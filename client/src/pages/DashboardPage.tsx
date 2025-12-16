@@ -10,6 +10,7 @@ import {
   EyeIcon,
   ClockIcon,
 } from 'lucide-react';
+import { Button } from '../components/common/Button';
 
 // Mock dashboard data
 const mockDashboardData = {
@@ -174,19 +175,15 @@ const DashboardPage: React.FC = () => {
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-charcoal mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-4">
-          <Link
-            to="/menu"
-            className="flex items-center px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-          >
-            <PlusIcon className="w-5 h-5 mr-2" />
-            Add Menu Item
+          <Link to="/menu">
+            <Button icon={PlusIcon}>
+              Add Menu Item
+            </Button>
           </Link>
-          <Link
-            to="/orders"
-            className="flex items-center px-4 py-2 bg-white hover:bg-antiflash text-charcoal border border-antiflash rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-          >
-            <EyeIcon className="w-5 h-5 mr-2" />
-            View Orders
+          <Link to="/orders">
+            <Button variant="secondary" icon={EyeIcon} className="hover:bg-charcoal hover:text-white">
+              View Orders
+            </Button>
           </Link>
         </div>
       </div>
@@ -197,31 +194,31 @@ const DashboardPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md border border-antiflash overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-antiflash">
+              <thead className="bg-charcoal">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Order ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Table
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Items
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Time
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-antiflash">
                 {mockRecentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-antiflash transition-colors">
+                  <tr key={order.id} className="hover:bg-naples/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-charcoal">
                       {order.id}
                     </td>

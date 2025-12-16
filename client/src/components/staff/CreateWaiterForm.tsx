@@ -2,8 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Staff } from '../../hooks/useStaff';
-
+import type { Staff } from '../../hooks/useStaff';import { Button } from '../common/Button';
 // Validation schema
 const waiterFormSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -19,11 +18,14 @@ const waiterFormSchema = z.object({
 type WaiterFormData = z.infer<typeof waiterFormSchema>;
 
 interface CreateWaiterFormProps {
+  staff?: Staff;
   onSubmit: (staff: Omit<Staff, 'id' | 'createdAt'>) => void;
   onClose: () => void;
 }
 
-export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, onClose }) => {
+export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSubmit, onClose }) => {
+  const isEditMode = !!staff;
+  
   const {
     register,
     handleSubmit,
@@ -31,6 +33,13 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
     reset,
   } = useForm<WaiterFormData>({
     resolver: zodResolver(waiterFormSchema),
+    defaultValues: {
+      name: staff?.name || '',
+      email: staff?.email || '',
+      phoneNumber: staff?.phoneNumber || '',
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   const onFormSubmit = async (data: WaiterFormData) => {
@@ -42,18 +51,20 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
       onSubmit({
         ...staffData,
         role: 'WAITER',
-        isActive: true,
+        isActive: staff?.isActive ?? true,
       });
 
       // Show success message (you can use a toast library here)
-      alert('Waiter account created successfully!');
+      alert(`Waiter account ${isEditMode ? 'updated' : 'created'} successfully!`);
       
       // Reset form and close modal
-      reset();
+      if (!isEditMode) {
+        reset();
+      }
       onClose();
     } catch (error) {
-      console.error('Error creating waiter:', error);
-      alert('Failed to create waiter account');
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} waiter:`, error);
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} waiter account`);
     }
   };
 
@@ -69,7 +80,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.name ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Enter full name"
@@ -88,7 +99,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
             id="email"
             type="email"
             {...register('email')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.email ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="email@restaurant.com"
@@ -107,7 +118,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
             id="phoneNumber"
             type="tel"
             {...register('phoneNumber')}
-            className="w-full px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+            className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             placeholder="+1234567890"
           />
         </div>
@@ -121,7 +132,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
             id="password"
             type="password"
             {...register('password')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.password ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Minimum 8 characters"
@@ -140,7 +151,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
             id="confirmPassword"
             type="password"
             {...register('confirmPassword')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.confirmPassword ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Re-enter password"
@@ -153,20 +164,12 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ onSubmit, on
 
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
-        <button
-          type="button"
-          onClick={onClose}
-          className="px-4 py-2 bg-white hover:bg-antiflash text-charcoal border border-antiflash rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-        >
+        <Button type="button" onClick={onClose} variant="secondary">
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Creating...' : 'Create Waiter Account'}
-        </button>
+        </Button>
       </div>
     </form>
   );

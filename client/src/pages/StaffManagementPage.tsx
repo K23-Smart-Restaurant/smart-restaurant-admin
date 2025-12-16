@@ -7,6 +7,7 @@ import { StaffList } from '../components/staff/StaffList';
 import { CreateWaiterForm } from '../components/staff/CreateWaiterForm';
 import { CreateKitchenStaffForm } from '../components/staff/CreateKitchenStaffForm';
 import { Modal } from '../components/common/Modal';
+import { Button } from '../components/common/Button';
 
 const StaffManagementPage: React.FC = () => {
   const { staff, addStaff, updateStaff, deleteStaff } = useStaff();
@@ -15,7 +16,13 @@ const StaffManagementPage: React.FC = () => {
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
 
   const handleAddStaff = (staffData: Omit<Staff, 'id' | 'createdAt'>) => {
-    addStaff(staffData);
+    if (editingStaff) {
+      // Update existing staff
+      updateStaff(editingStaff.id, staffData);
+    } else {
+      // Add new staff
+      addStaff(staffData);
+    }
   };
 
   const handleEditStaff = (staffMember: Staff) => {
@@ -58,14 +65,14 @@ const StaffManagementPage: React.FC = () => {
 
       {/* Tabs */}
       <Tab.Group>
-        <Tab.List className="flex space-x-1 rounded-lg bg-antiflash p-1 mb-6">
+        <Tab.List className="flex space-x-1 rounded-lg bg-white bg-antiflash p-1 mb-6">
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
                 className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
                   selected
                     ? 'bg-naples text-charcoal shadow'
-                    : 'text-gray-600 hover:bg-white/50 hover:text-charcoal'
+                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                 }`}
               >
                 Waiters
@@ -78,7 +85,7 @@ const StaffManagementPage: React.FC = () => {
                 className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
                   selected
                     ? 'bg-naples text-charcoal shadow'
-                    : 'text-gray-600 hover:bg-white/50 hover:text-charcoal'
+                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                 }`}
               >
                 Kitchen Staff
@@ -93,13 +100,9 @@ const StaffManagementPage: React.FC = () => {
             <div className="space-y-4">
               {/* Add Waiter button */}
               <div className="flex justify-end">
-                <button
-                  onClick={() => setIsWaiterModalOpen(true)}
-                  className="flex items-center px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-                >
-                  <PlusIcon className="w-5 h-5 mr-2" />
+                <Button onClick={() => setIsWaiterModalOpen(true)} icon={PlusIcon}>
                   Add Waiter
-                </button>
+                </Button>
               </div>
 
               {/* Waiters list */}
@@ -117,13 +120,9 @@ const StaffManagementPage: React.FC = () => {
             <div className="space-y-4">
               {/* Add Kitchen Staff button */}
               <div className="flex justify-end">
-                <button
-                  onClick={() => setIsKitchenStaffModalOpen(true)}
-                  className="flex items-center px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-                >
-                  <PlusIcon className="w-5 h-5 mr-2" />
+                <Button onClick={() => setIsKitchenStaffModalOpen(true)} icon={PlusIcon}>
                   Add Kitchen Staff
-                </button>
+                </Button>
               </div>
 
               {/* Kitchen staff list */}
@@ -145,6 +144,7 @@ const StaffManagementPage: React.FC = () => {
         title={editingStaff ? 'Edit Waiter' : 'Create Waiter Account'}
       >
         <CreateWaiterForm
+          staff={editingStaff || undefined}
           onSubmit={handleAddStaff}
           onClose={closeWaiterModal}
         />
@@ -157,6 +157,7 @@ const StaffManagementPage: React.FC = () => {
         title={editingStaff ? 'Edit Kitchen Staff' : 'Create Kitchen Staff Account'}
       >
         <CreateKitchenStaffForm
+          staff={editingStaff || undefined}
           onSubmit={handleAddStaff}
           onClose={closeKitchenStaffModal}
         />

@@ -2,8 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Staff } from '../../hooks/useStaff';
-
+import type { Staff } from '../../hooks/useStaff';import { Button } from '../common/Button';
 // Validation schema (same as waiter form)
 const kitchenStaffFormSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -19,11 +18,14 @@ const kitchenStaffFormSchema = z.object({
 type KitchenStaffFormData = z.infer<typeof kitchenStaffFormSchema>;
 
 interface CreateKitchenStaffFormProps {
+  staff?: Staff;
   onSubmit: (staff: Omit<Staff, 'id' | 'createdAt'>) => void;
   onClose: () => void;
 }
 
-export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ onSubmit, onClose }) => {
+export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ staff, onSubmit, onClose }) => {
+  const isEditMode = !!staff;
+  
   const {
     register,
     handleSubmit,
@@ -31,6 +33,13 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
     reset,
   } = useForm<KitchenStaffFormData>({
     resolver: zodResolver(kitchenStaffFormSchema),
+    defaultValues: {
+      name: staff?.name || '',
+      email: staff?.email || '',
+      phoneNumber: staff?.phoneNumber || '',
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   const onFormSubmit = async (data: KitchenStaffFormData) => {
@@ -42,18 +51,20 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
       onSubmit({
         ...staffData,
         role: 'KITCHEN_STAFF',
-        isActive: true,
+        isActive: staff?.isActive ?? true,
       });
 
       // Show success message (you can use a toast library here)
-      alert('Kitchen staff account created successfully!');
+      alert(`Kitchen staff account ${isEditMode ? 'updated' : 'created'} successfully!`);
       
       // Reset form and close modal
-      reset();
+      if (!isEditMode) {
+        reset();
+      }
       onClose();
     } catch (error) {
-      console.error('Error creating kitchen staff:', error);
-      alert('Failed to create kitchen staff account');
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} kitchen staff:`, error);
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} kitchen staff account`);
     }
   };
 
@@ -69,7 +80,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.name ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Enter full name"
@@ -88,7 +99,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             id="email"
             type="email"
             {...register('email')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.email ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="email@restaurant.com"
@@ -107,7 +118,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             id="phoneNumber"
             type="tel"
             {...register('phoneNumber')}
-            className="w-full px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+            className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             placeholder="+1234567890"
           />
         </div>
@@ -121,7 +132,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             id="password"
             type="password"
             {...register('password')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.password ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Minimum 8 characters"
@@ -140,7 +151,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             id="confirmPassword"
             type="password"
             {...register('confirmPassword')}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.confirmPassword ? 'border-red-500' : 'border-antiflash'
             }`}
             placeholder="Re-enter password"
@@ -153,20 +164,12 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
 
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
-        <button
-          type="button"
-          onClick={onClose}
-          className="px-4 py-2 bg-white hover:bg-antiflash text-charcoal border border-antiflash rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2"
-        >
+        <Button type="button" onClick={onClose} variant="secondary">
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-colors focus:ring-2 focus:ring-naples focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Creating...' : 'Create Kitchen Staff Account'}
-        </button>
+        </Button>
       </div>
     </form>
   );
