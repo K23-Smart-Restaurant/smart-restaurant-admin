@@ -15,6 +15,14 @@ export default {
         '2xl': '1536px',
       },
       colors: {
+        // Main colors from design system
+        charcoal: "#242424", // Primary dark background
+        white: "#ffffff", // Text on dark, light backgrounds
+        naples: "#ffdc64", // Primary accent (buttons, highlights)
+        // Supporting colors
+        antiflash: "#f0f0f0", // Light backgrounds, borders
+        black: "#000000", // Pure black for emphasis
+        arylide: "#dcc864", // Darker yellow for hover states
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
