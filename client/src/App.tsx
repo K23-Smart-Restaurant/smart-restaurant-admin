@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
 const CategoryManagementPage = lazy(() => import('./pages/CategoryManagementPage'));
 const MenuManagementPage = lazy(() => import('./pages/MenuManagementPage'));
+const TableManagementPage = lazy(() => import('./pages/TableManagementPage'));
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -81,6 +82,16 @@ function App() {
                     element={
                       <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
                         <MenuManagementPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Table management - Admin only */}
+                  <Route
+                    path="tables"
+                    element={
+                      <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                        <TableManagementPage />
                       </ProtectedRoute>
                     }
                   />

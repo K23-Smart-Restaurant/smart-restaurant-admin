@@ -24,9 +24,9 @@ interface TableFormProps {
   existingLocations?: string[]; // For location suggestions
 }
 
-export const TableForm: React.FC<TableFormProps> = ({ 
-  table, 
-  onSubmit, 
+export const TableForm: React.FC<TableFormProps> = ({
+  table,
+  onSubmit,
   onCancel,
   existingLocations = []
 }) => {
@@ -38,7 +38,6 @@ export const TableForm: React.FC<TableFormProps> = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm<TableFormData>({
     resolver: zodResolver(tableFormSchema),
     defaultValues: {
@@ -116,9 +115,8 @@ export const TableForm: React.FC<TableFormProps> = ({
               id="tableNumber"
               type="number"
               {...register('tableNumber', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.tableNumber ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.tableNumber ? 'border-red-500' : 'border-antiflash'
+                }`}
               placeholder="1"
               min="1"
             />
@@ -137,9 +135,8 @@ export const TableForm: React.FC<TableFormProps> = ({
               id="capacity"
               type="number"
               {...register('capacity', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.capacity ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.capacity ? 'border-red-500' : 'border-antiflash'
+                }`}
               placeholder="4"
               min="1"
               max="50"
@@ -161,9 +158,8 @@ export const TableForm: React.FC<TableFormProps> = ({
             type="text"
             list="location-suggestions"
             {...register('location')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.location ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.location ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="e.g., Main Floor, Patio, Private Room"
             maxLength={100}
           />
@@ -188,9 +184,8 @@ export const TableForm: React.FC<TableFormProps> = ({
           <select
             id="status"
             {...register('status')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.status ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.status ? 'border-red-500' : 'border-antiflash'
+              }`}
           >
             {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -238,7 +233,7 @@ export const TableForm: React.FC<TableFormProps> = ({
         {!isEditMode && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
             <p className="text-xs text-blue-900">
-              <strong>Note:</strong> A QR code will be automatically generated for this table after creation. 
+              <strong>Note:</strong> A QR code will be automatically generated for this table after creation.
               Guests can scan this code to access the menu and place orders.
             </p>
           </div>

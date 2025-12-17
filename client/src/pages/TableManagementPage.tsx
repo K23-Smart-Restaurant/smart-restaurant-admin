@@ -5,7 +5,7 @@ import type { Table, TableStatus } from '../hooks/useTables';
 import { TableList } from '../components/table/TableList';
 import { TableForm } from '../components/table/TableForm';
 import { Modal } from '../components/common/Modal';
-import { Button } from '../common/Button';
+import { Button } from '../components/common/Button';
 
 const TableManagementPage: React.FC = () => {
   const {
