@@ -1,15 +1,17 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '../../contexts/AuthContext';
+// import { Navigate } from 'react-router-dom';  // Temporarily disabled with auth bypass
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { UserRole } from '../../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: UserRole[];
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  allowedRoles 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  allowedRoles: _allowedRoles
 }) => {
   // const { isAuthenticated, isLoading, user } = useAuth();
 

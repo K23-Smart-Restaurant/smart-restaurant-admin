@@ -40,7 +40,6 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
@@ -138,9 +137,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.name ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.name ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter menu item name"
             maxLength={100}
           />
@@ -156,9 +154,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="description"
             {...register('description')}
             rows={3}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
-              errors.description ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${errors.description ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter item description"
             maxLength={500}
           />
@@ -177,9 +174,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             <select
               id="category"
               {...register('category')}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.category ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.category ? 'border-red-500' : 'border-antiflash'
+                }`}
             >
               {categoryOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -202,9 +198,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               type="number"
               step="0.01"
               {...register('price', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.price ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.price ? 'border-red-500' : 'border-antiflash'
+                }`}
               placeholder="0.00"
             />
             {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
@@ -220,9 +215,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="preparationTime"
             type="number"
             {...register('preparationTime', { valueAsNumber: true })}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.preparationTime ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.preparationTime ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="15"
           />
           {errors.preparationTime && (
@@ -235,7 +229,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           <label className="block text-sm font-medium text-charcoal mb-2">
             Images <span className="text-red-600">*</span>
           </label>
-          
+
           {/* Image input */}
           <div className="flex gap-2 mb-3">
             <input

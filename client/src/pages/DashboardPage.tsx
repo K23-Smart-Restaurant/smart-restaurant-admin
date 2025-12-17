@@ -68,7 +68,7 @@ const mockRecentOrders = [
 
 const DashboardPage: React.FC = () => {
   const activeTablePercentage = (mockDashboardData.activeTables / mockDashboardData.totalTables) * 100;
-  const staffOnlinePercentage = (mockDashboardData.staffOnline / mockDashboardData.totalStaff) * 100;
+  // staffOnlinePercentage calculation available for future use when needed
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -162,9 +162,8 @@ const DashboardPage: React.FC = () => {
             {Array.from({ length: mockDashboardData.totalStaff }).map((_, index) => (
               <div
                 key={index}
-                className={`w-6 h-6 rounded-full ${
-                  index < mockDashboardData.staffOnline ? 'bg-charcoal' : 'bg-charcoal/30'
-                }`}
+                className={`w-6 h-6 rounded-full ${index < mockDashboardData.staffOnline ? 'bg-charcoal' : 'bg-charcoal/30'
+                  }`}
               ></div>
             ))}
           </div>

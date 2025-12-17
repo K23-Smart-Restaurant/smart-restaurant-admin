@@ -8,7 +8,7 @@ import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 
 const CategoryManagementPage: React.FC = () => {
-  const { categories, addCategory, updateCategory, deleteCategory, getSortedCategories } = useCategories();
+  const { categories: _categories, addCategory, updateCategory, deleteCategory, getSortedCategories } = useCategories();
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 

@@ -10,7 +10,7 @@ import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 
 const StaffManagementPage: React.FC = () => {
-  const { staff, addStaff, updateStaff, deleteStaff } = useStaff();
+  const { staff, addStaff, updateStaff, deleteStaff: _deleteStaff } = useStaff();
   const [isWaiterModalOpen, setIsWaiterModalOpen] = useState(false);
   const [isKitchenStaffModalOpen, setIsKitchenStaffModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
@@ -69,11 +69,10 @@ const StaffManagementPage: React.FC = () => {
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
-                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
-                  selected
+                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
                     ? 'bg-naples text-charcoal shadow'
                     : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
-                }`}
+                  }`}
               >
                 Waiters
               </button>
@@ -82,11 +81,10 @@ const StaffManagementPage: React.FC = () => {
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
-                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
-                  selected
+                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
                     ? 'bg-naples text-charcoal shadow'
                     : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
-                }`}
+                  }`}
               >
                 Kitchen Staff
               </button>

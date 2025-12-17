@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PlusIcon, XIcon, Trash2Icon } from 'lucide-react';
+import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '../common/Button';
 import type { Modifier } from '../../hooks/useMenuItems';
 
@@ -33,7 +33,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
     };
 
     onChange([...modifiers, newModifier]);
-    
+
     // Reset only name and price, keep group name for easy adding
     setModifierName('');
     setModifierPrice('0');
@@ -63,7 +63,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
     <div className="space-y-4">
       <div className="bg-antiflash/50 p-4 rounded-lg">
         <h4 className="text-sm font-semibold text-charcoal mb-3">Add Modifier</h4>
-        
+
         <div className="space-y-3">
           {/* Group Name */}
           <div>
@@ -96,7 +96,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 placeholder="Large"
               />
             </div>
-            
+
             <div>
               <label htmlFor="modifierPrice" className="block text-xs font-medium text-charcoal mb-1">
                 Additional Price ($)
@@ -130,14 +130,14 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
       {Object.keys(groupedModifiers).length > 0 ? (
         <div className="space-y-4">
           <h4 className="text-sm font-semibold text-charcoal">Current Modifiers</h4>
-          
+
           {Object.entries(groupedModifiers).map(([group, mods]) => (
             <div key={group} className="bg-white border border-antiflash rounded-lg p-4">
               <h5 className="text-sm font-semibold text-charcoal mb-3 flex items-center">
                 <span className="px-2 py-1 bg-naples/20 rounded text-xs mr-2">{group}</span>
                 <span className="text-gray-600 text-xs">({mods.length} options)</span>
               </h5>
-              
+
               <div className="space-y-2">
                 {mods.map((modifier) => (
                   <div
@@ -150,7 +150,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                         {modifier.price > 0 ? `+$${modifier.price.toFixed(2)}` : 'Free'}
                       </span>
                     </div>
-                    
+
                     <button
                       type="button"
                       onClick={() => removeModifier(modifier.id)}
@@ -175,7 +175,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
       {/* Info text */}
       <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
         <p className="text-xs text-blue-900">
-          <strong>Tip:</strong> Group modifiers by type (e.g., "Size" for Small/Medium/Large, "Extras" for add-ons). 
+          <strong>Tip:</strong> Group modifiers by type (e.g., "Size" for Small/Medium/Large, "Extras" for add-ons).
           Customers will see these grouped together when ordering.
         </p>
       </div>
