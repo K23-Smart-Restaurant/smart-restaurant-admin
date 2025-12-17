@@ -1,18 +1,23 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './contexts/AuthContext';
-import { SocketProvider } from './contexts/SocketContext';
-import { ProtectedRoute } from './components/common/ProtectedRoute';
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./contexts/AuthContext";
+import { SocketProvider } from "./contexts/SocketContext";
+import { ProtectedRoute } from "./components/common/ProtectedRoute";
 
 // Lazy load pages for code splitting
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
-const CategoryManagementPage = lazy(() => import('./pages/CategoryManagementPage'));
-const MenuManagementPage = lazy(() => import('./pages/MenuManagementPage'));
-const TableManagementPage = lazy(() => import('./pages/TableManagementPage'));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const DashboardLayout = lazy(
+  () => import("./components/layout/DashboardLayout")
+);
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const StaffManagementPage = lazy(() => import("./pages/StaffManagementPage"));
+const CategoryManagementPage = lazy(
+  () => import("./pages/CategoryManagementPage")
+);
+const MenuManagementPage = lazy(() => import("./pages/MenuManagementPage"));
+const TableManagementPage = lazy(() => import("./pages/TableManagementPage"));
+const OrderManagementPage = lazy(() => import("./pages/OrderManagementPage"));
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -47,7 +52,14 @@ function App() {
                 <Route
                   path="/*"
                   element={
-                    <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN', 'WAITER', 'KITCHEN_STAFF']}>
+                    <ProtectedRoute
+                      allowedRoles={[
+                        "ADMIN",
+                        "SUPER_ADMIN",
+                        "WAITER",
+                        "KITCHEN_STAFF",
+                      ]}
+                    >
                       <DashboardLayout />
                     </ProtectedRoute>
                   }
@@ -60,7 +72,7 @@ function App() {
                   <Route
                     path="staff"
                     element={
-                      <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                         <StaffManagementPage />
                       </ProtectedRoute>
                     }
@@ -70,7 +82,7 @@ function App() {
                   <Route
                     path="categories"
                     element={
-                      <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                         <CategoryManagementPage />
                       </ProtectedRoute>
                     }
@@ -80,7 +92,7 @@ function App() {
                   <Route
                     path="menu"
                     element={
-                      <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                         <MenuManagementPage />
                       </ProtectedRoute>
                     }
@@ -90,14 +102,34 @@ function App() {
                   <Route
                     path="tables"
                     element={
-                      <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                         <TableManagementPage />
                       </ProtectedRoute>
                     }
                   />
 
+                  {/* Order management - All staff */}
+                  <Route
+                    path="orders"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={[
+                          "ADMIN",
+                          "SUPER_ADMIN",
+                          "WAITER",
+                          "KITCHEN_STAFF",
+                        ]}
+                      >
+                        <OrderManagementPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
                   {/* 404 */}
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  <Route
+                    path="*"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
                 </Route>
               </Routes>
             </Suspense>
@@ -109,4 +141,3 @@ function App() {
 }
 
 export default App;
-
