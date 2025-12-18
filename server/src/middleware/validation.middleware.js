@@ -1,13 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+const { ZodError } = require('zod');
 
 /**
  * Zod validation middleware factory
- * @param schema - Zod schema to validate against
- * @param source - Where to find data ('body', 'query', 'params')
+ * @param {Object} schema - Zod schema to validate against
+ * @param {string} source - Where to find data ('body', 'query', 'params')
  */
-export const validate = (schema: AnyZodObject, source: 'body' | 'query' | 'params' = 'body') => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+const validate = (schema, source = 'body') => {
+  return async (req, res, next) => {
     try {
       // Validate the request data
       await schema.parseAsync(req[source]);
@@ -33,3 +32,5 @@ export const validate = (schema: AnyZodObject, source: 'body' | 'query' | 'param
     }
   };
 };
+
+module.exports = { validate };

@@ -1,4 +1,5 @@
-import winston from 'winston';
+const winston = require('winston');
+const fs = require('fs');
 
 // Define log format
 const logFormat = winston.format.combine(
@@ -20,7 +21,7 @@ const consoleFormat = winston.format.combine(
 );
 
 // Create logger instance
-export const logger = winston.createLogger({
+const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: logFormat,
   transports: [
@@ -51,10 +52,9 @@ export const logger = winston.createLogger({
 });
 
 // Create logs directory if it doesn't exist
-import fs from 'fs';
 const logsDir = './logs';
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }
 
-export default logger;
+module.exports = { logger };

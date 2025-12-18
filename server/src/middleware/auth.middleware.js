@@ -1,25 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import passport from '../config/passport.config';
-import { UserRole } from '@prisma/client';
-
-// Extend Express Request to include user
-declare global {
-  namespace Express {
-    interface User {
-      id: string;
-      email: string;
-      name: string;
-      role: UserRole;
-      isActive: boolean;
-    }
-  }
-}
+const passport = require('../config/passport.config');
+const { UserRole } = require('@prisma/client');
 
 /**
  * Authentication middleware - requires valid JWT token
  */
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('jwt', { session: false }, (err: Error, user: Express.User, info: any) => {
+const authenticate = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err) {
       return res.status(500).json({
         success: false,
@@ -42,10 +28,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
 /**
  * Role-based authorization middleware
- * @param allowedRoles - Array of roles that can access the route
+ * @param {...string} allowedRoles - Roles that can access the route
  */
-export const authorize = (...allowedRoles: UserRole[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+const authorize = (...allowedRoles) => {
+  return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -67,19 +53,28 @@ export const authorize = (...allowedRoles: UserRole[]) => {
 /**
  * Admin-only middleware
  */
-export const adminOnly = authorize(UserRole.ADMIN);
+const adminOnly = authorize(UserRole.ADMIN);
 
 /**
  * Waiter-only middleware
  */
-export const waiterOnly = authorize(UserRole.WAITER);
+const waiterOnly = authorize(UserRole.WAITER);
 
 /**
  * Kitchen staff-only middleware
  */
-export const kitchenOnly = authorize(UserRole.KITCHEN_STAFF);
+const kitchenOnly = authorize(UserRole.KITCHEN_STAFF);
 
 /**
  * Admin or Waiter middleware
  */
-export const adminOrWaiter = authorize(UserRole.ADMIN, UserRole.WAITER);
+const adminOrWaiter = authorize(UserRole.ADMIN, UserRole.WAITER);
+
+module.exports = {
+  authenticate,
+  authorize,
+  adminOnly,
+  waiterOnly,
+  kitchenOnly,
+  adminOrWaiter,
+};

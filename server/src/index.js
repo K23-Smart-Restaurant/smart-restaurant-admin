@@ -1,10 +1,7 @@
-import dotenv from 'dotenv';
-import http from 'http';
-import app from './app';
-import { logger } from './config/winston.config';
-
-// Load environment variables
-dotenv.config();
+require('dotenv').config();
+const http = require('http');
+const app = require('./app');
+const { logger } = require('./config/winston.config');
 
 const PORT = process.env.PORT || 4000;
 
@@ -35,4 +32,4 @@ process.on('SIGINT', () => {
   });
 });
 
-export default server;
+module.exports = server;

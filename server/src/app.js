@@ -1,12 +1,12 @@
-import express, { Application } from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import passport from './config/passport.config';
-import { errorHandler, notFoundHandler } from './middleware/error.middleware';
-import { logger } from './config/winston.config';
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const passport = require('./config/passport.config');
+const { errorHandler, notFoundHandler } = require('./middleware/error.middleware');
+const { logger } = require('./config/winston.config');
 
-const app: Application = express();
+const app = express();
 
 // Security middleware
 app.use(helmet());
@@ -41,7 +41,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(
   morgan('combined', {
     stream: {
-      write: (message: string) => logger.info(message.trim()),
+      write: (message) => logger.info(message.trim()),
     },
   })
 );
@@ -73,4 +73,4 @@ app.use(notFoundHandler);
 // Global error handler (must be last)
 app.use(errorHandler);
 
-export default app;
+module.exports = app;
