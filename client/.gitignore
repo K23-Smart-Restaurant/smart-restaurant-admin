@@ -1,6 +1,10 @@
 # Dependency directories
 .env
 .env.example
+.env.local
+.env.*.local
+.env.*
+.env.*.*
 
 # Logs
 logs
