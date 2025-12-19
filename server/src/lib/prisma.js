@@ -4,7 +4,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const { PrismaClient } = require('../../../../generated/prisma/index.js');
+const { PrismaClient } = require('../../../../smart-restaurant-root/generated/prisma/index.js');
 
 const connectionString = `${process.env.DATABASE_URL}`
 
