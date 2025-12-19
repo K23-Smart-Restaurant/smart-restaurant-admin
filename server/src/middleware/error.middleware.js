@@ -1,4 +1,4 @@
-const { logger } = require('../config/winston.config');
+import { logger } from '../config/winston.config.js';
 
 /**
  * Global error handler middleware
@@ -34,4 +34,4 @@ const notFoundHandler = (req, res) => {
   });
 };
 
-module.exports = { errorHandler, notFoundHandler };
+export { errorHandler, notFoundHandler };

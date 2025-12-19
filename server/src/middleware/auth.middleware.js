@@ -1,5 +1,5 @@
-const passport = require('../config/passport.config');
-const { UserRole } = require('@prisma/client');
+import passport from 'passport';
+import { UserRole } from '../lib/client.js';
 
 /**
  * Authentication middleware - requires valid JWT token
@@ -70,7 +70,7 @@ const kitchenOnly = authorize(UserRole.KITCHEN_STAFF);
  */
 const adminOrWaiter = authorize(UserRole.ADMIN, UserRole.WAITER);
 
-module.exports = {
+export {
   authenticate,
   authorize,
   adminOnly,

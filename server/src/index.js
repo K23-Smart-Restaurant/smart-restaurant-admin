@@ -1,12 +1,12 @@
-require('dotenv').config();
-const http = require('http');
-const app = require('./app');
-const { logger } = require('./config/winston.config');
+import 'dotenv/config';
+import { createServer } from 'http';
+import app from './app.js';
+import { logger } from './config/winston.config.js';
 
 const PORT = process.env.PORT || 4000;
 
 // Create HTTP server
-const server = http.createServer(app);
+const server = createServer(app);
 
 // Start server
 server.listen(PORT, () => {
@@ -32,4 +32,4 @@ process.on('SIGINT', () => {
   });
 });
 
-module.exports = server;
+export default server;

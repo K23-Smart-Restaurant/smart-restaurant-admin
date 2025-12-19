@@ -1,10 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const passport = require('./config/passport.config');
-const { errorHandler, notFoundHandler } = require('./middleware/error.middleware');
-const { logger } = require('./config/winston.config');
+import express, { json, urlencoded } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import { passport } from './config/passport.config.js';
+import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
+import { logger } from './config/winston.config.js';
 
 const app = express();
 
@@ -34,8 +34,8 @@ app.use(
 );
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(json({ limit: '10mb' }));
+app.use(urlencoded({ extended: true, limit: '10mb' }));
 
 // HTTP request logging
 app.use(
@@ -46,7 +46,7 @@ app.use(
   })
 );
 
-// Initialize Passport
+// initialize Passport
 app.use(passport.initialize());
 
 // Health check endpoint
@@ -58,14 +58,21 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes will be added here
+// API routes
+import tableRoutes from './routes/table.routes.js';
+import orderRoutes from './routes/order.routes.js';
+import reportRoutes from './routes/report.routes.js';
+
+// Register routes
+app.use('/api/tables', tableRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/reports', reportRoutes);
+
+// Additional routes will be added here
 // Example: app.use('/api/auth', authRoutes);
 // Example: app.use('/api/staff', authenticate, staffRoutes);
 // Example: app.use('/api/categories', authenticate, categoryRoutes);
 // Example: app.use('/api/menu-items', authenticate, menuItemRoutes);
-// Example: app.use('/api/tables', authenticate, tableRoutes);
-// Example: app.use('/api/orders', authenticate, orderRoutes);
-// Example: app.use('/api/reports', authenticate, adminOnly, reportRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -73,4 +80,4 @@ app.use(notFoundHandler);
 // Global error handler (must be last)
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

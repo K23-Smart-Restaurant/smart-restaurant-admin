@@ -1,4 +1,4 @@
-const { ZodError } = require('zod');
+import { ZodError } from 'zod';
 
 /**
  * Zod validation middleware factory
@@ -33,4 +33,4 @@ const validate = (schema, source = 'body') => {
   };
 };
 
-module.exports = { validate };
+export  { validate };
