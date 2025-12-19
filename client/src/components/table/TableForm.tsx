@@ -102,55 +102,55 @@ export const TableForm: React.FC<TableFormProps> = ({
   ).sort();
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 animate-fade-in-up">
+      <div className="space-y-5">
         {/* Table Number and Capacity row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Table Number field */}
-          <div>
-            <label htmlFor="tableNumber" className="block text-sm font-medium text-charcoal mb-1">
+          <div className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+            <label htmlFor="tableNumber" className="block text-sm font-semibold text-charcoal mb-2">
               Table Number <span className="text-red-600">*</span>
             </label>
             <input
               id="tableNumber"
               type="number"
               {...register('tableNumber', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.tableNumber ? 'border-red-500' : 'border-antiflash'
+              className={`w-full bg-white px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-gradient-primary focus:border-gradient-primary focus:outline-none transition-all duration-300 ${errors.tableNumber ? 'border-red-500' : 'border-gray-200 hover:border-gradient-primary/50'
                 }`}
               placeholder="1"
               min="1"
             />
             {errors.tableNumber && (
-              <p className="mt-1 text-sm text-red-600">{errors.tableNumber.message}</p>
+              <p className="mt-2 text-sm text-red-600 font-medium animate-fade-in">{errors.tableNumber.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-600">Unique identifier for the table</p>
+            <p className="mt-2 text-xs text-gray-500">Unique identifier for the table</p>
           </div>
 
           {/* Capacity field */}
-          <div>
-            <label htmlFor="capacity" className="block text-sm font-medium text-charcoal mb-1">
+          <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
+            <label htmlFor="capacity" className="block text-sm font-semibold text-charcoal mb-2">
               Seating Capacity <span className="text-red-600">*</span>
             </label>
             <input
               id="capacity"
               type="number"
               {...register('capacity', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.capacity ? 'border-red-500' : 'border-antiflash'
+              className={`w-full bg-white px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-gradient-primary focus:border-gradient-primary focus:outline-none transition-all duration-300 ${errors.capacity ? 'border-red-500' : 'border-gray-200 hover:border-gradient-primary/50'
                 }`}
               placeholder="4"
               min="1"
               max="50"
             />
             {errors.capacity && (
-              <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
+              <p className="mt-2 text-sm text-red-600 font-medium animate-fade-in">{errors.capacity.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-600">Maximum number of guests</p>
+            <p className="mt-2 text-xs text-gray-500">Maximum number of guests</p>
           </div>
         </div>
 
         {/* Location field with suggestions */}
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium text-charcoal mb-1">
+        <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <label htmlFor="location" className="block text-sm font-semibold text-charcoal mb-2">
             Location <span className="text-red-600">*</span>
           </label>
           <input
@@ -158,7 +158,7 @@ export const TableForm: React.FC<TableFormProps> = ({
             type="text"
             list="location-suggestions"
             {...register('location')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.location ? 'border-red-500' : 'border-antiflash'
+            className={`w-full bg-white px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-gradient-primary focus:border-gradient-primary focus:outline-none transition-all duration-300 ${errors.location ? 'border-red-500' : 'border-gray-200 hover:border-gradient-primary/50'
               }`}
             placeholder="e.g., Main Floor, Patio, Private Room"
             maxLength={100}
@@ -169,22 +169,22 @@ export const TableForm: React.FC<TableFormProps> = ({
             ))}
           </datalist>
           {errors.location && (
-            <p className="mt-1 text-sm text-red-600">{errors.location.message}</p>
+            <p className="mt-2 text-sm text-red-600 font-medium animate-fade-in">{errors.location.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-600">
+          <p className="mt-2 text-xs text-gray-500">
             Physical location in the restaurant (start typing to see suggestions)
           </p>
         </div>
 
         {/* Status field */}
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-charcoal mb-1">
+        <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+          <label htmlFor="status" className="block text-sm font-semibold text-charcoal mb-2">
             Current Status <span className="text-red-600">*</span>
           </label>
           <select
             id="status"
             {...register('status')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.status ? 'border-red-500' : 'border-antiflash'
+            className={`w-full bg-white px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-gradient-primary focus:border-gradient-primary focus:outline-none transition-all duration-300 ${errors.status ? 'border-red-500' : 'border-gray-200 hover:border-gradient-primary/50'
               }`}
           >
             {statusOptions.map((option) => (
@@ -194,34 +194,35 @@ export const TableForm: React.FC<TableFormProps> = ({
             ))}
           </select>
           {errors.status && (
-            <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+            <p className="mt-2 text-sm text-red-600 font-medium animate-fade-in">{errors.status.message}</p>
           )}
-          <div className="mt-2 space-y-1 text-xs text-gray-600">
+          <div className="mt-3 space-y-2 text-xs bg-gradient-to-r from-gray-50 to-white rounded-xl p-3 border border-gray-100">
             <div className="flex items-center">
-              <span className="w-20 font-medium">Available:</span>
-              <span>Ready for new guests</span>
+              <span className="w-20 font-semibold text-gray-700">Available:</span>
+              <span className="text-gray-600">Ready for new guests</span>
             </div>
             <div className="flex items-center">
-              <span className="w-20 font-medium">Occupied:</span>
-              <span>Currently serving guests</span>
+              <span className="w-20 font-semibold text-gray-700">Occupied:</span>
+              <span className="text-gray-600">Currently serving guests</span>
             </div>
             <div className="flex items-center">
-              <span className="w-20 font-medium">Reserved:</span>
-              <span>Booked for upcoming guests</span>
+              <span className="w-20 font-semibold text-gray-700">Reserved:</span>
+              <span className="text-gray-600">Booked for upcoming guests</span>
             </div>
           </div>
         </div>
 
         {/* Quick capacity presets */}
-        <div className="bg-antiflash/50 p-4 rounded-lg">
-          <p className="text-sm font-medium text-charcoal mb-2">Quick Capacity Presets:</p>
+        <div className="bg-gradient-to-r from-gradient-primary/5 to-gradient-secondary/5 p-5 rounded-xl border border-gradient-primary/10 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <p className="text-sm font-semibold text-charcoal mb-3">Quick Capacity Presets:</p>
           <div className="flex flex-wrap gap-2">
-            {[2, 4, 6, 8].map((preset) => (
+            {[2, 4, 6, 8].map((preset, index) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => setValue('capacity', preset)}
-                className="px-3 py-1 bg-white hover:bg-naples/20 border border-antiflash rounded-md text-sm text-charcoal transition-colors"
+                className="px-4 py-2 bg-white hover:bg-gradient-to-r hover:from-gradient-primary hover:to-gradient-secondary hover:text-white border-2 border-gray-200 hover:border-transparent rounded-xl text-sm font-semibold text-charcoal transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"
+                style={{ animationDelay: `${250 + index * 50}ms` }}
               >
                 {preset} seats
               </button>
@@ -231,9 +232,9 @@ export const TableForm: React.FC<TableFormProps> = ({
 
         {/* Info box for new tables */}
         {!isEditMode && (
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-            <p className="text-xs text-blue-900">
-              <strong>Note:</strong> A QR code will be automatically generated for this table after creation.
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <p className="text-sm text-blue-900 font-medium">
+              <strong className="text-blue-700">💡 Note:</strong> A QR code will be automatically generated for this table after creation.
               Guests can scan this code to access the menu and place orders.
             </p>
           </div>
@@ -241,11 +242,11 @@ export const TableForm: React.FC<TableFormProps> = ({
       </div>
 
       {/* Form actions */}
-      <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
+      <div className="flex justify-end space-x-3 pt-6 border-t-2 border-gray-100 animate-fade-in-up" style={{ animationDelay: '350ms' }}>
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
+        <Button type="submit" variant="gradient" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : isEditMode ? 'Update Table' : 'Create Table'}
         </Button>
       </div>

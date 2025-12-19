@@ -35,23 +35,23 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      APPETIZER: 'bg-green-100 text-green-800',
-      MAIN_COURSE: 'bg-blue-100 text-blue-800',
-      DESSERT: 'bg-pink-100 text-pink-800',
-      BEVERAGE: 'bg-purple-100 text-purple-800',
+      APPETIZER: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm',
+      MAIN_COURSE: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 shadow-sm',
+      DESSERT: 'bg-gradient-to-r from-pink-100 to-pink-200 text-pink-800 shadow-sm',
+      BEVERAGE: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 shadow-sm',
     };
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border-2 border-white hover:border-naples/80 hover:shadow-lg hover:shadow-naples/30 transition-all duration-200 overflow-hidden group">
+    <div className="bg-white rounded-2xl shadow-elevation-2 border border-gray-100 hover:border-gradient-primary/30 hover:shadow-elevation-3 transition-all duration-300 overflow-hidden group card-hover animate-fade-in-up">
       {/* Image Section */}
-      <div className="relative h-48 bg-gray-200 overflow-hidden">
+      <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
         {menuItem.imageUrls && menuItem.imageUrls.length > 0 ? (
           <img
             src={menuItem.imageUrls[0]}
             alt={menuItem.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=No+Image';
             }}
@@ -61,34 +61,37 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             <span className="text-sm">No Image</span>
           </div>
         )}
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         {/* Chef Recommendation Badge */}
         {menuItem.isChefRecommendation && (
-          <div className="absolute top-2 left-2 px-2 py-1 bg-naples text-charcoal text-xs font-semibold rounded-full flex items-center shadow-md">
-            <StarIcon className="w-3 h-3 mr-1 fill-current" />
+          <div className="absolute top-3 left-3 px-3 py-1.5 bg-gradient-to-r from-naples to-arylide text-charcoal text-xs font-bold rounded-full flex items-center shadow-glow-yellow animate-bounce-gentle">
+            <StarIcon className="w-3.5 h-3.5 mr-1 fill-current" />
             Chef's Pick
           </div>
         )}
 
         {/* Multiple Images Indicator */}
         {menuItem.imageUrls && menuItem.imageUrls.length > 1 && (
-          <div className="absolute top-2 right-2 px-2 py-1 bg-black/70 text-white text-xs font-semibold rounded">
+          <div className="absolute top-3 right-3 px-2.5 py-1 bg-black/80 backdrop-blur-sm text-white text-xs font-bold rounded-lg shadow-md">
             +{menuItem.imageUrls.length - 1} more
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
           <button
             onClick={() => onEdit(menuItem)}
-            className="p-2 bg-white/90 hover:bg-white text-gray-600 hover:text-charcoal rounded-md shadow-md transition-colors"
+            className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gradient-primary hover:to-gradient-secondary text-gray-600 hover:text-white rounded-xl shadow-md hover:shadow-glow transition-all duration-300 transform hover:scale-110"
             title="Edit menu item"
           >
             <PencilIcon className="w-4 h-4" />
           </button>
           <button
             onClick={handleDelete}
-            className="p-2 bg-white/90 hover:bg-white text-red-600 hover:text-red-700 rounded-md shadow-md transition-colors"
+            className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-110"
             title="Delete menu item"
           >
             <Trash2Icon className="w-4 h-4" />

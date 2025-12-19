@@ -39,20 +39,20 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
   // Get border color based on status
   const getBorderColor = () => {
-    if (isOverdue) return "border-red-500 border-4";
+    if (isOverdue) return "border-l-4 border-red-500 shadow-lg shadow-red-500/20 animate-pulse-glow";
     switch (order.status) {
       case "PENDING":
-        return "border-yellow-400 border-2";
+        return "border-l-4 border-yellow-400 shadow-md hover:shadow-lg hover:shadow-yellow-400/20";
       case "CONFIRMED":
-        return "border-blue-400 border-2";
+        return "border-l-4 border-blue-400 shadow-md hover:shadow-lg hover:shadow-blue-400/20";
       case "PREPARING":
-        return "border-blue-500 border-2";
+        return "border-l-4 border-gradient-primary shadow-md hover:shadow-glow";
       case "READY":
-        return "border-green-500 border-2";
+        return "border-l-4 border-green-500 shadow-md hover:shadow-lg hover:shadow-green-500/20";
       case "SERVED":
-        return "border-gray-400 border-2";
+        return "border-l-4 border-gray-400 shadow-md";
       default:
-        return "border-gray-300 border-2";
+        return "border-l-4 border-gray-300 shadow-md";
     }
   };
 
@@ -60,21 +60,21 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const getStatusBadgeColor = () => {
     switch (order.status) {
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 shadow-sm";
       case "CONFIRMED":
-        return "bg-blue-100 text-blue-800";
+        return "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 shadow-sm";
       case "PREPARING":
-        return "bg-blue-500 text-white";
+        return "bg-gradient-to-r from-gradient-primary to-gradient-secondary text-white shadow-glow";
       case "READY":
-        return "bg-green-500 text-white";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md animate-pulse-glow";
       case "SERVED":
-        return "bg-gray-500 text-white";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-sm";
       case "PAID":
-        return "bg-purple-500 text-white";
+        return "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md";
       case "CANCELLED":
-        return "bg-red-500 text-white";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 shadow-sm";
     }
   };
 
@@ -82,15 +82,15 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const getPaymentBadgeColor = () => {
     switch (order.paymentStatus) {
       case "PAID":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm";
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 shadow-sm";
       case "UNPAID":
-        return "bg-red-100 text-red-800";
+        return "bg-gradient-to-r from-red-100 to-red-200 text-red-800 shadow-sm";
       case "FAILED":
-        return "bg-red-500 text-white";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 shadow-sm";
     }
   };
 
