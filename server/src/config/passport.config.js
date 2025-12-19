@@ -1,8 +1,6 @@
-const passport = require('passport');
-const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+import passport from 'passport';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import prisma from '../lib/prisma.js';
 
 // JWT Strategy configuration
 const jwtOptions = {
@@ -23,18 +21,12 @@ passport.use(
           email: true,
           name: true,
           role: true,
-          isActive: true,
         },
       });
 
       // Check if user exists
       if (!user) {
         return done(null, false, { message: 'User not found' });
-      }
-
-      // Check if user is active
-      if (!user.isActive) {
-        return done(null, false, { message: 'User account is inactive' });
       }
 
       // Check if user has admin, waiter, or kitchen staff role
@@ -51,4 +43,4 @@ passport.use(
   })
 );
 
-module.exports = passport;
+export { passport };
