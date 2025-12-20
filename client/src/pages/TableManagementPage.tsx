@@ -32,7 +32,7 @@ const TableManagementPage: React.FC = () => {
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
 
-  const handleAddTable = (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => {
+  const handleAddTable = (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>) => {
     try {
       if (editingTable) {
         // Update existing table

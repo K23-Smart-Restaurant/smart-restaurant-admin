@@ -6,9 +6,12 @@ export interface Table {
   id: string;
   tableNumber: number;
   capacity: number;
-  status: TableStatus;
   location: string; // e.g., "Main Floor", "Patio", "Private Room"
-  qrCode: string | null; // Base64 or URL to QR code image
+  description?: string | null; // Optional additional notes
+  status: TableStatus;
+  qrCode: string | null; // Base64 QR code image (cached)
+  qrToken: string | null; // JWT token for table access
+  qrTokenCreatedAt: string | null; // When the QR token was generated
   createdAt: string;
   updatedAt: string;
 }
@@ -19,9 +22,12 @@ const initialMockTables: Table[] = [
     id: "1",
     tableNumber: 1,
     capacity: 2,
-    status: "AVAILABLE",
     location: "Main Floor",
+    description: null,
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiMSJ9.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -29,9 +35,12 @@ const initialMockTables: Table[] = [
     id: "2",
     tableNumber: 2,
     capacity: 2,
-    status: "OCCUPIED",
     location: "Main Floor",
+    description: "Near the window",
+    status: "OCCUPIED",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiMiJ9.mock",
+    qrTokenCreatedAt: "2024-01-15T14:30:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-15T14:30:00.000Z",
   },
@@ -39,9 +48,12 @@ const initialMockTables: Table[] = [
     id: "3",
     tableNumber: 3,
     capacity: 4,
-    status: "AVAILABLE",
     location: "Main Floor",
+    description: null,
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiMyJ9.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -49,9 +61,12 @@ const initialMockTables: Table[] = [
     id: "4",
     tableNumber: 4,
     capacity: 4,
-    status: "RESERVED",
     location: "Main Floor",
+    description: "Corner table",
+    status: "RESERVED",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiNCJ9.mock",
+    qrTokenCreatedAt: "2024-01-16T10:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-16T10:00:00.000Z",
   },
@@ -59,9 +74,12 @@ const initialMockTables: Table[] = [
     id: "5",
     tableNumber: 5,
     capacity: 6,
-    status: "AVAILABLE",
     location: "Patio",
+    description: "Outdoor seating",
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiNSJ9.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -69,9 +87,12 @@ const initialMockTables: Table[] = [
     id: "6",
     tableNumber: 6,
     capacity: 6,
-    status: "OCCUPIED",
     location: "Patio",
+    description: null,
+    status: "OCCUPIED",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiNiJ9.mock",
+    qrTokenCreatedAt: "2024-01-17T12:15:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-17T12:15:00.000Z",
   },
@@ -79,9 +100,12 @@ const initialMockTables: Table[] = [
     id: "7",
     tableNumber: 7,
     capacity: 8,
-    status: "AVAILABLE",
     location: "Private Room A",
+    description: "Private dining room",
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiNyJ9.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -89,9 +113,12 @@ const initialMockTables: Table[] = [
     id: "8",
     tableNumber: 8,
     capacity: 8,
-    status: "RESERVED",
     location: "Private Room B",
+    description: "VIP area with projector",
+    status: "RESERVED",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiOCJ9.mock",
+    qrTokenCreatedAt: "2024-01-17T09:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-17T09:00:00.000Z",
   },
@@ -99,9 +126,12 @@ const initialMockTables: Table[] = [
     id: "9",
     tableNumber: 9,
     capacity: 2,
-    status: "AVAILABLE",
     location: "Bar Area",
+    description: null,
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiOSJ9.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -109,9 +139,12 @@ const initialMockTables: Table[] = [
     id: "10",
     tableNumber: 10,
     capacity: 4,
-    status: "AVAILABLE",
     location: "Bar Area",
+    description: "High top table",
+    status: "AVAILABLE",
     qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiMTAifQ.mock",
+    qrTokenCreatedAt: "2024-01-01T00:00:00.000Z",
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
@@ -193,7 +226,7 @@ export const useTables = () => {
   }, [tables]);
 
   // CRUD operations
-  const createTable = (newTable: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => {
+  const createTable = (newTable: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>) => {
     // Check if table number already exists
     if (tables.some((t) => t.tableNumber === newTable.tableNumber)) {
       throw new Error(`Table number ${newTable.tableNumber} already exists`);
@@ -203,6 +236,8 @@ export const useTables = () => {
       ...newTable,
       id: `${Date.now()}`,
       qrCode: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`, // Mock QR code
+      qrToken: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiJHtEYXRlLm5vdygpfSJ9.mock`, // Mock token
+      qrTokenCreatedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -210,7 +245,7 @@ export const useTables = () => {
     return table;
   };
 
-  const updateTable = (id: string, updates: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>>) => {
+  const updateTable = (id: string, updates: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>>) => {
     // If updating table number, check it doesn't conflict
     if (updates.tableNumber !== undefined) {
       const existingTable = tables.find((t) => t.tableNumber === updates.tableNumber && t.id !== id);
@@ -240,6 +275,8 @@ export const useTables = () => {
           ? {
               ...table,
               qrCode: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`,
+              qrToken: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiJHtpZH0iLCJ0aW1lc3RhbXAiOiIke0RhdGUubm93KCl9In0.mock`,
+              qrTokenCreatedAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             }
           : table

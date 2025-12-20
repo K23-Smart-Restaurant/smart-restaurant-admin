@@ -173,6 +173,11 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
           <p className="text-sm text-gray-600">
             {table.location} • Capacity: {table.capacity} guests
           </p>
+          {table.qrTokenCreatedAt && (
+            <p className="text-xs text-gray-500 mt-1">
+              QR Code generated: {new Date(table.qrTokenCreatedAt).toLocaleString()}
+            </p>
+          )}
         </div>
 
         {/* Action Buttons */}
