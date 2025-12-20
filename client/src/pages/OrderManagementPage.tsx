@@ -6,34 +6,45 @@ import { OrderList } from "../components/order/OrderList";
 import { OrderDetailModal } from "../components/order/OrderDetailModal";
 
 const OrderManagementPage: React.FC = () => {
-  const { orders, updateOrderStatus, updateOrderItemStatus, getOverdueOrders } =
-    useOrders();
+  const {
+    orders,
+    updateStatus,
+    isLoading,
+    isError,
+    refetch
+  } = useOrders();
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Calculate summary stats
-  const todayOrders = orders.filter((order) => {
+  const todayOrders = Array.isArray(orders) ? orders.filter((order) => {
     const orderDate = new Date(order.createdAt);
     const today = new Date();
     return orderDate.toDateString() === today.toDateString();
-  });
+  }) : [];
 
-  const pendingOrders = orders.filter((order) =>
+  const pendingOrders = Array.isArray(orders) ? orders.filter((order) =>
     ["PENDING", "CONFIRMED"].includes(order.status)
-  );
+  ) : [];
 
-  const overdueOrders = getOverdueOrders();
+  // Calculate overdue orders (mock - orders older than 30 minutes that aren't completed)
+  const overdueOrders = Array.isArray(orders) ? orders.filter((order) => {
+    const orderAge = Date.now() - new Date(order.createdAt).getTime();
+    const thirtyMinutes = 30 * 60 * 1000;
+    return orderAge > thirtyMinutes && !['PAID', 'CANCELLED'].includes(order.status);
+  }) : [];
 
   const avgPrepTime =
     orders.length > 0
       ? Math.round(
-          orders.reduce((sum, order) => {
-            const elapsed = Math.floor(
-              (Date.now() - new Date(order.createdAt).getTime()) / 60000
-            );
-            return sum + elapsed;
-          }, 0) / orders.length
-        )
+        orders.reduce((sum, order) => {
+          const elapsed = Math.floor(
+            (Date.now() - new Date(order.createdAt).getTime()) / 60000
+          );
+          return sum + elapsed;
+        }, 0) / orders.length
+      )
       : 0;
 
   const handleOrderClick = (order: Order) => {
@@ -128,22 +139,19 @@ const OrderManagementPage: React.FC = () => {
                 Overdue Orders
               </p>
               <p
-                className={`text-3xl font-bold mt-2 ${
-                  overdueOrders.length > 0 ? "text-red-600" : "text-charcoal"
-                }`}
+                className={`text-3xl font-bold mt-2 ${overdueOrders.length > 0 ? "text-red-600" : "text-charcoal"
+                  }`}
               >
                 {overdueOrders.length}
               </p>
             </div>
             <div
-              className={`p-3 rounded-full ${
-                overdueOrders.length > 0 ? "bg-red-100" : "bg-gray-100"
-              }`}
+              className={`p-3 rounded-full ${overdueOrders.length > 0 ? "bg-red-100" : "bg-gray-100"
+                }`}
             >
               <AlertCircle
-                className={`w-8 h-8 ${
-                  overdueOrders.length > 0 ? "text-red-600" : "text-gray-600"
-                }`}
+                className={`w-8 h-8 ${overdueOrders.length > 0 ? "text-red-600" : "text-gray-600"
+                  }`}
               />
             </div>
           </div>
@@ -159,7 +167,7 @@ const OrderManagementPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <OrderList
           orders={orders}
-          onUpdateStatus={updateOrderStatus}
+          onUpdateStatus={updateStatus}
           onOrderClick={handleOrderClick}
         />
       </div>
@@ -169,8 +177,8 @@ const OrderManagementPage: React.FC = () => {
         order={selectedOrder}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onUpdateOrderStatus={updateOrderStatus}
-        onUpdateItemStatus={updateOrderItemStatus}
+        onUpdateOrderStatus={updateStatus}
+        onUpdateItemStatus={() => { }} // Not implemented in new hook yet
       />
     </div>
   );

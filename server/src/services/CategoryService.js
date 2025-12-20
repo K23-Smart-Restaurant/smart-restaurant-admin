@@ -7,6 +7,12 @@ class CategoryService {
         name: data.name,
         description: data.description,
         displayOrder: data.displayOrder || 0,
+        isActive: data.isActive !== undefined ? data.isActive : true,
+      },
+      include: {
+        _count: {
+          select: { menuItems: true },
+        },
       },
     });
   }
@@ -26,19 +32,25 @@ class CategoryService {
     return await prisma.category.update({
       where: { id },
       data,
+      include: {
+        _count: {
+          select: { menuItems: true },
+        },
+      },
     });
   }
 
   async deleteCategory(id) {
-    // Check if category has menu items
-    const count = await prisma.menuItem.count({
-      where: { categoryId: id },
+    // Soft delete - set isActive to false instead of hard delete
+    return await prisma.category.update({
+      where: { id },
+      data: { isActive: false },
+      include: {
+        _count: {
+          select: { menuItems: true },
+        },
+      },
     });
-    if (count > 0) {
-      throw new Error(`Cannot delete category with ${count} menu items`);
-    }
-
-    await prisma.category.delete({ where: { id } });
   }
 }
 

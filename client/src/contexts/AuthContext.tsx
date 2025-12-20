@@ -6,7 +6,7 @@ export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'WAITER' | 'KITCHEN_STAFF';
 
 // User type
 export interface User {
-  id: number;
+  id: string;  // UUID from backend
   email: string;
   name: string;
   role: UserRole;
@@ -44,11 +44,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (token && storedUser) {
         try {
-          // Verify token is still valid
-          const { data } = await apiClient.get<User>('/auth/me');
-          setUser(data);
-        } catch (_error) {
-          // Token invalid, clear storage
+          // Try to parse stored user first
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+
+          // Try to verify token is still valid (optional check)
+          try {
+            const response = await apiClient.get<{ success: boolean; data: User }>('/auth/me');
+            // Extract user from nested response structure
+            const verifiedUser = response.data.data || response.data;
+            // Update with fresh data if successful
+            setUser(verifiedUser);
+            localStorage.setItem('admin_user', JSON.stringify(verifiedUser));
+          } catch (verifyError) {
+            // If verification fails, trust the stored token anyway
+            // This prevents logout on server errors
+            console.warn('Token verification failed, using cached user data:', verifyError);
+          }
+        } catch (parseError) {
+          // If stored user is corrupted, clear everything
+          console.error('Failed to parse stored user:', parseError);
           localStorage.removeItem('admin_jwt_token');
           localStorage.removeItem('admin_user');
         }
@@ -62,15 +77,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      const { data } = await apiClient.post<{ token: string; user: User }>('/auth/login', {
+      const response = await apiClient.post<{
+        success: boolean;
+        message: string;
+        data: { token: string; user: User }
+      }>('/auth/login', {
         email,
         password,
       });
 
+      // Extract token and user from nested data structure
+      const { token, user: userData } = response.data.data;
+
       // Store token and user
-      localStorage.setItem('admin_jwt_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
-      setUser(data.user);
+      localStorage.setItem('admin_jwt_token', token);
+      localStorage.setItem('admin_user', JSON.stringify(userData));
+      setUser(userData);
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

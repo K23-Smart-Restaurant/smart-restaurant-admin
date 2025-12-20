@@ -33,7 +33,8 @@ const DashboardLayout: React.FC = () => {
     { name: 'Reports', path: '/reports', icon: BarChart3Icon, roles: ['ADMIN', 'SUPER_ADMIN'] },
   ];
 
-  const visibleNavigation = navigation.filter(item => 
+  // Show all navigation if user not loaded, otherwise filter by role
+  const visibleNavigation = navigation.filter(item =>
     !user || item.roles.includes(user.role)
   );
 
@@ -44,9 +45,8 @@ const DashboardLayout: React.FC = () => {
     <div className="min-h-screen flex bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-white/80 backdrop-blur-xl text-charcoal border-r border-gray-200 shadow-elevation-2 transition-all duration-300 ease-in-out z-40 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64`}
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-white/80 backdrop-blur-xl text-charcoal border-r border-gray-200 shadow-elevation-2 transition-all duration-300 ease-in-out z-40 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0 w-64`}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
@@ -55,14 +55,14 @@ const DashboardLayout: React.FC = () => {
             <h1 className="text-2xl font-bold text-naples relative z-10 animate-fade-in">Smart Restaurant</h1>
             <p className="text-sm text-gray-600 mt-1 relative z-10">Admin Dashboard</p>
           </div>
-          
+
           {/* Navigation */}
           <nav className="flex-1 p-4 overflow-y-auto">
             <ul className="space-y-2">
               {visibleNavigation.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <li 
+                  <li
                     key={item.path}
                     className="animate-fade-in-up"
                     style={{ animationDelay: `${index * 50}ms` }}
@@ -70,11 +70,10 @@ const DashboardLayout: React.FC = () => {
                     <Link
                       to={item.path}
                       onClick={closeSidebar}
-                      className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
-                        isActive(item.path)
-                          ? 'bg-gradient-to-r from-naples to-arylide text-charcoal font-semibold shadow-glow-yellow-lg transform scale-105'
-                          : 'text-charcoal hover:bg-gradient-to-r hover:from-naples/20 hover:to-arylide/20 hover:text-charcoal hover:scale-105'
-                      }`}
+                      className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${isActive(item.path)
+                        ? 'bg-gradient-to-r from-naples to-arylide text-charcoal font-semibold shadow-glow-yellow-lg transform scale-105'
+                        : 'text-charcoal hover:bg-gradient-to-r hover:from-naples/20 hover:to-arylide/20 hover:text-charcoal hover:scale-105'
+                        }`}
                     >
                       <Icon className={`w-5 h-5 mr-3 transition-all duration-300 ${isActive(item.path) ? 'animate-bounce-gentle' : 'group-hover:scale-110 group-hover:rotate-12'}`} />
                       <span className="relative z-10">{item.name}</span>

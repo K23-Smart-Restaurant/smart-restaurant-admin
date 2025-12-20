@@ -47,9 +47,9 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     <div className="bg-white rounded-2xl shadow-elevation-2 border border-gray-100 hover:border-gradient-primary/30 hover:shadow-elevation-3 transition-all duration-300 overflow-hidden group card-hover animate-fade-in-up">
       {/* Image Section */}
       <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-        {menuItem.imageUrls && menuItem.imageUrls.length > 0 ? (
+        {menuItem.imageUrl ? (
           <img
-            src={menuItem.imageUrls[0]}
+            src={menuItem.imageUrl}
             alt={menuItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {
@@ -61,7 +61,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             <span className="text-sm">No Image</span>
           </div>
         )}
-        
+
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -73,12 +73,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           </div>
         )}
 
-        {/* Multiple Images Indicator */}
-        {menuItem.imageUrls && menuItem.imageUrls.length > 1 && (
-          <div className="absolute top-3 right-3 px-2.5 py-1 bg-black/80 backdrop-blur-sm text-white text-xs font-bold rounded-lg shadow-md">
-            +{menuItem.imageUrls.length - 1} more
-          </div>
-        )}
+
 
         {/* Action Buttons */}
         <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
@@ -116,7 +111,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         <div className="flex items-center justify-between pt-2 border-t border-antiflash">
           <div className="flex items-center text-charcoal font-bold text-lg">
             <DollarSignIcon className="w-5 h-5 text-naples" />
-            {menuItem.price.toFixed(2)}
+            {Number(menuItem.price).toFixed(2)}
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <ClockIcon className="w-4 h-4 mr-1" />

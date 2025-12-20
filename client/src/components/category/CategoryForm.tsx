@@ -2,7 +2,10 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Category } from '../../hooks/useCategories';import { Button } from '../common/Button';
+import type { Category } from '../../hooks/useCategories';
+import type { CreateCategoryDto } from '../../services/categoryService';
+import { Button } from '../common/Button';
+
 // Validation schema
 const categoryFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50, 'Name must be at most 50 characters'),
@@ -15,7 +18,7 @@ type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
 interface CategoryFormProps {
   category?: Category;
-  onSubmit: (data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (data: CreateCategoryDto) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -50,21 +53,21 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
 
   const onFormSubmit = async (data: CategoryFormData) => {
     try {
-      // Call parent's onSubmit with category data
-      onSubmit({
+      // Call parent's onSubmit with category data (without itemCount - it's computed server-side)
+      await onSubmit({
         ...data,
         description: data.description || '',
-        itemCount: category?.itemCount || 0, // Preserve item count in edit mode
       });
+
 
       // Show success message
       alert(`Category ${isEditMode ? 'updated' : 'created'} successfully!`);
-      
+
       // Reset form if creating new
       if (!isEditMode) {
         reset();
       }
-      
+
       onCancel();
     } catch (error) {
       console.error('Error saving category:', error);
@@ -84,9 +87,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.name ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.name ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter category name"
             maxLength={50}
           />
@@ -103,9 +105,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
           <textarea
             id="description"
             {...register('description')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
-              errors.description ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${errors.description ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter category description (optional)"
             rows={3}
             maxLength={200}
@@ -124,9 +125,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             id="displayOrder"
             type="number"
             {...register('displayOrder', { valueAsNumber: true })}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.displayOrder ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.displayOrder ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="0"
             min={0}
           />

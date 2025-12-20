@@ -9,44 +9,56 @@ import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 
 const MenuManagementPage: React.FC = () => {
+  // Local filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<'ALL' | any>('ALL');
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'category' | 'createdAt' | 'popularity'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
   const {
     menuItems,
-    searchQuery,
-    setSearchQuery,
-    selectedCategory,
-    setSelectedCategory,
-    sortBy,
-    setSortBy,
-    sortOrder,
-    setSortOrder,
     createMenuItem,
     updateMenuItem,
     deleteMenuItem,
     toggleAvailability,
     toggleSoldOut,
-  } = useMenuItems();
+    isLoading,
+    isError
+  } = useMenuItems({
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    sortOrder
+  });
 
   const [isMenuItemModalOpen, setIsMenuItemModalOpen] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState<MenuItem | null>(null);
   const [currentModifiers, setCurrentModifiers] = useState<MenuItem['modifiers']>([]);
 
-  const handleAddMenuItem = (menuItemData: any, imageUrls: string[]) => {
+  const handleAddMenuItem = async (menuItemData: any, imageUrls: string[]) => {
     const completeData = {
       ...menuItemData,
       imageUrls,
       modifiers: currentModifiers,
     };
 
-    if (editingMenuItem) {
-      // Update existing menu item
-      updateMenuItem(editingMenuItem.id, completeData);
-    } else {
-      // Add new menu item
-      createMenuItem(completeData);
+    try {
+      if (editingMenuItem) {
+        // Update existing menu item
+        await updateMenuItem(editingMenuItem.id, completeData);
+        alert('Menu item updated successfully!');
+      } else {
+        // Add new menu item
+        await createMenuItem(completeData);
+        alert('Menu item created successfully!');
+      }
+
+      setCurrentModifiers([]);
+      closeMenuItemModal();
+    } catch (error) {
+      console.error('Error saving menu item:', error);
+      alert('Failed to save menu item. Please try again.');
     }
-    
-    setCurrentModifiers([]);
-    closeMenuItemModal();
   };
 
   const handleEditMenuItem = (menuItem: MenuItem) => {
@@ -55,8 +67,16 @@ const MenuManagementPage: React.FC = () => {
     setIsMenuItemModalOpen(true);
   };
 
-  const handleDeleteMenuItem = (menuItem: MenuItem) => {
-    deleteMenuItem(menuItem.id);
+  const handleDeleteMenuItem = async (menuItem: MenuItem) => {
+    if (confirm(`Are you sure you want to delete "${menuItem.name}"?`)) {
+      try {
+        await deleteMenuItem(menuItem.id);
+        alert('Menu item deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting menu item:', error);
+        alert('Failed to delete menu item. Please try again.');
+      }
+    }
   };
 
   const closeMenuItemModal = () => {
@@ -130,7 +150,7 @@ const MenuManagementPage: React.FC = () => {
               Modifiers & Options
             </h3>
             <ModifierGroupForm
-              modifiers={currentModifiers}
+              modifiers={currentModifiers || []}
               onChange={setCurrentModifiers}
             />
           </div>

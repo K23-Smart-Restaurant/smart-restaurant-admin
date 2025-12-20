@@ -12,7 +12,10 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import type { RevenueDataPoint, PeakHourData } from "../../hooks/useReports";
+
+// Type definitions for chart data
+type RevenueDataPoint = { date: string; revenue: number; orders: number };
+type PeakHourData = { hour: string; orders: number };
 
 interface OrderAnalyticsChartProps {
   ordersPerDay: RevenueDataPoint[];
@@ -25,22 +28,26 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
 }) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
+  // Ensure arrays are valid
+  const validOrdersPerDay = Array.isArray(ordersPerDay) ? ordersPerDay : [];
+  const validPeakHours = Array.isArray(peakHours) ? peakHours : [];
+
   // Calculate average orders per day
   const avgOrdersPerDay =
-    ordersPerDay.length > 0
+    validOrdersPerDay.length > 0
       ? Math.round(
-          ordersPerDay.reduce((sum, item) => sum + item.orders, 0) /
-            ordersPerDay.length
-        )
+        validOrdersPerDay.reduce((sum, item) => sum + item.orders, 0) /
+        validOrdersPerDay.length
+      )
       : 0;
 
   // Calculate average orders per hour
   const avgOrdersPerHour =
-    peakHours.length > 0
+    validPeakHours.length > 0
       ? Math.round(
-          peakHours.reduce((sum, item) => sum + item.orders, 0) /
-            peakHours.length
-        )
+        validPeakHours.reduce((sum, item) => sum + item.orders, 0) /
+        validPeakHours.length
+      )
       : 0;
 
   // Format date for display
@@ -79,9 +86,8 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
           <p className="text-sm text-gray-700">
             Orders:{" "}
             <span
-              className={`font-bold ${
-                isPeak ? "text-orange-600" : "text-blue-600"
-              }`}
+              className={`font-bold ${isPeak ? "text-orange-600" : "text-blue-600"
+                }`}
             >
               {payload[0].value}
             </span>
@@ -117,11 +123,10 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
             <Tab key={tab.value} as={Fragment}>
               {({ selected }) => (
                 <button
-                  className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
-                    selected
-                      ? "bg-naples text-charcoal shadow"
-                      : "text-gray-600 hover:bg-white hover:text-charcoal"
-                  }`}
+                  className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
+                    ? "bg-naples text-charcoal shadow"
+                    : "text-gray-600 hover:bg-white hover:text-charcoal"
+                    }`}
                 >
                   {tab.name}
                 </button>
@@ -144,7 +149,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
             <div className="w-full" style={{ height: "350px" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={ordersPerDay}
+                  data={validOrdersPerDay}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -196,7 +201,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
             <div className="w-full" style={{ height: "350px" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={peakHours}
+                  data={validPeakHours}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -222,7 +227,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     }}
                   />
                   <Bar dataKey="orders" radius={[8, 8, 0, 0]}>
-                    {peakHours.map((entry, index) => (
+                    {validPeakHours.map((entry, index) => (
                       <rect
                         key={`bar-${index}`}
                         fill={

@@ -6,19 +6,35 @@ import { CategoryList } from '../components/category/CategoryList';
 import { CategoryForm } from '../components/category/CategoryForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
+import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
-  const { categories: _categories, addCategory, updateCategory, deleteCategory, getSortedCategories } = useCategories();
+  const {
+    categories: _categories,
+    isLoading,
+    isError,
+    error,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    getSortedCategories
+  } = useCategories();
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-  const handleAddCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingCategory) {
-      // Update existing category
-      updateCategory(editingCategory.id, categoryData);
-    } else {
-      // Add new category
-      addCategory(categoryData);
+  const handleAddCategory = async (categoryData: CreateCategoryDto) => {
+    try {
+      if (editingCategory) {
+        // Update existing category
+        await updateCategory(editingCategory.id, categoryData);
+      } else {
+        // Add new category
+        await addCategory(categoryData);
+      }
+      closeCategoryModal();
+    } catch (error) {
+      console.error('Failed to save category:', error);
+      // You can add toast notification here
     }
   };
 
@@ -27,8 +43,15 @@ const CategoryManagementPage: React.FC = () => {
     setIsCategoryModalOpen(true);
   };
 
-  const handleDeleteCategory = (category: Category) => {
-    deleteCategory(category.id);
+  const handleDeleteCategory = async (category: Category) => {
+    if (window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
+      try {
+        await deleteCategory(category.id);
+      } catch (error) {
+        console.error('Failed to delete category:', error);
+        // You can add toast notification here
+      }
+    }
   };
 
   const closeCategoryModal = () => {
@@ -43,6 +66,32 @@ const CategoryManagementPage: React.FC = () => {
 
   // Get categories sorted by display order
   const sortedCategories = getSortedCategories();
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600">Error loading categories: {error?.message || 'Unknown error'}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

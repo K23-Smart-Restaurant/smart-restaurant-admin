@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   DollarSign,
   ShoppingCart,
@@ -7,29 +7,81 @@ import {
   Download,
   Printer,
 } from "lucide-react";
-import { useReports } from "../hooks/useReports";
+import { useReports, type DateRange } from "../hooks/useReports";
 import { RevenueChart } from "../components/reports/RevenueChart";
 import { TopItemsChart } from "../components/reports/TopItemsChart";
 import { OrderAnalyticsChart } from "../components/reports/OrderAnalyticsChart";
 
 const ReportsPage: React.FC = () => {
-  const {
-    revenueData,
-    topItems,
-    peakHours,
-    dateRange,
-    setDateRange,
-    getTotalRevenue,
-    getTotalOrders,
-    getAverageOrderValue,
-    getMostPopularItem,
-  } = useReports();
+  const [dateRange, setDateRange] = useState<DateRange>("7days");
+  const { useRevenue, useTopItems, useAnalytics } = useReports();
 
-  // Calculate summary stats
-  const totalRevenue = getTotalRevenue();
-  const totalOrders = getTotalOrders();
-  const avgOrderValue = getAverageOrderValue();
-  const mostPopularItem = getMostPopularItem();
+  // Calculate date range - memoized to prevent infinite re-renders
+  const { startDate, endDate } = useMemo(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+
+    if (dateRange === '7days') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else if (dateRange === '30days') {
+      startDate.setDate(startDate.getDate() - 30);
+    } else if (dateRange === '3months') {
+      startDate.setMonth(startDate.getMonth() - 3);
+    }
+
+    return { startDate, endDate };
+  }, [dateRange]); // Only recalculate when dateRange changes
+
+  // Fetch data using the hooks
+  const { data: revenueData, isLoading: isLoadingRevenue } = useRevenue({ startDate, endDate });
+  const { data: topItemsData, isLoading: isLoadingTopItems } = useTopItems(10);
+  const { data: analyticsData, isLoading: isLoadingAnalytics } = useAnalytics();
+
+  // Calculate summary stats - MUST be before conditional return
+  // Since API doesn't return daily breakdown, create mock data for the chart
+  const revenueChartData = useMemo(() => {
+    if (!revenueData) return [];
+
+    const days = dateRange === '7days' ? 7 : dateRange === '30days' ? 30 : 90;
+    const dailyData = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+
+      // Distribute revenue across days (mock data)
+      dailyData.push({
+        date: date.toISOString().split('T')[0],
+        revenue: revenueData.totalRevenue / days,
+        orders: Math.floor(revenueData.totalOrders / days)
+      });
+    }
+
+    return dailyData;
+  }, [revenueData, dateRange]);
+
+  const totalRevenue = revenueData?.totalRevenue || 0;
+  const totalOrders = revenueData?.totalOrders || 0;
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+  const topItems = topItemsData || [];
+  const mostPopularItem = topItems[0] || null;
+
+  // Transform peakHours to match chart expected format
+  const peakHoursArray = Array.isArray(analyticsData?.peakHours) ? analyticsData.peakHours : [];
+  const peakHours = peakHoursArray.map((item: any) => ({
+    hour: item.hour,
+    orders: item.orderCount || item.orders || 0
+  }));
+
+  // Show loading state AFTER all hooks have been called
+  if (isLoadingRevenue || isLoadingTopItems || isLoadingAnalytics) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples"></div>
+      </div>
+    );
+  }
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -94,8 +146,8 @@ const ReportsPage: React.FC = () => {
                 {dateRange === "7days"
                   ? "Last 7 Days"
                   : dateRange === "30days"
-                  ? "Last 30 Days"
-                  : "Last 3 Months"}
+                    ? "Last 30 Days"
+                    : "Last 3 Months"}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2">
                 {formatCurrency(totalRevenue)}
@@ -116,8 +168,8 @@ const ReportsPage: React.FC = () => {
                 {dateRange === "7days"
                   ? "Last 7 Days"
                   : dateRange === "30days"
-                  ? "Last 30 Days"
-                  : "Last 3 Months"}
+                    ? "Last 30 Days"
+                    : "Last 3 Months"}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2">
                 {totalOrders.toLocaleString()}
@@ -156,7 +208,7 @@ const ReportsPage: React.FC = () => {
               </p>
               <p className="text-xs text-gray-500 mt-1">Best seller</p>
               <p className="text-xl font-bold text-charcoal mt-2 line-clamp-2">
-                {mostPopularItem?.name || "N/A"}
+                {mostPopularItem?.menuItemName || "N/A"}
               </p>
               {mostPopularItem && (
                 <p className="text-xs text-gray-600 mt-1">
@@ -174,7 +226,7 @@ const ReportsPage: React.FC = () => {
       {/* Revenue Chart - Full Width */}
       <div className="mb-8">
         <RevenueChart
-          data={revenueData}
+          data={revenueChartData}
           dateRange={dateRange}
           onDateRangeChange={(range) => {
             setDateRange(range);
@@ -188,7 +240,7 @@ const ReportsPage: React.FC = () => {
         <TopItemsChart data={topItems} />
 
         {/* Order Analytics Chart */}
-        <OrderAnalyticsChart ordersPerDay={revenueData} peakHours={peakHours} />
+        <OrderAnalyticsChart ordersPerDay={revenueChartData} peakHours={peakHours} />
       </div>
 
       {/* Print-specific styles */}

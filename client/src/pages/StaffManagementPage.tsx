@@ -10,18 +10,49 @@ import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 
 const StaffManagementPage: React.FC = () => {
-  const { staff, addStaff, updateStaff, deleteStaff: _deleteStaff } = useStaff();
+  const {
+    staff,
+    createWaiter,
+    createKitchenStaff,
+    updateStaff,
+    deleteStaff,
+    isLoading,
+    isError
+  } = useStaff();
+
   const [isWaiterModalOpen, setIsWaiterModalOpen] = useState(false);
   const [isKitchenStaffModalOpen, setIsKitchenStaffModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
 
-  const handleAddStaff = (staffData: Omit<Staff, 'id' | 'createdAt'>) => {
-    if (editingStaff) {
-      // Update existing staff
-      updateStaff(editingStaff.id, staffData);
-    } else {
-      // Add new staff
-      addStaff(staffData);
+  const handleAddWaiter = async (staffData: any) => {
+    try {
+      if (editingStaff) {
+        await updateStaff(editingStaff.id, staffData);
+        alert('Waiter updated successfully!');
+      } else {
+        await createWaiter(staffData);
+        alert('Waiter created successfully!');
+      }
+      closeWaiterModal();
+    } catch (error) {
+      console.error('Error saving waiter:', error);
+      alert('Failed to save waiter. Please try again.');
+    }
+  };
+
+  const handleAddKitchenStaff = async (staffData: any) => {
+    try {
+      if (editingStaff) {
+        await updateStaff(editingStaff.id, staffData);
+        alert('Kitchen staff updated successfully!');
+      } else {
+        await createKitchenStaff(staffData);
+        alert('Kitchen staff created successfully!');
+      }
+      closeKitchenStaffModal();
+    } catch (error) {
+      console.error('Error saving kitchen staff:', error);
+      alert('Failed to save kitchen staff. Please try again.');
     }
   };
 
@@ -35,12 +66,18 @@ const StaffManagementPage: React.FC = () => {
     }
   };
 
-  const handleToggleActive = (id: string) => {
+  const handleToggleActive = async (id: string) => {
     const staffMember = staff.find(s => s.id === id);
     if (staffMember) {
       const action = staffMember.isActive ? 'deactivate' : 'activate';
       if (confirm(`Are you sure you want to ${action} this staff member?`)) {
-        updateStaff(id, { isActive: !staffMember.isActive });
+        try {
+          await deleteStaff(id); // This actually toggles active status
+          alert(`Staff member ${action}d successfully!`);
+        } catch (error) {
+          console.error('Error toggling staff status:', error);
+          alert('Failed to update staff status. Please try again.');
+        }
       }
     }
   };
@@ -70,8 +107,8 @@ const StaffManagementPage: React.FC = () => {
             {({ selected }) => (
               <button
                 className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
-                    ? 'bg-naples text-charcoal shadow'
-                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
+                  ? 'bg-naples text-charcoal shadow'
+                  : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                   }`}
               >
                 Waiters
@@ -82,8 +119,8 @@ const StaffManagementPage: React.FC = () => {
             {({ selected }) => (
               <button
                 className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
-                    ? 'bg-naples text-charcoal shadow'
-                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
+                  ? 'bg-naples text-charcoal shadow'
+                  : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                   }`}
               >
                 Kitchen Staff
@@ -143,7 +180,7 @@ const StaffManagementPage: React.FC = () => {
       >
         <CreateWaiterForm
           staff={editingStaff || undefined}
-          onSubmit={handleAddStaff}
+          onSubmit={handleAddWaiter}
           onClose={closeWaiterModal}
         />
       </Modal>
@@ -156,7 +193,7 @@ const StaffManagementPage: React.FC = () => {
       >
         <CreateKitchenStaffForm
           staff={editingStaff || undefined}
-          onSubmit={handleAddStaff}
+          onSubmit={handleAddKitchenStaff}
           onClose={closeKitchenStaffModal}
         />
       </Modal>

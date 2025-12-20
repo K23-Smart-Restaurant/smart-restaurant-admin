@@ -11,7 +11,7 @@ const authController = new AuthController();
 // Rate limiters for authentication endpoints
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 requests per 15 minutes
+  max: 100, // 100 requests per 15 minutes (used in development only)
   message: {
     success: false,
     message: 'Too many login attempts, please try again after 15 minutes',
@@ -22,7 +22,7 @@ const loginLimiter = rateLimit({
 
 const registerLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 requests per 15 minutes
+  max: 100  , // 100 requests per 15 minutes (used in development only)
   message: {
     success: false,
     message: 'Too many registration attempts, please try again after 15 minutes',

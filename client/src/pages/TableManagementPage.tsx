@@ -9,19 +9,11 @@ import { Button } from '../components/common/Button';
 
 const TableManagementPage: React.FC = () => {
   const {
-    tables,
-    locations,
+    tables: allTables,
     statistics,
-    searchQuery,
-    setSearchQuery,
-    selectedStatus,
-    setSelectedStatus,
-    selectedLocation,
-    setSelectedLocation,
-    sortBy,
-    setSortBy,
-    sortOrder,
-    setSortOrder,
+    isLoading,
+    isError,
+    refetch,
     createTable,
     updateTable,
     deleteTable,
@@ -29,23 +21,56 @@ const TableManagementPage: React.FC = () => {
     updateStatus,
   } = useTables();
 
+  // Local filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<TableStatus | 'ALL'>('ALL');
+  const [sortBy, setSortBy] = useState<'tableNumber' | 'capacity' | 'status'>('tableNumber');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
 
-  const handleAddTable = (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => {
+  // Apply filters and sorting
+  const tables = React.useMemo(() => {
+    let filtered = Array.isArray(allTables) ? [...allTables] : [];
+
+    // Search filter
+    if (searchQuery) {
+      filtered = filtered.filter(t =>
+        t.tableNumber.toString().includes(searchQuery)
+      );
+    }
+
+    // Status filter
+    if (selectedStatus !== 'ALL') {
+      filtered = filtered.filter(t => t.status === selectedStatus);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      if (sortBy === 'tableNumber') comparison = a.tableNumber - b.tableNumber;
+      else if (sortBy === 'capacity') comparison = a.capacity - b.capacity;
+      else if (sortBy === 'status') comparison = a.status.localeCompare(b.status);
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [allTables, searchQuery, selectedStatus, sortBy, sortOrder]);
+
+  const handleAddTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => {
     try {
       if (editingTable) {
-        // Update existing table
-        updateTable(editingTable.id, tableData);
+        await updateTable(editingTable.id, tableData);
         alert('Table updated successfully!');
       } else {
-        // Add new table
-        createTable(tableData);
+        await createTable(tableData);
         alert('Table created successfully!');
       }
       closeTableModal();
     } catch (error) {
-      // Error already shown by the hook
+      console.error('Error saving table:', error);
+      alert('Failed to save table. Please try again.');
     }
   };
 
@@ -54,8 +79,16 @@ const TableManagementPage: React.FC = () => {
     setIsTableModalOpen(true);
   };
 
-  const handleDeleteTable = (table: Table) => {
-    deleteTable(table.id);
+  const handleDeleteTable = async (table: Table) => {
+    if (window.confirm(`Are you sure you want to delete Table ${table.tableNumber}?`)) {
+      try {
+        await deleteTable(table.id);
+        alert('Table deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting table:', error);
+        alert('Failed to delete table. Please try again.');
+      }
+    }
   };
 
   const closeTableModal = () => {
@@ -72,6 +105,30 @@ const TableManagementPage: React.FC = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples"></div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+        <p className="text-red-600 mb-4">Failed to load tables</p>
+        <button
+          onClick={() => refetch()}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   const statusOptions: Array<{ value: TableStatus | 'ALL'; label: string }> = [
     { value: 'ALL', label: 'All Statuses' },
     { value: 'AVAILABLE', label: 'Available' },
@@ -83,7 +140,6 @@ const TableManagementPage: React.FC = () => {
     { value: 'tableNumber', label: 'Table Number' },
     { value: 'capacity', label: 'Capacity' },
     { value: 'status', label: 'Status' },
-    { value: 'location', label: 'Location' },
   ];
 
   return (
@@ -154,7 +210,7 @@ const TableManagementPage: React.FC = () => {
 
       {/* Filters Section */}
       <div className="bg-white rounded-lg shadow-md border border-antiflash p-4 mb-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Search */}
           <div>
             <label htmlFor="search" className="block text-sm font-medium text-charcoal mb-2">
@@ -166,7 +222,7 @@ const TableManagementPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Table number or location..."
+              placeholder="Table number..."
               className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             />
           </div>
@@ -186,27 +242,6 @@ const TableManagementPage: React.FC = () => {
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Location Filter */}
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium text-charcoal mb-2">
-              <FilterIcon className="w-4 h-4 inline mr-1" />
-              Location
-            </label>
-            <select
-              id="location"
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
-            >
-              <option value="ALL">All Locations</option>
-              {locations.map((location) => (
-                <option key={location} value={location}>
-                  {location}
                 </option>
               ))}
             </select>
@@ -241,29 +276,6 @@ const TableManagementPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Active Filters Display */}
-        <div className="mt-3 flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-600">Active filters:</span>
-          {searchQuery && (
-            <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
-              Search: "{searchQuery}"
-            </span>
-          )}
-          {selectedStatus !== 'ALL' && (
-            <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
-              Status: {statusOptions.find((s) => s.value === selectedStatus)?.label}
-            </span>
-          )}
-          {selectedLocation !== 'ALL' && (
-            <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
-              Location: {selectedLocation}
-            </span>
-          )}
-          <span className="px-2 py-1 bg-gray-200 text-charcoal text-xs rounded-full">
-            Sort: {sortOptions.find((s) => s.value === sortBy)?.label} ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
-          </span>
-        </div>
       </div>
 
       {/* Results Count */}
@@ -292,7 +304,7 @@ const TableManagementPage: React.FC = () => {
           table={editingTable || undefined}
           onSubmit={handleAddTable}
           onCancel={closeTableModal}
-          existingLocations={locations}
+          existingLocations={[]}
         />
       </Modal>
     </div>

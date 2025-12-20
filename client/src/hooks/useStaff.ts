@@ -1,137 +1,88 @@
-import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { staffService, type Staff, type StaffRole, type CreateWaiterDto, type CreateKitchenStaffDto, type UpdateStaffDto } from '../services/staffService';
 
-export type StaffRole = 'WAITER' | 'KITCHEN_STAFF';
-
-export interface Staff {
-  id: string;
-  email: string;
-  name: string;
-  role: StaffRole;
-  phoneNumber?: string;
-  isActive: boolean; // UI-only field for filtering
-  createdAt: string;
-}
-
-// Initial mock data
-const initialMockStaff: Staff[] = [
-  {
-    id: "1",
-    email: "john@restaurant.com",
-    name: "John Doe",
-    role: "WAITER",
-    phoneNumber: "+1234567890",
-    isActive: true,
-    createdAt: "2024-01-15T00:00:00.000Z",
-  },
-  {
-    id: "2",
-    email: "jane@restaurant.com",
-    name: "Jane Smith",
-    role: "WAITER",
-    phoneNumber: "+1234567891",
-    isActive: true,
-    createdAt: "2024-02-20T00:00:00.000Z",
-  },
-  {
-    id: "3",
-    email: "mike@restaurant.com",
-    name: "Mike Wilson",
-    role: "WAITER",
-    phoneNumber: "+1234567892",
-    isActive: false, // Deactivated staff
-    createdAt: "2024-03-10T00:00:00.000Z",
-  },
-  {
-    id: "4",
-    email: "sarah@restaurant.com",
-    name: "Sarah Brown",
-    role: "KITCHEN_STAFF",
-    phoneNumber: "+1234567893",
-    isActive: true,
-    createdAt: "2024-01-20T00:00:00.000Z",
-  },
-  {
-    id: "5",
-    email: "tom@restaurant.com",
-    name: "Tom Lee",
-    role: "KITCHEN_STAFF",
-    phoneNumber: "+1234567894",
-    isActive: true,
-    createdAt: "2024-02-15T00:00:00.000Z",
-  },
-];
+// Re-export types
+export type { Staff, StaffRole };
 
 export const useStaff = () => {
-  const [staff, setStaff] = useState<Staff[]>(initialMockStaff);
+  const queryClient = useQueryClient();
 
-  // Add new staff member
-  const addStaff = (newStaff: Omit<Staff, 'id' | 'createdAt'>) => {
-    const id = (Math.max(...staff.map(s => parseInt(s.id)), 0) + 1).toString();
-    const createdAt = new Date().toISOString();
-    
-    const staffMember: Staff = {
-      ...newStaff,
-      id,
-      createdAt,
-    };
+  // Fetch all staff
+  const {
+    data: staff = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['staff'],
+    queryFn: staffService.getAll,
+  });
 
-    setStaff(prevStaff => [...prevStaff, staffMember]);
-    return staffMember;
+  // Create waiter mutation
+  const createWaiterMutation = useMutation({
+    mutationFn: staffService.createWaiter,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+
+  // Create kitchen staff mutation
+  const createKitchenStaffMutation = useMutation({
+    mutationFn: staffService.createKitchenStaff,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+
+  // Update staff mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateStaffDto }) =>
+      staffService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+
+  // Delete staff mutation
+  const deleteMutation = useMutation({
+    mutationFn: staffService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+
+  // Helper functions
+  const createWaiter = (data: CreateWaiterDto) => {
+    return createWaiterMutation.mutateAsync(data);
   };
 
-  // Update existing staff member
-  const updateStaff = (id: string, data: Partial<Omit<Staff, 'id' | 'createdAt'>>) => {
-    setStaff(prevStaff =>
-      prevStaff.map(member =>
-        member.id === id
-          ? { ...member, ...data }
-          : member
-      )
-    );
+  const createKitchenStaff = (data: CreateKitchenStaffDto) => {
+    return createKitchenStaffMutation.mutateAsync(data);
   };
 
-  // Delete staff member (toggle isActive to false)
+  const updateStaff = (id: string, data: UpdateStaffDto) => {
+    return updateMutation.mutateAsync({ id, data });
+  };
+
   const deleteStaff = (id: string) => {
-    setStaff(prevStaff =>
-      prevStaff.map(member =>
-        member.id === id
-          ? { ...member, isActive: false }
-          : member
-      )
-    );
-  };
-
-  // Permanently remove from array (alternative to soft delete)
-  const removeStaff = (id: string) => {
-    setStaff(prevStaff => prevStaff.filter(member => member.id !== id));
-  };
-
-  // Filter staff by role
-  const filterByRole = (role: StaffRole | 'ALL') => {
-    if (role === 'ALL') {
-      return staff;
-    }
-    return staff.filter(member => member.role === role);
-  };
-
-  // Get active staff only
-  const getActiveStaff = () => {
-    return staff.filter(member => member.isActive);
-  };
-
-  // Get staff by ID
-  const getStaffById = (id: string) => {
-    return staff.find(member => member.id === id);
+    return deleteMutation.mutateAsync(id);
   };
 
   return {
     staff,
-    addStaff,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    createWaiter,
+    createKitchenStaff,
     updateStaff,
     deleteStaff,
-    removeStaff,
-    filterByRole,
-    getActiveStaff,
-    getStaffById,
+    // Mutation states
+    isCreatingWaiter: createWaiterMutation.isPending,
+    isCreatingKitchenStaff: createKitchenStaffMutation.isPending,
+    isUpdating: updateMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 };
