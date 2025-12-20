@@ -6,8 +6,12 @@ export interface Table {
     id: string;
     tableNumber: number;
     capacity: number;
+    location: string;
+    description?: string | null;
     status: TableStatus;
     qrCode: string | null;
+    qrToken: string | null;
+    qrTokenCreatedAt: string | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -15,12 +19,16 @@ export interface Table {
 export interface CreateTableDto {
     tableNumber: number;
     capacity: number;
+    location: string;
+    description?: string;
     status?: TableStatus;
 }
 
 export interface UpdateTableDto {
     tableNumber?: number;
     capacity?: number;
+    location?: string;
+    description?: string;
     status?: TableStatus;
 }
 

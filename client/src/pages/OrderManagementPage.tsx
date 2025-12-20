@@ -8,10 +8,7 @@ import { OrderDetailModal } from "../components/order/OrderDetailModal";
 const OrderManagementPage: React.FC = () => {
   const {
     orders,
-    updateStatus,
-    isLoading,
-    isError,
-    refetch
+    updateStatus
   } = useOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);

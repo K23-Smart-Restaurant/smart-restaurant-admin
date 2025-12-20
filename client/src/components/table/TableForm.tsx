@@ -8,8 +8,9 @@ import { Button } from '../common/Button';
 // Validation schema
 const tableFormSchema = z.object({
   tableNumber: z.number().min(1, 'Table number must be at least 1'),
-  capacity: z.number().min(1, 'Capacity must be at least 1').max(50, 'Capacity cannot exceed 50'),
+  capacity: z.number().min(1, 'Capacity must be at least 1').max(20, 'Capacity cannot exceed 20'),
   location: z.string().min(1, 'Location is required').max(100, 'Location must be at most 100 characters'),
+  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
   status: z.enum(['AVAILABLE', 'OCCUPIED', 'RESERVED'], {
     errorMap: () => ({ message: 'Please select a valid status' }),
   }),
@@ -19,7 +20,7 @@ type TableFormData = z.infer<typeof tableFormSchema>;
 
 interface TableFormProps {
   table?: Table;
-  onSubmit: (data: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => void;
+  onSubmit: (data: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>) => void;
   onCancel: () => void;
   existingLocations?: string[]; // For location suggestions
 }
@@ -44,6 +45,7 @@ export const TableForm: React.FC<TableFormProps> = ({
       tableNumber: table?.tableNumber || 1,
       capacity: table?.capacity || 4,
       location: table?.location || '',
+      description: table?.description || '',
       status: table?.status || 'AVAILABLE',
     },
   });
@@ -54,6 +56,7 @@ export const TableForm: React.FC<TableFormProps> = ({
       setValue('tableNumber', table.tableNumber);
       setValue('capacity', table.capacity);
       setValue('location', table.location);
+      setValue('description', table.description || '');
       setValue('status', table.status);
     }
   }, [table, setValue]);
@@ -173,6 +176,27 @@ export const TableForm: React.FC<TableFormProps> = ({
           )}
           <p className="mt-2 text-xs text-gray-500">
             Physical location in the restaurant (start typing to see suggestions)
+          </p>
+        </div>
+
+        {/* Description field */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '125ms' }}>
+          <label htmlFor="description" className="block text-sm font-semibold text-charcoal mb-2">
+            Description <span className="text-gray-400 font-normal">(Optional)</span>
+          </label>
+          <textarea
+            id="description"
+            {...register('description')}
+            rows={3}
+            placeholder="Additional notes about this table (e.g., 'Window view', 'Near kitchen', 'Quiet corner')..."
+            className={`w-full bg-white px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-gradient-primary focus:border-gradient-primary focus:outline-none transition-all duration-300 resize-none ${errors.description ? 'border-red-500' : 'border-gray-200 hover:border-gradient-primary/50'
+              }`}
+          />
+          {errors.description && (
+            <p className="mt-2 text-sm text-red-600 font-medium animate-fade-in">{errors.description.message}</p>
+          )}
+          <p className="mt-2 text-xs text-gray-500">
+            Optional additional information about this table
           </p>
         </div>
 

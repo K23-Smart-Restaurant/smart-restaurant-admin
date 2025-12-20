@@ -58,13 +58,22 @@ const TableManagementPage: React.FC = () => {
     return filtered;
   }, [allTables, searchQuery, selectedStatus, sortBy, sortOrder]);
 
-  const handleAddTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode'>) => {
+  const handleAddTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>) => {
     try {
+      // Convert data to match DTO types (handle null -> undefined for description)
+      const dto = {
+        tableNumber: tableData.tableNumber,
+        capacity: tableData.capacity,
+        location: tableData.location,
+        description: tableData.description ?? undefined,
+        status: tableData.status,
+      };
+
       if (editingTable) {
-        await updateTable(editingTable.id, tableData);
+        await updateTable(editingTable.id, dto);
         alert('Table updated successfully!');
       } else {
-        await createTable(tableData);
+        await createTable(dto);
         alert('Table created successfully!');
       }
       closeTableModal();
