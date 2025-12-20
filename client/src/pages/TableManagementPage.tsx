@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { PlusIcon, SearchIcon, FilterIcon, ArrowUpDownIcon } from 'lucide-react';
-import { useTables } from '../hooks/useTables';
-import type { Table, TableStatus } from '../hooks/useTables';
-import { TableList } from '../components/table/TableList';
-import { TableForm } from '../components/table/TableForm';
-import { Modal } from '../components/common/Modal';
-import { Button } from '../components/common/Button';
+import React, { useState } from "react";
+import {
+  PlusIcon,
+  SearchIcon,
+  FilterIcon,
+  ArrowUpDownIcon,
+} from "lucide-react";
+import { useTables } from "../hooks/useTables";
+import type { Table, TableStatus } from "../hooks/useTables";
+import { TableList } from "../components/table/TableList";
+import { TableForm } from "../components/table/TableForm";
+import { BatchQROperations } from "../components/table/BatchQROperations";
+import { Modal } from "../components/common/Modal";
+import { Button } from "../components/common/Button";
 
 const TableManagementPage: React.FC = () => {
   const {
@@ -22,10 +28,15 @@ const TableManagementPage: React.FC = () => {
   } = useTables();
 
   // Local filter state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<TableStatus | 'ALL'>('ALL');
-  const [sortBy, setSortBy] = useState<'tableNumber' | 'capacity' | 'status'>('tableNumber');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<TableStatus | "ALL">(
+    "ALL"
+  );
+  const [sortBy, setSortBy] = useState<"tableNumber" | "capacity" | "status">(
+    "tableNumber"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedTableIds, setSelectedTableIds] = useState<string[]>([]);
 
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
@@ -36,29 +47,40 @@ const TableManagementPage: React.FC = () => {
 
     // Search filter
     if (searchQuery) {
-      filtered = filtered.filter(t =>
+      filtered = filtered.filter((t) =>
         t.tableNumber.toString().includes(searchQuery)
       );
     }
 
     // Status filter
-    if (selectedStatus !== 'ALL') {
-      filtered = filtered.filter(t => t.status === selectedStatus);
+    if (selectedStatus !== "ALL") {
+      filtered = filtered.filter((t) => t.status === selectedStatus);
     }
 
     // Sort
     filtered.sort((a, b) => {
       let comparison = 0;
-      if (sortBy === 'tableNumber') comparison = a.tableNumber - b.tableNumber;
-      else if (sortBy === 'capacity') comparison = a.capacity - b.capacity;
-      else if (sortBy === 'status') comparison = a.status.localeCompare(b.status);
-      return sortOrder === 'asc' ? comparison : -comparison;
+      if (sortBy === "tableNumber") comparison = a.tableNumber - b.tableNumber;
+      else if (sortBy === "capacity") comparison = a.capacity - b.capacity;
+      else if (sortBy === "status")
+        comparison = a.status.localeCompare(b.status);
+      return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return filtered;
   }, [allTables, searchQuery, selectedStatus, sortBy, sortOrder]);
 
-  const handleAddTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'qrCode' | 'qrToken' | 'qrTokenCreatedAt'>) => {
+  const handleAddTable = async (
+    tableData: Omit<
+      Table,
+      | "id"
+      | "createdAt"
+      | "updatedAt"
+      | "qrCode"
+      | "qrToken"
+      | "qrTokenCreatedAt"
+    >
+  ) => {
     try {
       // Convert data to match DTO types (handle null -> undefined for description)
       const dto = {
@@ -71,15 +93,15 @@ const TableManagementPage: React.FC = () => {
 
       if (editingTable) {
         await updateTable(editingTable.id, dto);
-        alert('Table updated successfully!');
+        alert("Table updated successfully!");
       } else {
         await createTable(dto);
-        alert('Table created successfully!');
+        alert("Table created successfully!");
       }
       closeTableModal();
     } catch (error) {
-      console.error('Error saving table:', error);
-      alert('Failed to save table. Please try again.');
+      console.error("Error saving table:", error);
+      alert("Failed to save table. Please try again.");
     }
   };
 
@@ -89,13 +111,17 @@ const TableManagementPage: React.FC = () => {
   };
 
   const handleDeleteTable = async (table: Table) => {
-    if (window.confirm(`Are you sure you want to delete Table ${table.tableNumber}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete Table ${table.tableNumber}?`
+      )
+    ) {
       try {
         await deleteTable(table.id);
-        alert('Table deleted successfully!');
+        alert("Table deleted successfully!");
       } catch (error) {
-        console.error('Error deleting table:', error);
-        alert('Failed to delete table. Please try again.');
+        console.error("Error deleting table:", error);
+        alert("Failed to delete table. Please try again.");
       }
     }
   };
@@ -111,7 +137,7 @@ const TableManagementPage: React.FC = () => {
   };
 
   const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   // Show loading state
@@ -138,17 +164,17 @@ const TableManagementPage: React.FC = () => {
     );
   }
 
-  const statusOptions: Array<{ value: TableStatus | 'ALL'; label: string }> = [
-    { value: 'ALL', label: 'All Statuses' },
-    { value: 'AVAILABLE', label: 'Available' },
-    { value: 'OCCUPIED', label: 'Occupied' },
-    { value: 'RESERVED', label: 'Reserved' },
+  const statusOptions: Array<{ value: TableStatus | "ALL"; label: string }> = [
+    { value: "ALL", label: "All Statuses" },
+    { value: "AVAILABLE", label: "Available" },
+    { value: "OCCUPIED", label: "Occupied" },
+    { value: "RESERVED", label: "Reserved" },
   ];
 
   const sortOptions: Array<{ value: typeof sortBy; label: string }> = [
-    { value: 'tableNumber', label: 'Table Number' },
-    { value: 'capacity', label: 'Capacity' },
-    { value: 'status', label: 'Status' },
+    { value: "tableNumber", label: "Table Number" },
+    { value: "capacity", label: "Capacity" },
+    { value: "status", label: "Status" },
   ];
 
   return (
@@ -157,7 +183,9 @@ const TableManagementPage: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-charcoal">Tables</h1>
-          <p className="text-gray-600 mt-1">Manage restaurant tables and QR codes</p>
+          <p className="text-gray-600 mt-1">
+            Manage restaurant tables and QR codes
+          </p>
         </div>
 
         {/* Add Table button */}
@@ -172,7 +200,9 @@ const TableManagementPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Tables</p>
-              <p className="text-2xl font-bold text-charcoal">{statistics.total}</p>
+              <p className="text-2xl font-bold text-charcoal">
+                {statistics.total}
+              </p>
             </div>
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <span className="text-2xl">🏪</span>
@@ -184,7 +214,9 @@ const TableManagementPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Available</p>
-              <p className="text-2xl font-bold text-green-600">{statistics.available}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {statistics.available}
+              </p>
             </div>
             <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
               <span className="text-2xl">✅</span>
@@ -196,7 +228,9 @@ const TableManagementPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Occupied</p>
-              <p className="text-2xl font-bold text-red-600">{statistics.occupied}</p>
+              <p className="text-2xl font-bold text-red-600">
+                {statistics.occupied}
+              </p>
             </div>
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
               <span className="text-2xl">👥</span>
@@ -208,7 +242,9 @@ const TableManagementPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Reserved</p>
-              <p className="text-2xl font-bold text-yellow-600">{statistics.reserved}</p>
+              <p className="text-2xl font-bold text-yellow-600">
+                {statistics.reserved}
+              </p>
             </div>
             <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
               <span className="text-2xl">📅</span>
@@ -222,7 +258,10 @@ const TableManagementPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Search */}
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-charcoal mb-2">
+            <label
+              htmlFor="search"
+              className="block text-sm font-medium text-charcoal mb-2"
+            >
               <SearchIcon className="w-4 h-4 inline mr-1" />
               Search
             </label>
@@ -238,14 +277,19 @@ const TableManagementPage: React.FC = () => {
 
           {/* Status Filter */}
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-charcoal mb-2">
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-charcoal mb-2"
+            >
               <FilterIcon className="w-4 h-4 inline mr-1" />
               Status
             </label>
             <select
               id="status"
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as TableStatus | 'ALL')}
+              onChange={(e) =>
+                setSelectedStatus(e.target.value as TableStatus | "ALL")
+              }
               className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             >
               {statusOptions.map((option) => (
@@ -258,7 +302,10 @@ const TableManagementPage: React.FC = () => {
 
           {/* Sort */}
           <div>
-            <label htmlFor="sort" className="block text-sm font-medium text-charcoal mb-2">
+            <label
+              htmlFor="sort"
+              className="block text-sm font-medium text-charcoal mb-2"
+            >
               <ArrowUpDownIcon className="w-4 h-4 inline mr-1" />
               Sort By
             </label>
@@ -278,19 +325,33 @@ const TableManagementPage: React.FC = () => {
               <button
                 onClick={toggleSortOrder}
                 className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-charcoal border border-antiflash rounded-md transition-colors"
-                title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                title={`Sort ${
+                  sortOrder === "asc" ? "Descending" : "Ascending"
+                }`}
               >
-                {sortOrder === 'asc' ? '↑' : '↓'}
+                {sortOrder === "asc" ? "↑" : "↓"}
               </button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Batch QR Operations */}
+      <BatchQROperations
+        tables={tables}
+        selectedTableIds={selectedTableIds}
+        onBulkRegenerateComplete={() => {
+          refetch();
+          setSelectedTableIds([]);
+        }}
+      />
+
       {/* Results Count */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-charcoal">{tables.length}</span> table{tables.length !== 1 ? 's' : ''}
+          Showing{" "}
+          <span className="font-semibold text-charcoal">{tables.length}</span>{" "}
+          table{tables.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -307,7 +368,7 @@ const TableManagementPage: React.FC = () => {
       <Modal
         isOpen={isTableModalOpen}
         onClose={closeTableModal}
-        title={editingTable ? 'Edit Table' : 'Create Table'}
+        title={editingTable ? "Edit Table" : "Create Table"}
       >
         <TableForm
           table={editingTable || undefined}
