@@ -7,6 +7,12 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "build": "npx prisma generate",
+    "postinstall": "npx prisma generate || true",
+    "migrate": "npx prisma migrate deploy",
+    "migrate-dev": "npx prisma migrate dev",
+    "db-reset": "npx prisma migrate reset",
+    "db-seed": "node prisma/lib/seed.js",
     "test": "jest"
   },
   "keywords": [

@@ -1,14 +1,15 @@
 import "dotenv/config";
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-const { PrismaClient } = require('../../../../smart-restaurant-root/generated/prisma/index.js');
+import { PrismaClient } from '@prisma/client'
 
 const connectionString = `${process.env.DATABASE_URL}`
 
-const pool = new Pool({ connectionString })
+// Configure pool with SSL for production (Render requires SSL)
+const pool = new Pool({
+    connectionString,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+})
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
