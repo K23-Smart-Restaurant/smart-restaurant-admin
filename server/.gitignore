@@ -1,1 +1,49 @@
+# Sub-applications (managed in separate repos)
+smart-restaurant-admin/
+smart-restaurant-customer/
+smart-restaurant-kds/
+smart-restaurant-superadmin/
+
+# Dependencies
 node_modules/
+
+# Environment variables (CRITICAL - contains DATABASE_URL)
+.env
+.env.example
+.env.local
+.env.*.local
+
+# Generated Prisma Client (regenerated from schema)
+# generated/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test coverage
+coverage/
+*.lcov
+
+# Temp files
+*.tmp
+.cache/
