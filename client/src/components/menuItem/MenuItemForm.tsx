@@ -31,7 +31,7 @@ interface MenuItemFormProps {
 
 export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, onCancel }) => {
   const isEditMode = !!menuItem;
-  const [imageUrls, setImageUrls] = useState<string[]>(menuItem?.imageUrls || []);
+  const [imageUrls, setImageUrls] = useState<string[]>(menuItem?.imageUrl ? [menuItem.imageUrl] : []);
   const [imageInput, setImageInput] = useState('');
 
   const {
@@ -59,15 +59,15 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   useEffect(() => {
     if (menuItem) {
       setValue('name', menuItem.name);
-      setValue('description', menuItem.description);
+      setValue('description', menuItem.description ?? undefined);
       setValue('category', menuItem.category);
       setValue('price', menuItem.price);
-      setValue('preparationTime', menuItem.preparationTime);
+      setValue('preparationTime', menuItem.preparationTime ?? undefined);
       setValue('isAvailable', menuItem.isAvailable);
       setValue('isSoldOut', menuItem.isSoldOut);
       setValue('isChefRecommendation', menuItem.isChefRecommendation);
       setValue('categoryId', menuItem.categoryId || '');
-      setImageUrls(menuItem.imageUrls || []);
+      setImageUrls(menuItem.imageUrl ? [menuItem.imageUrl] : []);
     }
   }, [menuItem, setValue]);
 
