@@ -38,6 +38,8 @@ export interface Order {
     createdAt: string;
     updatedAt: string;
     paidAt: string | null;
+    tableName?: string; // Computed from table.tableNumber
+    prepTime?: number; // Expected preparation time in minutes
     table?: {
         id: string;
         tableNumber: number;

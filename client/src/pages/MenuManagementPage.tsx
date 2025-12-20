@@ -21,9 +21,7 @@ const MenuManagementPage: React.FC = () => {
     updateMenuItem,
     deleteMenuItem,
     toggleAvailability,
-    toggleSoldOut,
-    isLoading,
-    isError
+    toggleSoldOut
   } = useMenuItems({
     searchQuery,
     selectedCategory,

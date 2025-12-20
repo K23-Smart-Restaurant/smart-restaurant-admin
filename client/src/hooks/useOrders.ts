@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { orderService, type Order, type OrderStatus, type OrderFilters } from '../services/orderService';
+import { orderService, type Order, type OrderStatus, type OrderItemStatus, type OrderFilters } from '../services/orderService';
 
 // Re-export types
-export type { Order, OrderStatus };
+export type { Order, OrderStatus, OrderItemStatus, OrderFilters };
 
 export const useOrders = (filters?: OrderFilters) => {
   const queryClient = useQueryClient();

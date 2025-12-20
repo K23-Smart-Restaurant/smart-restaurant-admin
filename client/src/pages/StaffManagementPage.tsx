@@ -15,9 +15,7 @@ const StaffManagementPage: React.FC = () => {
     createWaiter,
     createKitchenStaff,
     updateStaff,
-    deleteStaff,
-    isLoading,
-    isError
+    deleteStaff
   } = useStaff();
 
   const [isWaiterModalOpen, setIsWaiterModalOpen] = useState(false);

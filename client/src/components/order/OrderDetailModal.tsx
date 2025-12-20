@@ -11,8 +11,8 @@ import {
 import type {
   Order,
   OrderStatus,
-  OrderItemStatus,
 } from "../../hooks/useOrders";
+import type { OrderItemStatus } from "../../services/orderService";
 
 interface OrderDetailModalProps {
   order: Order | null;
@@ -102,7 +102,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               <h2 className="text-3xl font-bold text-charcoal">
                 Order #{order.orderNumber}
               </h2>
-              <p className="text-xl text-gray-600 mt-1">{order.tableName}</p>
+              <p className="text-xl text-gray-600 mt-1">{order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}</p>
             </div>
 
             {/* Customer & Order Info */}
@@ -154,7 +154,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                   <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-2" />
-                    <span>Expected: {order.prepTime} minutes</span>
+                    <span>Expected: {order.prepTime || 'N/A'} minutes</span>
                   </div>
                   {order.paidAt && (
                     <div className="flex items-center text-gray-700">
@@ -172,7 +172,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 Order Items
               </h3>
               <div className="space-y-4">
-                {order.orderItems.map((item) => (
+                {order.orderItems?.map((item) => (
                   <div
                     key={item.id}
                     className="border-l-4 border-naples pl-4 py-2"
@@ -180,7 +180,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <p className="font-medium text-charcoal text-lg">
-                          {item.quantity}x {item.menuItemName} -{" "}
+                          {item.quantity}x {item.menuItem?.name || 'Unknown Item'} -{" "}
                           {formatCurrency(item.unitPrice)}
                         </p>
                         <p className="text-sm text-gray-600 mt-1">

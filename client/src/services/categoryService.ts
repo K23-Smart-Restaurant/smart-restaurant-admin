@@ -11,6 +11,7 @@ export interface Category {
     _count?: {
         menuItems: number;
     };
+    itemCount?: number; // Computed from _count.menuItems
 }
 
 export interface CreateCategoryDto {
