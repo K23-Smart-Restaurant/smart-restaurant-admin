@@ -6,6 +6,7 @@ export type DateRange = '7days' | '30days' | '3months' | 'custom';
 
 // Re-export types
 export type { RevenueReport, TopRevenueItem, OrderAnalytics };
+export type TopItem = TopRevenueItem; // Alias for backward compatibility
 
 interface UseRevenueOptions {
   startDate: Date;

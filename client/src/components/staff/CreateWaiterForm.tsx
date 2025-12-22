@@ -19,7 +19,7 @@ type WaiterFormData = z.infer<typeof waiterFormSchema>;
 
 interface CreateWaiterFormProps {
   staff?: Staff;
-  onSubmit: (staff: Omit<Staff, 'id' | 'createdAt'>) => void;
+  onSubmit: (staff: Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onClose: () => void;
 }
 
@@ -50,6 +50,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
       // Call parent's onSubmit with staff data
       onSubmit({
         ...staffData,
+        phoneNumber: staffData.phoneNumber || null,
         role: 'WAITER',
         isActive: staff?.isActive ?? true,
       });

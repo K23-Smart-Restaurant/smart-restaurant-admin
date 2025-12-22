@@ -7,6 +7,12 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "build": "npx prisma generate",
+    "postinstall": "npx prisma generate || true",
+    "migrate": "npx prisma migrate deploy",
+    "migrate-dev": "npx prisma migrate dev",
+    "db-reset": "npx prisma migrate reset",
+    "db-seed": "node prisma/lib/seed.js",
     "test": "jest"
   },
   "keywords": [
@@ -18,8 +24,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^6.2.1",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
     "archiver": "^7.0.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -42,6 +48,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9",
-    "prisma": "^6.2.1"
+    "prisma": "^7.1.0"
   }
 }

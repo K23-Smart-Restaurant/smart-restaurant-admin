@@ -40,7 +40,9 @@ export const OrderList: React.FC<OrderListProps> = ({
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
       case "table":
-        return filtered.sort((a, b) => a.tableName.localeCompare(b.tableName));
+        return filtered.sort((a, b) => 
+          (a.tableName || `Table ${a.table?.tableNumber || 0}`).localeCompare(b.tableName || `Table ${b.table?.tableNumber || 0}`)
+        );
       default:
         return filtered;
     }

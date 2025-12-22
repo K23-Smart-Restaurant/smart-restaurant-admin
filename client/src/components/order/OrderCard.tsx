@@ -33,7 +33,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
   // Check if order is overdue
   const isOverdue =
-    order.prepTime > 0 &&
+    order.prepTime && order.prepTime > 0 &&
     elapsedMinutes > order.prepTime &&
     ["PENDING", "CONFIRMED", "PREPARING"].includes(order.status);
 
@@ -128,7 +128,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
           <h2 className="text-3xl font-bold text-charcoal">
             #{order.orderNumber}
           </h2>
-          <p className="text-xl text-gray-600 mt-1">{order.tableName}</p>
+          <p className="text-xl text-gray-600 mt-1">{order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <span
@@ -179,7 +179,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             <>
               <AlertTriangle className="w-5 h-5 ml-3 mr-1" />
               <span className="font-bold">
-                OVERDUE by {elapsedMinutes - order.prepTime} min
+                OVERDUE by {elapsedMinutes - (order.prepTime || 0)} min
               </span>
             </>
           )}
@@ -191,12 +191,12 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         <h3 className="text-lg font-semibold text-charcoal border-b pb-2">
           Order Items:
         </h3>
-        {order.orderItems.map((item) => (
+        {order.orderItems?.map((item) => (
           <div key={item.id} className="ml-2">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <p className="text-xl font-medium text-charcoal">
-                  {item.quantity}x {item.menuItemName}
+                  {item.quantity}x {item.menuItem?.name || 'Unknown Item'}
                 </p>
                 {item.specialInstructions && (
                   <p className="text-sm text-gray-600 italic ml-4 mt-1">

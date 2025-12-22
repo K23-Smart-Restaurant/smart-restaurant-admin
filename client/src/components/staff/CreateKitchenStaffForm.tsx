@@ -19,7 +19,7 @@ type KitchenStaffFormData = z.infer<typeof kitchenStaffFormSchema>;
 
 interface CreateKitchenStaffFormProps {
   staff?: Staff;
-  onSubmit: (staff: Omit<Staff, 'id' | 'createdAt'>) => void;
+  onSubmit: (staff: Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onClose: () => void;
 }
 
@@ -50,6 +50,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
       // Call parent's onSubmit with staff data
       onSubmit({
         ...staffData,
+        phoneNumber: staffData.phoneNumber || null,
         role: 'KITCHEN_STAFF',
         isActive: staff?.isActive ?? true,
       });

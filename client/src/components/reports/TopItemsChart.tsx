@@ -48,8 +48,8 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
     if (active && payload && payload.length) {
       const item = payload[0].payload;
       return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-bold text-charcoal mb-2">{item.name}</p>
+        <div className="p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <p className="mb-2 text-sm font-bold text-charcoal">{item.name}</p>
           <p className="text-sm text-gray-700">
             Orders:{" "}
             <span className="font-bold text-blue-600">{item.orderCount}</span>
@@ -72,24 +72,24 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="p-6 bg-white rounded-lg shadow-md">
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-charcoal">Top Menu Items</h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="mt-1 text-sm text-gray-600">
           Most ordered items by popularity
         </p>
       </div>
 
       {/* Selected Item Info */}
       {selectedItem && (
-        <div className="mb-4 p-4 bg-naples/20 border-l-4 border-naples rounded">
+        <div className="p-4 mb-4 border-l-4 rounded bg-naples/20 border-naples">
           <p className="text-sm font-semibold text-charcoal">
-            {selectedItem.name}
+            {selectedItem.menuItemName}
           </p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="mt-1 text-xs text-gray-600">
             {selectedItem.orderCount} orders •{" "}
-            {formatCurrency(selectedItem.revenue)} revenue
+            {formatCurrency(selectedItem.totalRevenue)} revenue
           </p>
         </div>
       )}

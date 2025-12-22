@@ -1,0 +1,39 @@
+# Render Blueprint Configuration
+# This file can be used for Infrastructure as Code deployment on Render
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Admin Backend API
+  - type: web
+    name: smart-restaurant-admin-api
+    runtime: node
+    region: singapore  # or your preferred region: oregon, frankfurt, ohio
+    plan: free  # free, starter, standard, pro
+    branch: phase02/fullstack  # Change to your branch
+    rootDir: smart-restaurant-admin/server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false  # Set this manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true  # Auto-generate a secure secret
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: CLIENT_URL
+        sync: false  # Set your frontend URL
+      - key: CUSTOMER_APP_URL
+        sync: false  # Set your customer app URL
+    healthCheckPath: /health
+    autoDeploy: true
+
+# Optional: Add PostgreSQL database
+databases:
+  - name: smart-restaurant-db
+    plan: free  # free tier: 90 day expiry, 1GB storage
+    region: singapore  # same region as your web service
+    postgresMajorVersion: 16
