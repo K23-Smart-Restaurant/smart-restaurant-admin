@@ -101,25 +101,55 @@ class MenuItemService {
     return { items: itemsWithPopularity, total: sorted.length };
   }
 
-  async createMenuItem(data, imageUrl) {
-    return await prisma.menuItem.create({
+  async createMenuItem(data, imageUrl, uploadedPhotos = []) {
+    // Parse numeric fields that might come as strings from FormData
+    const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
+    const preparationTime = data.preparationTime
+      ? (typeof data.preparationTime === 'string' ? parseInt(data.preparationTime) : data.preparationTime)
+      : null;
+
+    const menuItem = await prisma.menuItem.create({
       data: {
         name: data.name,
-        description: data.description,
+        description: data.description || null,
         category: data.category,
-        price: data.price,
-        categoryId: data.categoryId,
+        price,
+        categoryId: data.categoryId || null,
         imageUrl,
-        preparationTime: data.preparationTime,
-        isAvailable: data.isAvailable ?? true,
-        isSoldOut: data.isSoldOut ?? false,
-        isChefRecommendation: data.isChefRecommendation ?? false,
+        preparationTime,
+        isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
+        isSoldOut: data.isSoldOut === 'true' || data.isSoldOut === true,
+        isChefRecommendation: data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
       },
       include: {
         modifiers: true,
         categoryModel: true,
+        photos: true,
       },
     });
+
+    // Create photo records if photos were uploaded
+    if (uploadedPhotos.length > 0) {
+      await prisma.menuItemPhoto.createMany({
+        data: uploadedPhotos.map((photo) => ({
+          menuItemId: menuItem.id,
+          url: photo.url,
+          isPrimary: photo.isPrimary || false,
+        })),
+      });
+
+      // Refetch to include photos
+      return await prisma.menuItem.findUnique({
+        where: { id: menuItem.id },
+        include: {
+          modifiers: true,
+          categoryModel: true,
+          photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        },
+      });
+    }
+
+    return menuItem;
   }
 
   async addModifiers(menuItemId, modifiers) {
@@ -141,31 +171,68 @@ class MenuItemService {
     return this.addModifiers(menuItemId, modifiers);
   }
 
-  async updateMenuItem(id, data, imageUrl) {
-    const updateData = {
-      name: data.name,
-      description: data.description,
-      category: data.category,
-      price: data.price,
-      categoryId: data.categoryId,
-      preparationTime: data.preparationTime,
-      isAvailable: data.isAvailable,
-      isSoldOut: data.isSoldOut,
-      isChefRecommendation: data.isChefRecommendation,
-    };
+  async updateMenuItem(id, data, imageUrl, uploadedPhotos = []) {
+    // Parse numeric fields that might come as strings from FormData
+    const updateData = {};
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.description !== undefined) updateData.description = data.description || null;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.price !== undefined) {
+      updateData.price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
+    }
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || null;
+    if (data.preparationTime !== undefined) {
+      updateData.preparationTime = data.preparationTime
+        ? (typeof data.preparationTime === 'string' ? parseInt(data.preparationTime) : data.preparationTime)
+        : null;
+    }
+    if (data.isAvailable !== undefined) {
+      updateData.isAvailable = data.isAvailable === 'true' || data.isAvailable === true;
+    }
+    if (data.isSoldOut !== undefined) {
+      updateData.isSoldOut = data.isSoldOut === 'true' || data.isSoldOut === true;
+    }
+    if (data.isChefRecommendation !== undefined) {
+      updateData.isChefRecommendation = data.isChefRecommendation === 'true' || data.isChefRecommendation === true;
+    }
 
     if (imageUrl) {
       updateData.imageUrl = imageUrl;
     }
 
-    return await prisma.menuItem.update({
+    const menuItem = await prisma.menuItem.update({
       where: { id },
       data: updateData,
       include: {
         modifiers: true,
         categoryModel: true,
+        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });
+
+    // Create new photo records if photos were uploaded
+    if (uploadedPhotos.length > 0) {
+      await prisma.menuItemPhoto.createMany({
+        data: uploadedPhotos.map((photo) => ({
+          menuItemId: menuItem.id,
+          url: photo.url,
+          isPrimary: photo.isPrimary || false,
+        })),
+      });
+
+      // Refetch to include new photos
+      return await prisma.menuItem.findUnique({
+        where: { id: menuItem.id },
+        include: {
+          modifiers: true,
+          categoryModel: true,
+          photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        },
+      });
+    }
+
+    return menuItem;
   }
 
   async updateStatus(id, status) {

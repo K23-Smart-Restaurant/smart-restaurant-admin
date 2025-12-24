@@ -1,30 +1,9 @@
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import fs from "fs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "../../uploads/menu-items");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// M8: Enhanced storage configuration with randomized filenames for security
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/menu-items/");
-  },
-  filename: (req, file, cb) => {
-    // M8: Randomize filename for security - prevent directory traversal attacks
-    const randomName = crypto.randomUUID();
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${randomName}${ext}`);
-  },
-});
+// Use memory storage for Supabase uploads (files stored as buffers)
+// This allows us to upload directly to Supabase Storage without saving to disk
+const storage = multer.memoryStorage();
 
 // M8: MIME type and file validation with descriptive errors
 const fileFilter = (req, file, cb) => {
@@ -65,11 +44,18 @@ const multerConfig = {
   },
 };
 
-// Single file upload (backward compatibility)
+// Single file upload (backward compatibility - field name 'image')
 const uploadSingle = multer(multerConfig).single("image");
 
 // H2: Multiple file upload for menu item photos (up to 5 photos)
 const uploadMultiple = multer(multerConfig).array("photos", 5);
+
+// Combined upload for menu items - accepts both 'photos' (multiple) and 'image' (single)
+// This provides backward compatibility while supporting multi-photo uploads
+const uploadMenuItemPhotos = multer(multerConfig).fields([
+  { name: "photos", maxCount: 5 },
+  { name: "image", maxCount: 1 },
+]);
 
 // H3: Single photo upload for updating/adding individual photos
 const uploadPhoto = multer(multerConfig).single("photo");
@@ -119,6 +105,7 @@ const handleUploadError = (uploadMiddleware) => {
 export {
   uploadSingle,
   uploadMultiple,
+  uploadMenuItemPhotos,
   uploadPhoto,
   handleUploadError
 };
