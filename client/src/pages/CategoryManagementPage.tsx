@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PlusIcon } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { PlusIcon, ArrowUpDownIcon } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
 import type { Category } from '../hooks/useCategories';
 import { CategoryList } from '../components/category/CategoryList';
@@ -17,10 +17,11 @@ const CategoryManagementPage: React.FC = () => {
     addCategory,
     updateCategory,
     deleteCategory,
-    getSortedCategories
   } = useCategories();
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [sortBy, setSortBy] = useState<'displayOrder' | 'name' | 'createdAt'>('displayOrder');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const handleAddCategory = async (categoryData: CreateCategoryDto) => {
     try {
@@ -64,8 +65,17 @@ const CategoryManagementPage: React.FC = () => {
     setIsCategoryModalOpen(true);
   };
 
-  // Get categories sorted by display order
-  const sortedCategories = getSortedCategories();
+  const sortedCategories = useMemo(() => {
+    const categoriesCopy = [..._categories];
+    categoriesCopy.sort((a, b) => {
+      let comparison = 0;
+      if (sortBy === 'displayOrder') comparison = a.displayOrder - b.displayOrder;
+      else if (sortBy === 'name') comparison = a.name.localeCompare(b.name);
+      else if (sortBy === 'createdAt') comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    return categoriesCopy;
+  }, [_categories, sortBy, sortOrder]);
 
   // Loading state
   if (isLoading) {
@@ -102,10 +112,36 @@ const CategoryManagementPage: React.FC = () => {
           <p className="text-gray-600 mt-1">Manage your menu categories</p>
         </div>
 
-        {/* Add Category button */}
-        <Button onClick={openAddCategoryModal} icon={PlusIcon}>
-          Add Category
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-700" htmlFor="category-sort">
+              Sort by
+            </label>
+            <select
+              id="category-sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
+            >
+              <option value="displayOrder">Display order</option>
+              <option value="name">Name</option>
+              <option value="createdAt">Created date</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="p-2 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-md border border-antiflash"
+              title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+            >
+              <ArrowUpDownIcon className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Add Category button */}
+          <Button onClick={openAddCategoryModal} icon={PlusIcon}>
+            Add Category
+          </Button>
+        </div>
       </div>
 
       {/* Category List */}
