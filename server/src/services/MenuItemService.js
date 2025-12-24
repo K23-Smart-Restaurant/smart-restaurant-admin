@@ -242,15 +242,25 @@ class MenuItemService {
     });
   }
 
+  /**
+   * Delete a menu item permanently from the database (hard delete)
+   * Also removes associated photos and modifier groups
+   */
   async deleteMenuItem(id) {
-    // Soft delete: mark as unavailable
-    await prisma.menuItem.update({
-      where: { id },
-      data: { isAvailable: false },
+    // First, delete associated photos
+    await prisma.menuItemPhoto.deleteMany({
+      where: { menuItemId: id },
     });
 
-    // Or hard delete:
-    // await prisma.menuItem.delete({ where: { id } });
+    // Delete associated modifier groups and their modifiers (cascade should handle modifiers)
+    await prisma.modifierGroup.deleteMany({
+      where: { menuItemId: id },
+    });
+
+    // Finally, delete the menu item
+    return await prisma.menuItem.delete({
+      where: { id },
+    });
   }
 }
 
