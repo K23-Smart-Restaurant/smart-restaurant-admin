@@ -17,14 +17,23 @@ class MenuItemService {
       where.isAvailable = filters.isAvailable;
     }
 
+    const limit = filters.limit || 20;
+    const offset = filters.offset || 0;
+
+    // M2: Handle popularity sorting separately using aggregation
+    if (filters.sortBy === "popularity") {
+      return this.getMenuItemsByPopularity(where, filters);
+    }
+
     let orderBy = { createdAt: "desc" };
     if (filters.sortBy === "name") {
       orderBy = { name: filters.sortOrder || "asc" };
     } else if (filters.sortBy === "price") {
       orderBy = { price: filters.sortOrder || "asc" };
-    } else if (filters.sortBy === "popularity") {
-      // TODO: Add orderItems count aggregation
-      orderBy = { createdAt: "desc" };
+    } else if (filters.sortBy === "category") {
+      orderBy = { category: filters.sortOrder || "asc" };
+    } else if (filters.sortBy === "createdAt") {
+      orderBy = { createdAt: filters.sortOrder || "desc" };
     }
 
     const [items, total] = await Promise.all([
@@ -33,15 +42,63 @@ class MenuItemService {
         include: {
           modifiers: true,
           categoryModel: true,
+          photos: {
+            orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+          },
         },
         orderBy,
-        take: filters.limit || 20,
-        skip: filters.offset || 0,
+        take: limit,
+        skip: offset,
       }),
       prisma.menuItem.count({ where }),
     ]);
 
     return { items, total };
+  }
+
+  /**
+   * M2: Get menu items sorted by popularity (order count)
+   * Uses aggregation to count total orders per menu item
+   */
+  async getMenuItemsByPopularity(where, filters) {
+    const limit = filters.limit || 20;
+    const offset = filters.offset || 0;
+    const sortOrder = filters.sortOrder || "desc";
+
+    // Get all matching items with their order counts
+    const itemsWithCounts = await prisma.menuItem.findMany({
+      where,
+      include: {
+        modifiers: true,
+        categoryModel: true,
+        photos: {
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        },
+        _count: {
+          select: {
+            orderItems: true,
+          },
+        },
+      },
+    });
+
+    // Sort by order count (popularity)
+    const sorted = itemsWithCounts.sort((a, b) => {
+      const countA = a._count.orderItems;
+      const countB = b._count.orderItems;
+      return sortOrder === "desc" ? countB - countA : countA - countB;
+    });
+
+    // Apply pagination
+    const paginated = sorted.slice(offset, offset + limit);
+
+    // Add popularity score to each item
+    const itemsWithPopularity = paginated.map((item) => ({
+      ...item,
+      popularityScore: item._count.orderItems,
+    }));
+
+    return { items: itemsWithPopularity, total: sorted.length };
   }
 
   async createMenuItem(data, imageUrl) {

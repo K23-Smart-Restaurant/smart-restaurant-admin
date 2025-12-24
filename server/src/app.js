@@ -72,8 +72,12 @@ import orderRoutes from "./routes/order.routes.js";
 import reportRoutes from "./routes/report.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import menuItemRoutes from "./routes/menuItem.routes.js";
+import publicMenuRoutes from "./routes/publicMenu.routes.js";
 
 // Register routes
+// H1: Public Menu API - No authentication required (for guests browsing via QR)
+app.use("/api/menu", publicMenuRoutes);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/tables", tableRoutes);
