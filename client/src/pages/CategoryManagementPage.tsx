@@ -6,6 +6,7 @@ import { CategoryList } from '../components/category/CategoryList';
 import { CategoryForm } from '../components/category/CategoryForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
+import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
 import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
@@ -22,6 +23,11 @@ const CategoryManagementPage: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [sortBy, setSortBy] = useState<'displayOrder' | 'name' | 'createdAt'>('displayOrder');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Delete confirmation state
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleAddCategory = async (categoryData: CreateCategoryDto) => {
     try {
@@ -44,15 +50,36 @@ const CategoryManagementPage: React.FC = () => {
     setIsCategoryModalOpen(true);
   };
 
-  const handleDeleteCategory = async (category: Category) => {
-    if (window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
-      try {
-        await deleteCategory(category.id);
-      } catch (error) {
-        console.error('Failed to delete category:', error);
-        // You can add toast notification here
-      }
+  const handleDeleteCategory = (category: Category) => {
+    // Open confirmation dialog instead of window.confirm
+    setCategoryToDelete(category);
+    setDeleteError(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await deleteCategory(categoryToDelete.id);
+      setCategoryToDelete(null);
+    } catch (error: unknown) {
+      console.error('Failed to delete category:', error);
+      // Show error in dialog
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to delete category. Please try again.';
+      setDeleteError(errorMessage);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setCategoryToDelete(null);
+    setDeleteError(null);
   };
 
   const closeCategoryModal = () => {
@@ -163,8 +190,24 @@ const CategoryManagementPage: React.FC = () => {
           onCancel={closeCategoryModal}
         />
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDeleteDialog
+        isOpen={categoryToDelete !== null}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Category"
+        itemName={categoryToDelete?.name}
+        message={
+          deleteError
+            ? deleteError
+            : `Are you sure you want to delete this category? This will permanently remove it from the system.`
+        }
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
 
 export default CategoryManagementPage;
+

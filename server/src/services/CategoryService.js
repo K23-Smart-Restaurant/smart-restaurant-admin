@@ -41,41 +41,34 @@ class CategoryService {
   }
 
   /**
-   * M4: Delete/deactivate a category with validation
-   * Prevents deletion if category contains active menu items
+   * Delete a category from the database (hard delete)
+   * M4: Prevents deletion if category contains any menu items
    */
   async deleteCategory(id) {
-    // M4: Check for active menu items in this category
-    const activeItemsCount = await prisma.menuItem.count({
+    // M4: Check for any menu items in this category (not just active ones)
+    const itemsCount = await prisma.menuItem.count({
       where: {
         categoryId: id,
-        isAvailable: true,
       },
     });
 
-    if (activeItemsCount > 0) {
+    if (itemsCount > 0) {
       const error = new Error(
-        `Cannot deactivate category: it contains ${activeItemsCount} active menu item(s). ` +
-        `Please move or deactivate these items first.`
+        `Cannot delete category: it contains ${itemsCount} menu item(s). ` +
+        `Please move or delete these items first.`
       );
       error.statusCode = 400;
-      error.code = "CATEGORY_HAS_ACTIVE_ITEMS";
+      error.code = "CATEGORY_HAS_ITEMS";
       error.details = {
         categoryId: id,
-        activeItemsCount,
+        itemsCount,
       };
       throw error;
     }
 
-    // Soft delete - set isActive to false instead of hard delete
-    return await prisma.category.update({
+    // Hard delete - remove from database
+    return await prisma.category.delete({
       where: { id },
-      data: { isActive: false },
-      include: {
-        _count: {
-          select: { menuItems: true },
-        },
-      },
     });
   }
 }
