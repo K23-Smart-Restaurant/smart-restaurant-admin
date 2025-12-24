@@ -41,6 +41,15 @@ router.post("/:id/regenerate-qr", (req, res, next) =>
 router.get("/:id/qr-code", (req, res, next) =>
   tableController.downloadQR(req, res, next)
 );
+
+// M5 & M6: Table active status management with active orders warning
+router.get("/:id/active-orders", (req, res, next) =>
+  tableController.checkActiveOrders(req, res, next)
+);
+router.patch("/:id/toggle-active", (req, res, next) =>
+  tableController.toggleActive(req, res, next)
+);
+
 router.delete("/:id", (req, res, next) =>
   tableController.delete(req, res, next)
 );

@@ -25,6 +25,7 @@ const TableManagementPage: React.FC = () => {
     deleteTable,
     regenerateQRCode,
     updateStatus,
+    toggleActive,
   } = useTables();
 
   // Local filter state
@@ -76,12 +77,20 @@ const TableManagementPage: React.FC = () => {
       else if (sortBy === "status")
         comparison = a.status.localeCompare(b.status);
       else if (sortBy === "createdAt")
-        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        comparison =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return filtered;
-  }, [allTables, searchQuery, selectedStatus, selectedLocation, sortBy, sortOrder]);
+  }, [
+    allTables,
+    searchQuery,
+    selectedStatus,
+    selectedLocation,
+    sortBy,
+    sortOrder,
+  ]);
 
   const uniqueLocations = React.useMemo(
     () =>
@@ -414,6 +423,7 @@ const TableManagementPage: React.FC = () => {
         onDelete={handleDeleteTable}
         onRegenerateQR={regenerateQRCode}
         onUpdateStatus={updateStatus}
+        onToggleActive={toggleActive}
       />
 
       {/* Create/Edit Table Modal */}

@@ -7,10 +7,18 @@ import {
   type UpdateTableDto,
   type BatchDownloadOptions,
   type QRStatus,
+  type ActiveOrdersCheckResult,
+  type ToggleActiveResult,
 } from "../services/tableService";
 
 // Re-export types
-export type { Table, TableStatus, QRStatus };
+export type {
+  Table,
+  TableStatus,
+  QRStatus,
+  ActiveOrdersCheckResult,
+  ToggleActiveResult,
+};
 
 export const useTables = () => {
   const queryClient = useQueryClient();
@@ -77,6 +85,24 @@ export const useTables = () => {
     },
   });
 
+  // M5 & M6: Toggle active status mutation
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({
+      id,
+      isActive,
+      force,
+    }: {
+      id: string;
+      isActive: boolean;
+      force?: boolean;
+    }) => tableService.toggleActive(id, isActive, force),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["tables"] });
+      }
+    },
+  });
+
   // Helper functions
   const createTable = (data: CreateTableDto) => {
     return createMutation.mutateAsync(data);
@@ -102,6 +128,16 @@ export const useTables = () => {
     return updateStatusMutation.mutateAsync({ id, status });
   };
 
+  // M6: Check for active orders before deactivating
+  const checkActiveOrders = (id: string) => {
+    return tableService.checkActiveOrders(id);
+  };
+
+  // M5 & M6: Toggle table active status with warning support
+  const toggleActive = (id: string, isActive: boolean, force?: boolean) => {
+    return toggleActiveMutation.mutateAsync({ id, isActive, force });
+  };
+
   // Get QR code download URL
   const getQRCodeUrl = (id: string, format: "png" | "pdf" = "png") => {
     return tableService.getQRCodeUrl(id, format);
@@ -123,6 +159,8 @@ export const useTables = () => {
     available: tables.filter((t) => t.status === "AVAILABLE").length,
     occupied: tables.filter((t) => t.status === "OCCUPIED").length,
     reserved: tables.filter((t) => t.status === "RESERVED").length,
+    active: tables.filter((t) => t.isActive !== false).length,
+    inactive: tables.filter((t) => t.isActive === false).length,
   };
 
   return {
@@ -139,6 +177,8 @@ export const useTables = () => {
     regenerateQRCode,
     bulkRegenerateQRCodes,
     updateStatus,
+    checkActiveOrders,
+    toggleActive,
     getQRCodeUrl,
     downloadQRCode,
     downloadBatchQRCodes,
@@ -149,5 +189,6 @@ export const useTables = () => {
     isRegeneratingQR: regenerateQRMutation.isPending,
     isBulkRegeneratingQR: bulkRegenerateQRMutation.isPending,
     isUpdatingStatus: updateStatusMutation.isPending,
+    isTogglingActive: toggleActiveMutation.isPending,
   };
 };
