@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma.js";
 import qrCodeService from "./QRCodeService.js";
+import storageService from "./StorageService.js";
 
 class TableService {
   async createTable(data) {
@@ -33,10 +34,10 @@ class TableService {
   }
 
   async regenerateQRCode(tableId) {
-    // Get current table
+    // Get current table including the old QR code URL
     const existingTable = await prisma.table.findUnique({
       where: { id: tableId },
-      select: { restaurantId: true, qrToken: true },
+      select: { restaurantId: true, qrToken: true, qrCode: true },
     });
 
     if (!existingTable) {
@@ -48,11 +49,12 @@ class TableService {
       console.log(`Invalidating old QR token for table ${tableId}`);
     }
 
-    // Generate new QR code and token
+    // Generate new QR code and token (pass old URL for cleanup)
     const { qrCode, qrToken, qrTokenCreatedAt } =
       await qrCodeService.generateTableQR(
         tableId,
-        existingTable.restaurantId || undefined
+        existingTable.restaurantId || undefined,
+        existingTable.qrCode // Pass old QR code URL for deletion
       );
 
     // Update table with new QR data (old token is automatically invalidated)
@@ -217,7 +219,8 @@ class TableService {
     // Log the deactivation
     if (!isActive) {
       console.log(
-        `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${force ? " (forced)" : ""
+        `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${
+          force ? " (forced)" : ""
         }`
       );
     }
@@ -229,6 +232,18 @@ class TableService {
   }
 
   async deleteTable(id) {
+    // Get the table to access its QR code URL
+    const table = await prisma.table.findUnique({
+      where: { id },
+      select: { qrCode: true },
+    });
+
+    // Delete QR code from storage if it exists
+    if (table?.qrCode && storageService.isConfigured()) {
+      await storageService.deleteOldQRCode(table.qrCode);
+    }
+
+    // Delete the table from database
     await prisma.table.delete({ where: { id } });
   }
 
