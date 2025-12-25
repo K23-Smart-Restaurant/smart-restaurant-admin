@@ -276,69 +276,85 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs">
-                  <label className="flex items-center gap-1">
-                    <span className="text-gray-600">Required</span>
-                    <input
-                      type="checkbox"
-                      checked={group.isRequired}
-                      onChange={(e) =>
-                        updateGroup(group.id || group.name, (g) => ({ ...g, isRequired: e.target.checked }))
+                <div className="flex items-center gap-3">
+                  {/* Delete Group Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Delete the entire "${group.name}" modifier group?`)) {
+                        onChange(modifiers.filter(g => g.id !== group.id && g.name !== group.name));
                       }
-                      className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
-                    />
-                  </label>
-                  <select
-                    value={group.selectionType}
-                    onChange={(e) =>
-                      updateGroup(group.id || group.name, (g) =>
-                        e.target.value === "single"
-                          ? { ...g, selectionType: "single", minSelections: 1, maxSelections: 1 }
-                          : { ...g, selectionType: "multiple", minSelections: g.minSelections ?? 0, maxSelections: g.maxSelections ?? 1 }
-                      )
-                    }
-                    className="bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
+                    }}
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors"
+                    title="Delete entire group"
                   >
-                    <option value="single">Single</option>
-                    <option value="multiple">Multiple</option>
-                  </select>
-                  <input
-                    type="number"
-                    min={0}
-                    value={group.selectionType === "single" ? 1 : group.minSelections ?? 0}
-                    onChange={(e) =>
-                      updateGroup(group.id || group.name, (g) => {
-                        const nextMin = Math.max(0, Number(e.target.value));
-                        const nextMax = g.maxSelections ?? nextMin;
-                        return {
-                          ...g,
-                          minSelections: nextMin,
-                          maxSelections: Math.max(nextMin, nextMax),
-                        };
-                      })
-                    }
-                    className="w-16 bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
-                    title="Min selections"
-                    disabled={group.selectionType === "single"}
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    value={group.selectionType === "single" ? 1 : group.maxSelections ?? 1}
-                    onChange={(e) =>
-                      updateGroup(group.id || group.name, (g) => {
-                        const nextMax = Math.max(1, Number(e.target.value));
-                        const nextMin = g.minSelections ?? 0;
-                        return {
-                          ...g,
-                          maxSelections: Math.max(nextMax, nextMin || 0),
-                        };
-                      })
-                    }
-                    className="w-16 bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
-                    title="Max selections"
-                    disabled={group.selectionType === "single"}
-                  />
+                    <Trash2Icon className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <label className="flex items-center gap-1">
+                      <span className="text-gray-600">Required</span>
+                      <input
+                        type="checkbox"
+                        checked={group.isRequired}
+                        onChange={(e) =>
+                          updateGroup(group.id || group.name, (g) => ({ ...g, isRequired: e.target.checked }))
+                        }
+                        className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
+                      />
+                    </label>
+                    <select
+                      value={group.selectionType}
+                      onChange={(e) =>
+                        updateGroup(group.id || group.name, (g) =>
+                          e.target.value === "single"
+                            ? { ...g, selectionType: "single", minSelections: 1, maxSelections: 1 }
+                            : { ...g, selectionType: "multiple", minSelections: g.minSelections ?? 0, maxSelections: g.maxSelections ?? 1 }
+                        )
+                      }
+                      className="bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
+                    >
+                      <option value="single">Single</option>
+                      <option value="multiple">Multiple</option>
+                    </select>
+                    <input
+                      type="number"
+                      min={0}
+                      value={group.selectionType === "single" ? 1 : group.minSelections ?? 0}
+                      onChange={(e) =>
+                        updateGroup(group.id || group.name, (g) => {
+                          const nextMin = Math.max(0, Number(e.target.value));
+                          const nextMax = g.maxSelections ?? nextMin;
+                          return {
+                            ...g,
+                            minSelections: nextMin,
+                            maxSelections: Math.max(nextMin, nextMax),
+                          };
+                        })
+                      }
+                      className="w-16 bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
+                      title="Min selections"
+                      disabled={group.selectionType === "single"}
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      value={group.selectionType === "single" ? 1 : group.maxSelections ?? 1}
+                      onChange={(e) =>
+                        updateGroup(group.id || group.name, (g) => {
+                          const nextMax = Math.max(1, Number(e.target.value));
+                          const nextMin = g.minSelections ?? 0;
+                          return {
+                            ...g,
+                            maxSelections: Math.max(nextMax, nextMin || 0),
+                          };
+                        })
+                      }
+                      className="w-16 bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
+                      title="Max selections"
+                      disabled={group.selectionType === "single"}
+                    />
+                  </div>
                 </div>
               </div>
 
