@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js";
+import StorageService from "./StorageService.js";
 
 class MenuItemService {
   async getMenuItems(filters) {
@@ -40,7 +41,11 @@ class MenuItemService {
       prisma.menuItem.findMany({
         where,
         include: {
-          modifiers: true,
+          modifiers: {
+            include: {
+              modifiers: true,
+            },
+          },
           categoryModel: true,
           photos: {
             orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
@@ -69,7 +74,11 @@ class MenuItemService {
     const itemsWithCounts = await prisma.menuItem.findMany({
       where,
       include: {
-        modifiers: true,
+        modifiers: {
+          include: {
+            modifiers: true,
+          },
+        },
         categoryModel: true,
         photos: {
           orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
@@ -101,6 +110,21 @@ class MenuItemService {
     return { items: itemsWithPopularity, total: sorted.length };
   }
 
+  async getMenuItemById(id) {
+    return await prisma.menuItem.findUnique({
+      where: { id },
+      include: {
+        modifiers: {
+          include: {
+            modifiers: true,
+          },
+        },
+        categoryModel: true,
+        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+      },
+    });
+  }
+
   async createMenuItem(data, imageUrl, uploadedPhotos = []) {
     // Parse numeric fields that might come as strings from FormData
     const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
@@ -122,7 +146,11 @@ class MenuItemService {
         isChefRecommendation: data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
       },
       include: {
-        modifiers: true,
+        modifiers: {
+          include: {
+            modifiers: true,
+          },
+        },
         categoryModel: true,
         photos: true,
       },
@@ -139,33 +167,54 @@ class MenuItemService {
       });
 
       // Refetch to include photos
-      return await prisma.menuItem.findUnique({
-        where: { id: menuItem.id },
-        include: {
-          modifiers: true,
-          categoryModel: true,
-          photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
-        },
-      });
+      return await this.getMenuItemById(menuItem.id);
     }
 
     return menuItem;
   }
 
   async addModifiers(menuItemId, modifiers) {
-    return await prisma.modifier.createMany({
-      data: modifiers.map((m) => ({
-        menuItemId,
-        name: m.name,
-        price: m.price,
-        groupName: m.groupName,
-      })),
-    });
+    // Group modifiers by groupName
+    const groupMap = new Map();
+
+    for (const modifier of modifiers) {
+      const groupName = modifier.groupName || 'Default';
+      if (!groupMap.has(groupName)) {
+        groupMap.set(groupName, []);
+      }
+      groupMap.get(groupName).push(modifier);
+    }
+
+    // Create modifier groups and their modifiers
+    for (const [groupName, groupModifiers] of groupMap.entries()) {
+      // Create the modifier group
+      const modifierGroup = await prisma.modifierGroup.create({
+        data: {
+          menuItemId,
+          name: groupName,
+          selectionType: groupModifiers[0]?.selectionType || 'multiple',
+          isRequired: groupModifiers[0]?.isRequired || false,
+          minSelections: groupModifiers[0]?.minSelections || 0,
+          maxSelections: groupModifiers[0]?.maxSelections || null,
+          displayOrder: groupModifiers[0]?.displayOrder || 0,
+        },
+      });
+
+      // Create modifiers for this group
+      await prisma.modifier.createMany({
+        data: groupModifiers.map((m, index) => ({
+          modifierGroupId: modifierGroup.id,
+          name: m.name,
+          price: m.price,
+          displayOrder: m.displayOrder || index,
+        })),
+      });
+    }
   }
 
   async updateModifiers(menuItemId, modifiers) {
-    // Delete existing modifiers
-    await prisma.modifier.deleteMany({ where: { menuItemId } });
+    // Delete existing modifier groups (this cascades to modifiers)
+    await prisma.modifierGroup.deleteMany({ where: { menuItemId } });
 
     // Create new modifiers
     return this.addModifiers(menuItemId, modifiers);
@@ -205,7 +254,11 @@ class MenuItemService {
       where: { id },
       data: updateData,
       include: {
-        modifiers: true,
+        modifiers: {
+          include: {
+            modifiers: true,
+          },
+        },
         categoryModel: true,
         photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
@@ -222,14 +275,7 @@ class MenuItemService {
       });
 
       // Refetch to include new photos
-      return await prisma.menuItem.findUnique({
-        where: { id: menuItem.id },
-        include: {
-          modifiers: true,
-          categoryModel: true,
-          photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
-        },
-      });
+      return await this.getMenuItemById(menuItem.id);
     }
 
     return menuItem;
@@ -244,10 +290,44 @@ class MenuItemService {
 
   /**
    * Delete a menu item permanently from the database (hard delete)
-   * Also removes associated photos and modifier groups
+   * Also removes associated photos from Supabase and database, plus modifier groups
    */
   async deleteMenuItem(id) {
-    // First, delete associated photos
+    // First, fetch the menu item with all photos to get URLs for deletion
+    const menuItem = await prisma.menuItem.findUnique({
+      where: { id },
+      include: {
+        photos: true,
+      },
+    });
+
+    if (!menuItem) {
+      throw new Error('Menu item not found');
+    }
+
+    // Delete photos from Supabase Storage
+    const photoUrls = [];
+
+    // Collect photo URLs from MenuItemPhoto records
+    if (menuItem.photos && menuItem.photos.length > 0) {
+      menuItem.photos.forEach((photo) => {
+        if (photo.url) photoUrls.push(photo.url);
+      });
+    }
+
+    // Also include the legacy imageUrl if it exists
+    if (menuItem.imageUrl) {
+      photoUrls.push(menuItem.imageUrl);
+    }
+
+    // Delete all photos from Supabase bucket
+    if (photoUrls.length > 0) {
+      await Promise.allSettled(
+        photoUrls.map((url) => StorageService.deleteFileByUrl(url))
+      );
+    }
+
+    // Delete associated photo records from database
     await prisma.menuItemPhoto.deleteMany({
       where: { menuItemId: id },
     });

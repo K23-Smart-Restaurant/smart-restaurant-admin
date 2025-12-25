@@ -68,16 +68,19 @@ class MenuItemController {
       const menuItem = await menuItemService.createMenuItem(req.body, imageUrl, uploadedPhotos);
 
       // Add modifiers if provided
+      let finalMenuItem = menuItem;
       if (req.body.modifiers) {
         const modifiers = typeof req.body.modifiers === 'string'
           ? JSON.parse(req.body.modifiers)
           : req.body.modifiers;
-        if (Array.isArray(modifiers)) {
+        if (Array.isArray(modifiers) && modifiers.length > 0) {
           await menuItemService.addModifiers(menuItem.id, modifiers);
+          // Refetch to include modifiers
+          finalMenuItem = await menuItemService.getMenuItemById(menuItem.id);
         }
       }
 
-      res.status(201).json(menuItem);
+      res.status(201).json(finalMenuItem);
     } catch (error) {
       next(error);
     }
@@ -132,16 +135,19 @@ class MenuItemController {
       );
 
       // Update modifiers if provided
+      let finalMenuItem = menuItem;
       if (req.body.modifiers) {
         const modifiers = typeof req.body.modifiers === 'string'
           ? JSON.parse(req.body.modifiers)
           : req.body.modifiers;
         if (Array.isArray(modifiers)) {
           await menuItemService.updateModifiers(menuItem.id, modifiers);
+          // Refetch to include updated modifiers
+          finalMenuItem = await menuItemService.getMenuItemById(menuItem.id);
         }
       }
 
-      res.json(menuItem);
+      res.json(finalMenuItem);
     } catch (error) {
       next(error);
     }

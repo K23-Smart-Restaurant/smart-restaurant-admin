@@ -18,9 +18,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onToggleSoldOut,
 }) => {
   const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete "${menuItem.name}"?`)) {
-      onDelete(menuItem);
-    }
+    onDelete(menuItem);
   };
 
   const primaryPhotoUrl =
@@ -59,7 +57,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             alt={menuItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x300?text=No+Image";
+              (e.target as HTMLImageElement).src = "https://placehold.co/400x300?text=No+Image";
             }}
           />
         ) : (

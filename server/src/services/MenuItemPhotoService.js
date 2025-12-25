@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js";
+import StorageService from "./StorageService.js";
 
 /**
  * MenuItemPhoto Service
@@ -133,6 +134,7 @@ class MenuItemPhotoService {
 
     /**
      * H3: Delete a photo
+     * Also deletes the file from Supabase storage
      */
     async deletePhoto(menuItemId, photoId) {
         // Verify the photo belongs to the menu item
@@ -147,7 +149,15 @@ class MenuItemPhotoService {
             throw new Error("Photo not found for this menu item");
         }
 
-        // Delete the photo record
+        // Delete the file from Supabase storage
+        try {
+            await StorageService.deleteFileByUrl(photo.url);
+        } catch (error) {
+            console.error('Failed to delete photo from storage:', error);
+            // Continue with database deletion even if storage deletion fails
+        }
+
+        // Delete the photo record from database
         await prisma.menuItemPhoto.delete({
             where: { id: photoId },
         });

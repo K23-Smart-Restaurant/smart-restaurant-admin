@@ -41,13 +41,14 @@ export interface MenuItemFormSubmitPayload {
 
 interface MenuItemFormProps {
   menuItem?: MenuItem;
-  onSubmit: (payload: MenuItemFormSubmitPayload) => void;
+  onSubmit: (payload: MenuItemFormSubmitPayload) => Promise<void>;
   onCancel: () => void;
 }
 
 export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, onCancel }) => {
   const isEditMode = !!menuItem;
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const initialPhotos = useMemo<PhotoState[]>(() => {
     if (menuItem?.photos?.length) {
@@ -78,7 +79,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
     setValue,
   } = useForm<MenuItemFormData>({
@@ -115,11 +116,15 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   }, [menuItem, setValue, initialPhotos]);
 
   const onFormSubmit = async (data: MenuItemFormData) => {
+    if (isLoading) return; // Prevent double submission
+
     try {
       if (photos.length === 0) {
         alert("Please add at least one image");
         return;
       }
+
+      setIsLoading(true);
 
       const normalizedPhotos: PhotoInput[] = photos.map((photo, index) => ({
         id: photo.id,
@@ -128,7 +133,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         isPrimary: photo.isPrimary || (!photo.isPrimary && index === 0),
       }));
 
-      onSubmit({
+      // Await the onSubmit to keep loading state during the operation
+      await onSubmit({
         data: {
           ...data,
           description: data.description || "",
@@ -148,6 +154,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     } catch (error) {
       console.error("Error saving menu item:", error);
       alert("Failed to save menu item");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -209,7 +217,19 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   ];
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 relative">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+          <div className="bg-white rounded-lg shadow-2xl p-6 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 border-4 border-naples border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-charcoal font-semibold">
+              {isEditMode ? 'Updating menu item...' : 'Creating menu item...'}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         {/* Name field */}
         <div>
@@ -358,7 +378,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
                     alt={`Preview ${index + 1}`}
                     className="w-full h-32 object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Image";
+                      (e.target as HTMLImageElement).src = "https://placehold.co/150?text=Image";
                     }}
                   />
 
@@ -443,11 +463,11 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
 
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancel
         </Button>
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : isEditMode ? 'Update Item' : 'Create Item'}
+        <Button type="submit" variant="primary" loading={isLoading}>
+          {isEditMode ? 'Update Item' : 'Create Item'}
         </Button>
       </div>
     </form>
