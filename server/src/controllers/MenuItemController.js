@@ -23,6 +23,21 @@ class MenuItemController {
     }
   }
 
+  async getById(req, res, next) {
+    try {
+      const menuItem = await menuItemService.getMenuItemById(req.params.id);
+      if (!menuItem) {
+        return res.status(404).json({
+          success: false,
+          message: "Menu item not found",
+        });
+      }
+      res.json({ success: true, data: menuItem });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async create(req, res, next) {
     try {
       // Upload files to Supabase Storage
@@ -52,7 +67,10 @@ class MenuItemController {
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
-          const uploaded = await StorageService.uploadMenuItemPhotos(filesToUpload, primaryIndex);
+          const uploaded = await StorageService.uploadMenuItemPhotos(
+            filesToUpload,
+            primaryIndex
+          );
           uploaded.forEach((photo) => {
             uploadedPhotos.push({
               url: photo.url,
@@ -65,14 +83,19 @@ class MenuItemController {
         }
       }
 
-      const menuItem = await menuItemService.createMenuItem(req.body, imageUrl, uploadedPhotos);
+      const menuItem = await menuItemService.createMenuItem(
+        req.body,
+        imageUrl,
+        uploadedPhotos
+      );
 
       // Add modifiers if provided
       let finalMenuItem = menuItem;
       if (req.body.modifiers) {
-        const modifiers = typeof req.body.modifiers === 'string'
-          ? JSON.parse(req.body.modifiers)
-          : req.body.modifiers;
+        const modifiers =
+          typeof req.body.modifiers === "string"
+            ? JSON.parse(req.body.modifiers)
+            : req.body.modifiers;
         if (Array.isArray(modifiers) && modifiers.length > 0) {
           await menuItemService.addModifiers(menuItem.id, modifiers);
           // Refetch to include modifiers
@@ -92,29 +115,58 @@ class MenuItemController {
       let imageUrl = undefined;
       const uploadedPhotos = [];
 
+      // Determine if an existing photo is being set as primary
+      const primaryPhotoId = req.body.primaryPhotoId;
+      const hasExistingPrimaryPhoto =
+        primaryPhotoId &&
+        typeof primaryPhotoId === "string" &&
+        primaryPhotoId.length > 0;
+
+      // Get primaryPhotoIndex from request body (for new photos)
+      const primaryPhotoIndex =
+        req.body.primaryPhotoIndex !== undefined
+          ? parseInt(req.body.primaryPhotoIndex, 10)
+          : null;
+
       if (req.files) {
         // Collect all files to upload
         const filesToUpload = [];
-        let primaryIndex = 0;
+        // Default to -1 (no primary among new photos) if an existing photo is set as primary
+        let primaryIndex = hasExistingPrimaryPhoto ? -1 : 0;
 
         // Check 'image' field first (for backward compatibility)
         if (req.files.image && req.files.image[0]) {
           filesToUpload.push(req.files.image[0]);
-          primaryIndex = 0;
+          if (!hasExistingPrimaryPhoto) {
+            primaryIndex = 0;
+          }
         }
 
         // Add 'photos' field files
         if (req.files.photos) {
           filesToUpload.push(...req.files.photos);
-          // If no image was set, first photo becomes primary
-          if (filesToUpload.length > 0 && !req.files.image) {
+          // Use primaryPhotoIndex if provided and no existing photo is primary
+          if (
+            !hasExistingPrimaryPhoto &&
+            primaryPhotoIndex !== null &&
+            primaryPhotoIndex >= 0
+          ) {
+            primaryIndex = primaryPhotoIndex;
+          } else if (
+            !hasExistingPrimaryPhoto &&
+            filesToUpload.length > 0 &&
+            !req.files.image
+          ) {
             primaryIndex = 0;
           }
         }
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
-          const uploaded = await StorageService.uploadMenuItemPhotos(filesToUpload, primaryIndex);
+          const uploaded = await StorageService.uploadMenuItemPhotos(
+            filesToUpload,
+            primaryIndex
+          );
           uploaded.forEach((photo) => {
             uploadedPhotos.push({
               url: photo.url,
@@ -127,19 +179,33 @@ class MenuItemController {
         }
       }
 
-      const menuItem = await menuItemService.updateMenuItem(
+      let menuItem = await menuItemService.updateMenuItem(
         req.params.id,
         req.body,
         imageUrl,
         uploadedPhotos
       );
 
+      // Handle primary photo change for existing photos
+      // (primaryPhotoId was already extracted at the start of update method)
+      if (hasExistingPrimaryPhoto) {
+        try {
+          menuItem = await menuItemService.setPrimaryPhoto(
+            req.params.id,
+            primaryPhotoId
+          );
+        } catch (err) {
+          console.warn("Failed to set primary photo:", err.message);
+        }
+      }
+
       // Update modifiers if provided
       let finalMenuItem = menuItem;
       if (req.body.modifiers) {
-        const modifiers = typeof req.body.modifiers === 'string'
-          ? JSON.parse(req.body.modifiers)
-          : req.body.modifiers;
+        const modifiers =
+          typeof req.body.modifiers === "string"
+            ? JSON.parse(req.body.modifiers)
+            : req.body.modifiers;
         if (Array.isArray(modifiers)) {
           await menuItemService.updateModifiers(menuItem.id, modifiers);
           // Refetch to include updated modifiers
@@ -176,4 +242,3 @@ class MenuItemController {
 }
 
 export default MenuItemController;
-

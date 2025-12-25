@@ -33,6 +33,18 @@ class CategoryController {
     }
   }
 
+  async updateStatus(req, res, next) {
+    try {
+      const { isActive } = req.body;
+      const category = await categoryService.updateCategory(req.params.id, {
+        isActive,
+      });
+      res.json(category);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async delete(req, res, next) {
     try {
       await categoryService.deleteCategory(req.params.id);

@@ -9,6 +9,7 @@ const menuItemController = new MenuItemController();
 router.use(authenticate, authorize("ADMIN"));
 
 router.get("/", (req, res, next) => menuItemController.getAll(req, res, next));
+router.get("/:id", (req, res, next) => menuItemController.getById(req, res, next));
 router.post("/", handleUploadError(uploadMenuItemPhotos), (req, res, next) =>
   menuItemController.create(req, res, next)
 );

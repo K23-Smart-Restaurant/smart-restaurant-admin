@@ -120,16 +120,19 @@ class MenuItemService {
           },
         },
         categoryModel: true,
-        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        photos: { orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] },
       },
     });
   }
 
   async createMenuItem(data, imageUrl, uploadedPhotos = []) {
     // Parse numeric fields that might come as strings from FormData
-    const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
+    const price =
+      typeof data.price === "string" ? parseFloat(data.price) : data.price;
     const preparationTime = data.preparationTime
-      ? (typeof data.preparationTime === 'string' ? parseInt(data.preparationTime) : data.preparationTime)
+      ? typeof data.preparationTime === "string"
+        ? parseInt(data.preparationTime)
+        : data.preparationTime
       : null;
 
     const menuItem = await prisma.menuItem.create({
@@ -141,9 +144,11 @@ class MenuItemService {
         categoryId: data.categoryId || null,
         imageUrl,
         preparationTime,
-        isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
-        isSoldOut: data.isSoldOut === 'true' || data.isSoldOut === true,
-        isChefRecommendation: data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
+        isAvailable: data.isAvailable === "true" || data.isAvailable === true,
+        isSoldOut: data.isSoldOut === "true" || data.isSoldOut === true,
+        isChefRecommendation:
+          data.isChefRecommendation === "true" ||
+          data.isChefRecommendation === true,
       },
       include: {
         modifiers: {
@@ -178,7 +183,7 @@ class MenuItemService {
     const groupMap = new Map();
 
     for (const modifier of modifiers) {
-      const groupName = modifier.groupName || 'Default';
+      const groupName = modifier.groupName || "Default";
       if (!groupMap.has(groupName)) {
         groupMap.set(groupName, []);
       }
@@ -192,7 +197,7 @@ class MenuItemService {
         data: {
           menuItemId,
           name: groupName,
-          selectionType: groupModifiers[0]?.selectionType || 'multiple',
+          selectionType: groupModifiers[0]?.selectionType || "multiple",
           isRequired: groupModifiers[0]?.isRequired || false,
           minSelections: groupModifiers[0]?.minSelections || 0,
           maxSelections: groupModifiers[0]?.maxSelections || null,
@@ -225,25 +230,34 @@ class MenuItemService {
     const updateData = {};
 
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description || null;
+    if (data.description !== undefined)
+      updateData.description = data.description || null;
     if (data.category !== undefined) updateData.category = data.category;
     if (data.price !== undefined) {
-      updateData.price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
+      updateData.price =
+        typeof data.price === "string" ? parseFloat(data.price) : data.price;
     }
-    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || null;
+    if (data.categoryId !== undefined)
+      updateData.categoryId = data.categoryId || null;
     if (data.preparationTime !== undefined) {
       updateData.preparationTime = data.preparationTime
-        ? (typeof data.preparationTime === 'string' ? parseInt(data.preparationTime) : data.preparationTime)
+        ? typeof data.preparationTime === "string"
+          ? parseInt(data.preparationTime)
+          : data.preparationTime
         : null;
     }
     if (data.isAvailable !== undefined) {
-      updateData.isAvailable = data.isAvailable === 'true' || data.isAvailable === true;
+      updateData.isAvailable =
+        data.isAvailable === "true" || data.isAvailable === true;
     }
     if (data.isSoldOut !== undefined) {
-      updateData.isSoldOut = data.isSoldOut === 'true' || data.isSoldOut === true;
+      updateData.isSoldOut =
+        data.isSoldOut === "true" || data.isSoldOut === true;
     }
     if (data.isChefRecommendation !== undefined) {
-      updateData.isChefRecommendation = data.isChefRecommendation === 'true' || data.isChefRecommendation === true;
+      updateData.isChefRecommendation =
+        data.isChefRecommendation === "true" ||
+        data.isChefRecommendation === true;
     }
 
     if (imageUrl) {
@@ -260,12 +274,25 @@ class MenuItemService {
           },
         },
         categoryModel: true,
-        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        photos: { orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] },
       },
     });
 
     // Create new photo records if photos were uploaded
     if (uploadedPhotos.length > 0) {
+      // Check if any of the new photos is marked as primary
+      const hasNewPrimaryPhoto = uploadedPhotos.some(
+        (photo) => photo.isPrimary
+      );
+
+      // If a new photo is set as primary, reset all existing photos' isPrimary to false
+      if (hasNewPrimaryPhoto) {
+        await prisma.menuItemPhoto.updateMany({
+          where: { menuItemId: menuItem.id },
+          data: { isPrimary: false },
+        });
+      }
+
       await prisma.menuItemPhoto.createMany({
         data: uploadedPhotos.map((photo) => ({
           menuItemId: menuItem.id,
@@ -279,6 +306,44 @@ class MenuItemService {
     }
 
     return menuItem;
+  }
+
+  /**
+   * Set a specific photo as the primary photo for a menu item
+   * Also updates the legacy imageUrl field with the primary photo's URL
+   */
+  async setPrimaryPhoto(menuItemId, photoId) {
+    // First, verify the photo belongs to this menu item
+    const photo = await prisma.menuItemPhoto.findFirst({
+      where: {
+        id: photoId,
+        menuItemId: menuItemId,
+      },
+    });
+
+    if (!photo) {
+      throw new Error("Photo not found or does not belong to this menu item");
+    }
+
+    // Reset all photos' isPrimary to false for this menu item
+    await prisma.menuItemPhoto.updateMany({
+      where: { menuItemId: menuItemId },
+      data: { isPrimary: false },
+    });
+
+    // Set the specified photo as primary
+    await prisma.menuItemPhoto.update({
+      where: { id: photoId },
+      data: { isPrimary: true },
+    });
+
+    // Update the legacy imageUrl field on the menu item
+    await prisma.menuItem.update({
+      where: { id: menuItemId },
+      data: { imageUrl: photo.url },
+    });
+
+    return await this.getMenuItemById(menuItemId);
   }
 
   async updateStatus(id, status) {
@@ -302,7 +367,7 @@ class MenuItemService {
     });
 
     if (!menuItem) {
-      throw new Error('Menu item not found');
+      throw new Error("Menu item not found");
     }
 
     // Delete photos from Supabase Storage
