@@ -16,25 +16,62 @@ app.use(helmet());
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:5173",
-  process.env.CUSTOMER_APP_URL || "http://localhost:5174",
-];
+  // Production URLs (set these in environment variables)
+  process.env.CLIENT_URL,
+  process.env.CUSTOMER_APP_URL,
+  // Development URLs
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:3000",
+].filter(Boolean); // Remove undefined/null values
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin) {
+      return callback(null, true);
+    }
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+    // Allow file:// protocol for local development (opening HTML files directly)
+    if (origin.startsWith("file://")) {
+      console.log(`[CORS] Allowing file:// origin: ${origin}`);
+      return callback(null, true);
+    }
+
+    // Check if origin is in the allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Log rejected origins for debugging
+    console.warn(`[CORS] Blocked request from origin: ${origin}`);
+    console.warn(`[CORS] Allowed origins: ${allowedOrigins.join(", ")}`);
+    return callback(new Error(`CORS policy: Origin ${origin} is not allowed`));
+  },
+  credentials: true, // Allow cookies and authorization headers
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allowed HTTP methods
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers",
+  ],
+  exposedHeaders: ["Content-Range", "X-Content-Range"], // Headers exposed to the client
+  maxAge: 86400, // Cache preflight response for 24 hours (in seconds)
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS requests explicitly for all routes
+app.options("*", cors(corsOptions));
 
 // Body parsing middleware
 app.use(json({ limit: "10mb" }));
