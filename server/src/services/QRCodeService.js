@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import PDFDocument from "pdfkit";
 import archiver from "archiver";
 import prisma from "../lib/prisma.js";
+import storageService from "./StorageService.js";
 
 // QR Token configuration
 const QR_TOKEN_SECRET =
@@ -170,7 +171,7 @@ class QRCodeService {
       },
     };
 
-    return await toDataURL(url, { ...defaultOptions, ...options });
+    return toDataURL(url, { ...defaultOptions, ...options });
   }
 
   /**
@@ -187,21 +188,56 @@ class QRCodeService {
       errorCorrectionLevel: "H",
     };
 
-    return await toBuffer(url, { ...defaultOptions, ...options });
+    return toBuffer(url, { ...defaultOptions, ...options });
   }
 
   /**
    * Generate complete QR code data for a table
+   * Uploads QR image to Supabase Storage and returns the public URL
    * @param {string} tableId - Table ID
    * @param {string} restaurantId - Restaurant ID
-   * @returns {Promise<Object>} QR code data
+   * @param {string} oldQrCodeUrl - Previous QR code URL to delete (optional)
+   * @returns {Promise<Object>} QR code data with Supabase URL
    */
-  async generateTableQR(tableId, restaurantId = DEFAULT_RESTAURANT_ID) {
+  async generateTableQR(
+    tableId,
+    restaurantId = DEFAULT_RESTAURANT_ID,
+    oldQrCodeUrl = null
+  ) {
     const { token, createdAt } = this.generateSignedToken(
       tableId,
       restaurantId
     );
     const url = this.generateQRUrl(tableId, token);
+
+    // Check if Supabase storage is configured
+    if (storageService.isConfigured()) {
+      // Delete old QR code from storage if it exists
+      if (oldQrCodeUrl) {
+        await storageService.deleteOldQRCode(oldQrCodeUrl);
+      }
+
+      // Generate QR code as PNG buffer
+      const qrBuffer = await this.generateQRBuffer(url, { width: 400 });
+
+      // Upload to Supabase Storage
+      const { url: qrCodeUrl } = await storageService.uploadQRCode(
+        qrBuffer,
+        tableId
+      );
+
+      return {
+        qrCode: qrCodeUrl,
+        qrToken: token,
+        qrTokenCreatedAt: createdAt,
+        qrUrl: url,
+      };
+    }
+
+    // Fallback to base64 data URL if Supabase is not configured
+    console.warn(
+      "Supabase not configured, falling back to base64 QR code storage"
+    );
     const qrCodeDataUrl = await this.generateQRDataUrl(url);
 
     return {
@@ -468,13 +504,10 @@ class QRCodeService {
       });
 
     // Table number
-    doc
-      .fontSize(32)
-      .font("Helvetica-Bold")
-      .text(`Table ${table.tableNumber}`, {
-        align: "center",
-        width: pageWidth,
-      });
+    doc.fontSize(32).font("Helvetica-Bold").text(`Table ${table.tableNumber}`, {
+      align: "center",
+      width: pageWidth,
+    });
 
     if (table.location) {
       doc
@@ -563,12 +596,10 @@ class QRCodeService {
       });
 
     if (table.location) {
-      doc
-        .fontSize(8)
-        .text(table.location, x + 5, y + 55 + qrSize + 5, {
-          width: width - 10,
-          align: "center",
-        });
+      doc.fontSize(8).text(table.location, x + 5, y + 55 + qrSize + 5, {
+        width: width - 10,
+        align: "center",
+      });
     }
   }
 
@@ -618,8 +649,13 @@ class QRCodeService {
 
     for (const tableId of tableIds) {
       try {
+        const existingQrCode = await prisma.table.findUnique({
+          where: { id: tableId },
+          select: { qrCode: true },
+        });
+
         const { qrCode, qrToken, qrTokenCreatedAt } =
-          await this.generateTableQR(tableId, restaurantId);
+          await this.generateTableQR(tableId, restaurantId, existingQrCode?.qrCode);
 
         await prisma.table.update({
           where: { id: tableId },

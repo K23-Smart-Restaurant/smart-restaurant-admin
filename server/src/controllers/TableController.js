@@ -147,6 +147,35 @@ class TableController {
       next(error);
     }
   }
+
+  /**
+   * M6: Check for active orders on a table
+   */
+  async checkActiveOrders(req, res, next) {
+    try {
+      const result = await tableService.checkActiveOrders(req.params.id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * M5 & M6: Toggle table active status with warning for active orders
+   */
+  async toggleActive(req, res, next) {
+    try {
+      const { isActive, force } = req.body;
+      const result = await tableService.toggleActive(
+        req.params.id,
+        isActive,
+        force
+      );
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default TableController;

@@ -21,6 +21,7 @@ export interface Table {
   location: string;
   description?: string | null;
   status: TableStatus;
+  isActive: boolean; // M5: Active/Inactive status for soft delete
   qrCode: string | null;
   qrToken: string | null;
   qrTokenCreatedAt: string | null;
@@ -62,6 +63,34 @@ export interface BulkRegenerateResult {
     failed: Array<{ tableId: string; error: string }>;
     total: number;
   };
+}
+
+// M6: Active orders check result
+export interface ActiveOrderInfo {
+  id: string;
+  orderNumber: string;
+  status: string;
+  totalAmount: number;
+  itemCount: number;
+  createdAt: string;
+}
+
+export interface ActiveOrdersCheckResult {
+  hasActiveOrders: boolean;
+  activeOrdersCount: number;
+  orders: ActiveOrderInfo[];
+}
+
+// M5 & M6: Toggle active result with warning
+export interface ToggleActiveResult {
+  success: boolean;
+  requiresConfirmation?: boolean;
+  warning?: {
+    message: string;
+    activeOrdersCount: number;
+    orders: ActiveOrderInfo[];
+  };
+  table?: Table;
 }
 
 export const tableService = {
@@ -185,6 +214,27 @@ export const tableService = {
     const response = await api.get("/tables/validate-qr", {
       params: { token },
     });
+    return response.data;
+  },
+
+  // M6: Check for active orders on a table
+  checkActiveOrders: async (id: string): Promise<ActiveOrdersCheckResult> => {
+    const response = await apiClient.get<ActiveOrdersCheckResult>(
+      `/tables/${id}/active-orders`
+    );
+    return response.data;
+  },
+
+  // M5 & M6: Toggle table active status with warning for active orders
+  toggleActive: async (
+    id: string,
+    isActive: boolean,
+    force?: boolean
+  ): Promise<ToggleActiveResult> => {
+    const response = await apiClient.patch<ToggleActiveResult>(
+      `/tables/${id}/toggle-active`,
+      { isActive, force }
+    );
     return response.data;
   },
 };

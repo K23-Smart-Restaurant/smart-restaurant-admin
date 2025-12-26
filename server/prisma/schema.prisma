@@ -105,16 +105,17 @@ model Restaurant {
     name        String
     address     String?
     phoneNumber String?
+    logoUrl     String? // L4: Restaurant logo for QR PDFs and branding
     adminId     String // Foreign Key to User (ADMIN role)
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
     // Relationships
-    admin      User       @relation(fields: [adminId], references: [id], onDelete: Restrict)
-    tables     Table[]
-    menuItems  MenuItem[]
-    categories Category[]
-    modifiers  Modifier[]
+    admin          User            @relation(fields: [adminId], references: [id], onDelete: Restrict)
+    tables         Table[]
+    menuItems      MenuItem[]
+    categories     Category[]
+    modifierGroups ModifierGroup[]
 
     @@index([adminId])
     @@map("Restaurant")
@@ -128,6 +129,7 @@ model Table {
     location         String? // e.g., "Main Floor", "Patio", "Private Room"
     description      String?     @db.Text
     status           TableStatus @default(AVAILABLE)
+    isActive         Boolean     @default(true) // M5: Soft delete - Active/Inactive status
     qrCode           String?     @db.Text // Base64 QR image (stored as TEXT, no unique constraint due to size)
     qrToken          String?     @unique @db.VarChar(500) // JWT token for table access
     qrTokenCreatedAt DateTime? // When QR token was generated
@@ -165,6 +167,49 @@ model Category {
     @@map("Category")
 }
 
+// H2: MenuItemPhoto - Multiple photos support for menu items
+model MenuItemPhoto {
+    id         String   @id @default(uuid())
+    menuItemId String
+    url        String // File path or URL to the photo
+    isPrimary  Boolean  @default(false) // H3: Primary photo selection
+    createdAt  DateTime @default(now())
+
+    // Relationships
+    menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+    @@index([menuItemId])
+    @@index([menuItemId, isPrimary])
+    @@map("MenuItemPhoto")
+}
+
+// H5: ModifierGroup - Grouping for modifiers with selection constraints
+model ModifierGroup {
+    id            String   @id @default(uuid())
+    name          String
+    description   String?
+    selectionType String   @default("multiple") // "single" or "multiple"
+    isRequired    Boolean  @default(false)
+    minSelections Int?     @default(0) // Minimum number of selections (for multi-select)
+    maxSelections Int? // Maximum number of selections (null = unlimited for multi-select)
+    displayOrder  Int      @default(0)
+    status        String   @default("active") // "active" or "inactive"
+    menuItemId    String
+    restaurantId  String?
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    // Relationships
+    menuItem   MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+    restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    modifiers  Modifier[]
+
+    @@index([menuItemId])
+    @@index([restaurantId])
+    @@index([status])
+    @@map("ModifierGroup")
+}
+
 // MenuItem - Items available on the menu
 model MenuItem {
     id                   String       @id @default(uuid())
@@ -172,7 +217,7 @@ model MenuItem {
     description          String?
     category             MenuCategory
     price                Decimal      @db.Decimal(10, 2)
-    imageUrl             String?
+    imageUrl             String? // H2: Kept for backward compatibility, use photos relation for new items
     isAvailable          Boolean      @default(true)
     isSoldOut            Boolean      @default(false)
     isChefRecommendation Boolean      @default(false)
@@ -183,10 +228,11 @@ model MenuItem {
     updatedAt            DateTime     @updatedAt
 
     // Relationships
-    categoryModel Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-    restaurant    Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    categoryModel Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+    restaurant    Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
     orderItems    OrderItem[]
-    modifiers     Modifier[]
+    modifiers     ModifierGroup[]
+    photos        MenuItemPhoto[] // H2: Multiple photos support
 
     @@index([category, isAvailable])
     @@index([isAvailable])
@@ -195,23 +241,22 @@ model MenuItem {
     @@map("MenuItem")
 }
 
-// Modifier - Menu item customizations (e.g., "Extra Cheese", "No Onions")
+// Modifier - Individual modifier options within a modifier group
 model Modifier {
-    id           String   @id @default(uuid())
-    name         String
-    price        Decimal  @default(0) @db.Decimal(10, 2)
-    groupName    String? // e.g., "Toppings", "Side Options"
-    menuItemId   String
-    restaurantId String?
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id              String   @id @default(uuid())
+    name            String
+    price           Decimal  @default(0) @db.Decimal(10, 2)
+    status          String   @default("active") // L5: "active" or "inactive"
+    displayOrder    Int      @default(0)
+    modifierGroupId String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 
     // Relationships
-    menuItem   MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-    restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
 
-    @@index([menuItemId])
-    @@index([restaurantId])
+    @@index([modifierGroupId])
+    @@index([status])
     @@map("Modifier")
 }
 

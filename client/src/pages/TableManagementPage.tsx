@@ -25,6 +25,7 @@ const TableManagementPage: React.FC = () => {
     deleteTable,
     regenerateQRCode,
     updateStatus,
+    toggleActive,
   } = useTables();
 
   // Local filter state
@@ -32,9 +33,12 @@ const TableManagementPage: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<TableStatus | "ALL">(
     "ALL"
   );
-  const [sortBy, setSortBy] = useState<"tableNumber" | "capacity" | "status">(
-    "tableNumber"
+  const [selectedLocation, setSelectedLocation] = useState<string | "ALL">(
+    "ALL"
   );
+  const [sortBy, setSortBy] = useState<
+    "tableNumber" | "capacity" | "status" | "createdAt"
+  >("tableNumber");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedTableIds, setSelectedTableIds] = useState<string[]>([]);
 
@@ -44,6 +48,11 @@ const TableManagementPage: React.FC = () => {
   // Apply filters and sorting
   const tables = React.useMemo(() => {
     let filtered = Array.isArray(allTables) ? [...allTables] : [];
+
+    const locationMatches = (location: string) => {
+      if (selectedLocation === "ALL") return true;
+      return location === selectedLocation;
+    };
 
     // Search filter
     if (searchQuery) {
@@ -57,6 +66,9 @@ const TableManagementPage: React.FC = () => {
       filtered = filtered.filter((t) => t.status === selectedStatus);
     }
 
+    // Location filter
+    filtered = filtered.filter((t) => locationMatches(t.location));
+
     // Sort
     filtered.sort((a, b) => {
       let comparison = 0;
@@ -64,11 +76,33 @@ const TableManagementPage: React.FC = () => {
       else if (sortBy === "capacity") comparison = a.capacity - b.capacity;
       else if (sortBy === "status")
         comparison = a.status.localeCompare(b.status);
+      else if (sortBy === "createdAt")
+        comparison =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return filtered;
-  }, [allTables, searchQuery, selectedStatus, sortBy, sortOrder]);
+  }, [
+    allTables,
+    searchQuery,
+    selectedStatus,
+    selectedLocation,
+    sortBy,
+    sortOrder,
+  ]);
+
+  const uniqueLocations = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (allTables || [])
+            .map((t) => t.location)
+            .filter((loc): loc is string => !!loc?.trim())
+        )
+      ).sort(),
+    [allTables]
+  );
 
   const handleAddTable = async (
     tableData: Omit<
@@ -175,6 +209,7 @@ const TableManagementPage: React.FC = () => {
     { value: "tableNumber", label: "Table Number" },
     { value: "capacity", label: "Capacity" },
     { value: "status", label: "Status" },
+    { value: "createdAt", label: "Created Date" },
   ];
 
   return (
@@ -300,6 +335,32 @@ const TableManagementPage: React.FC = () => {
             </select>
           </div>
 
+          {/* Location Filter */}
+          <div>
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium text-charcoal mb-2"
+            >
+              <FilterIcon className="w-4 h-4 inline mr-1" />
+              Location
+            </label>
+            <select
+              id="location"
+              value={selectedLocation}
+              onChange={(e) =>
+                setSelectedLocation(e.target.value as string | "ALL")
+              }
+              className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+            >
+              <option value="ALL">All Locations</option>
+              {uniqueLocations.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Sort */}
           <div>
             <label
@@ -362,6 +423,7 @@ const TableManagementPage: React.FC = () => {
         onDelete={handleDeleteTable}
         onRegenerateQR={regenerateQRCode}
         onUpdateStatus={updateStatus}
+        onToggleActive={toggleActive}
       />
 
       {/* Create/Edit Table Modal */}
@@ -374,7 +436,7 @@ const TableManagementPage: React.FC = () => {
           table={editingTable || undefined}
           onSubmit={handleAddTable}
           onCancel={closeTableModal}
-          existingLocations={[]}
+          existingLocations={uniqueLocations}
         />
       </Modal>
     </div>

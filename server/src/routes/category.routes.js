@@ -19,6 +19,9 @@ router.get("/", (req, res, next) => categoryController.getAll(req, res, next));
 router.patch("/:id", validate(updateCategorySchema), (req, res, next) =>
   categoryController.update(req, res, next)
 );
+router.patch("/:id/status", (req, res, next) =>
+  categoryController.updateStatus(req, res, next)
+);
 router.delete("/:id", (req, res, next) =>
   categoryController.delete(req, res, next)
 );

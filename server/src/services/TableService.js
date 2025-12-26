@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma.js";
 import qrCodeService from "./QRCodeService.js";
+import storageService from "./StorageService.js";
 
 class TableService {
   async createTable(data) {
@@ -33,10 +34,10 @@ class TableService {
   }
 
   async regenerateQRCode(tableId) {
-    // Get current table
+    // Get current table including the old QR code URL
     const existingTable = await prisma.table.findUnique({
       where: { id: tableId },
-      select: { restaurantId: true, qrToken: true },
+      select: { restaurantId: true, qrToken: true, qrCode: true },
     });
 
     if (!existingTable) {
@@ -48,11 +49,12 @@ class TableService {
       console.log(`Invalidating old QR token for table ${tableId}`);
     }
 
-    // Generate new QR code and token
+    // Generate new QR code and token (pass old URL for cleanup)
     const { qrCode, qrToken, qrTokenCreatedAt } =
       await qrCodeService.generateTableQR(
         tableId,
-        existingTable.restaurantId || undefined
+        existingTable.restaurantId || undefined,
+        existingTable.qrCode // Pass old QR code URL for deletion
       );
 
     // Update table with new QR data (old token is automatically invalidated)
@@ -125,6 +127,7 @@ class TableService {
       ...(data.location !== undefined && { location: data.location }),
       ...(data.description !== undefined && { description: data.description }),
       ...(data.status !== undefined && { status: data.status }),
+      ...(data.isActive !== undefined && { isActive: data.isActive }), // M5: Support isActive field
     };
 
     return await prisma.table.update({
@@ -133,7 +136,114 @@ class TableService {
     });
   }
 
+  /**
+   * M6: Check for active orders before deactivating a table
+   * Returns warning information if there are active orders
+   */
+  async checkActiveOrders(tableId) {
+    const activeOrders = await prisma.order.findMany({
+      where: {
+        tableId,
+        status: {
+          in: ["PENDING", "CONFIRMED", "PREPARING", "READY", "SERVED"],
+        },
+        paymentStatus: {
+          not: "PAID",
+        },
+      },
+      include: {
+        orderItems: {
+          include: {
+            menuItem: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      hasActiveOrders: activeOrders.length > 0,
+      activeOrdersCount: activeOrders.length,
+      orders: activeOrders.map((order) => ({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        totalAmount: order.totalAmount,
+        itemCount: order.orderItems.length,
+        createdAt: order.createdAt,
+      })),
+    };
+  }
+
+  /**
+   * M5: Toggle table active status (soft delete)
+   * M6: Check for active orders before deactivating
+   */
+  async toggleActive(tableId, isActive, force = false) {
+    const table = await prisma.table.findUnique({
+      where: { id: tableId },
+    });
+
+    if (!table) {
+      throw new Error("Table not found");
+    }
+
+    // M6: If deactivating (isActive = false), check for active orders
+    if (!isActive && !force) {
+      const activeOrdersCheck = await this.checkActiveOrders(tableId);
+
+      if (activeOrdersCheck.hasActiveOrders) {
+        // Return warning data instead of throwing error
+        return {
+          success: false,
+          requiresConfirmation: true,
+          warning: {
+            message: `Table ${table.tableNumber} has ${activeOrdersCheck.activeOrdersCount} active order(s). Deactivating will prevent new orders but won't affect existing ones.`,
+            activeOrdersCount: activeOrdersCheck.activeOrdersCount,
+            orders: activeOrdersCheck.orders,
+          },
+          table,
+        };
+      }
+    }
+
+    // Update table active status
+    const updatedTable = await prisma.table.update({
+      where: { id: tableId },
+      data: { isActive },
+    });
+
+    // Log the deactivation
+    if (!isActive) {
+      console.log(
+        `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${
+          force ? " (forced)" : ""
+        }`
+      );
+    }
+
+    return {
+      success: true,
+      table: updatedTable,
+    };
+  }
+
   async deleteTable(id) {
+    // Get the table to access its QR code URL
+    const table = await prisma.table.findUnique({
+      where: { id },
+      select: { qrCode: true },
+    });
+
+    // Delete QR code from storage if it exists
+    if (table?.qrCode && storageService.isConfigured()) {
+      await storageService.deleteOldQRCode(table.qrCode);
+    }
+
+    // Delete the table from database
     await prisma.table.delete({ where: { id } });
   }
 

@@ -18,10 +18,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onToggleSoldOut,
 }) => {
   const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete "${menuItem.name}"?`)) {
-      onDelete(menuItem);
-    }
+    onDelete(menuItem);
   };
+
+  const primaryPhotoUrl =
+    menuItem.photos?.find((p) => p.isPrimary)?.url ||
+    menuItem.photos?.[0]?.url ||
+    menuItem.imageUrl ||
+    "";
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -47,13 +51,13 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     <div className="bg-white rounded-2xl shadow-elevation-2 border border-gray-100 hover:border-gradient-primary/30 hover:shadow-elevation-3 transition-all duration-300 overflow-hidden group card-hover animate-fade-in-up">
       {/* Image Section */}
       <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-        {menuItem.imageUrl ? (
+        {primaryPhotoUrl ? (
           <img
-            src={menuItem.imageUrl}
+            src={primaryPhotoUrl}
             alt={menuItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=No+Image';
+              (e.target as HTMLImageElement).src = "https://placehold.co/400x300?text=No+Image";
             }}
           />
         ) : (

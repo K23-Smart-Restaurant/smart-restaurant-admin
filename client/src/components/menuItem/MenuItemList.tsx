@@ -1,7 +1,8 @@
-import React from 'react';
-import { SearchIcon, FilterIcon, ArrowUpDownIcon } from 'lucide-react';
-import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
-import { MenuItemCard } from './MenuItemCard';
+import React from "react";
+import { SearchIcon, FilterIcon, ArrowUpDownIcon } from "lucide-react";
+import type { MenuItem, MenuCategory } from "../../hooks/useMenuItems";
+import { MenuItemCard } from "./MenuItemCard";
+import { Pagination } from "../common/Pagination";
 
 interface MenuItemListProps {
   menuItems: MenuItem[];
@@ -13,6 +14,11 @@ interface MenuItemListProps {
   onSortChange: (sortBy: 'name' | 'price' | 'category' | 'createdAt' | 'popularity') => void;
   sortOrder: 'asc' | 'desc';
   onSortOrderToggle: () => void;
+  page: number;
+  pageSize: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onEdit: (menuItem: MenuItem) => void;
   onDelete: (menuItem: MenuItem) => void;
   onToggleAvailability: (id: string) => void;
@@ -29,6 +35,11 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
   onSortChange,
   sortOrder,
   onSortOrderToggle,
+  page,
+  pageSize,
+  total,
+  onPageChange,
+  onPageSizeChange,
   onEdit,
   onDelete,
   onToggleAvailability,
@@ -143,7 +154,8 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> menu items
+          Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> of {" "}
+          <span className="font-semibold text-charcoal">{total}</span> menu items
         </p>
       </div>
 
@@ -169,6 +181,19 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               ? 'Try adjusting your filters'
               : 'Create your first menu item to get started!'}
           </p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {total > 0 && (
+        <div className="pt-4 border-t border-antiflash">
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
         </div>
       )}
     </div>
