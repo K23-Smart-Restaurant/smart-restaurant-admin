@@ -171,7 +171,7 @@ class QRCodeService {
       },
     };
 
-    return await toDataURL(url, { ...defaultOptions, ...options });
+    return toDataURL(url, { ...defaultOptions, ...options });
   }
 
   /**
@@ -188,7 +188,7 @@ class QRCodeService {
       errorCorrectionLevel: "H",
     };
 
-    return await toBuffer(url, { ...defaultOptions, ...options });
+    return toBuffer(url, { ...defaultOptions, ...options });
   }
 
   /**
@@ -649,8 +649,13 @@ class QRCodeService {
 
     for (const tableId of tableIds) {
       try {
+        const existingQrCode = await prisma.table.findUnique({
+          where: { id: tableId },
+          select: { qrCode: true },
+        });
+
         const { qrCode, qrToken, qrTokenCreatedAt } =
-          await this.generateTableQR(tableId, restaurantId);
+          await this.generateTableQR(tableId, restaurantId, existingQrCode?.qrCode);
 
         await prisma.table.update({
           where: { id: tableId },

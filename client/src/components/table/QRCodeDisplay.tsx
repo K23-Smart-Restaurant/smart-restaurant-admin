@@ -18,7 +18,7 @@ import { saveAs } from "file-saver";
 
 interface QRCodeDisplayProps {
   table: Table;
-  onRegenerateQR: (tableId: string) => void;
+  onRegenerateQR: (tableId: string) => Promise<void>;
 }
 
 export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
@@ -169,13 +169,11 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
           <div class="print-container">
             <div class="restaurant-name">Smart Restaurant</div>
             <div class="table-number">Table ${table.tableNumber}</div>
-            <div class="table-location">${table.location || ""} ${
-      table.capacity ? `• ${table.capacity} guests` : ""
-    }</div>
+            <div class="table-location">${table.location || ""} ${table.capacity ? `• ${table.capacity} guests` : ""
+      }</div>
             <div class="qr-container">
-              <img class="qr-code" src="${
-                table.qrCode
-              }" alt="QR Code for Table ${table.tableNumber}">
+              <img class="qr-code" src="${table.qrCode
+      }" alt="QR Code for Table ${table.tableNumber}">
             </div>
             <div class="scan-instruction">Scan to Order</div>
             <div class="scan-description">
@@ -243,13 +241,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
       <div className="bg-white rounded-lg border border-antiflash">
         {/* QR Status Banner */}
         <div
-          className={`px-4 py-3 border-b flex items-center justify-between ${
-            qrStatus.status === "active"
-              ? "bg-green-50 border-green-100"
-              : qrStatus.status === "invalid"
+          className={`px-4 py-3 border-b flex items-center justify-between ${qrStatus.status === "active"
+            ? "bg-green-50 border-green-100"
+            : qrStatus.status === "invalid"
               ? "bg-red-50 border-red-100"
               : "bg-gray-50 border-gray-100"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             {getStatusIcon()}
@@ -311,11 +308,10 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={() => setDownloadFormat("png")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
-                  downloadFormat === "png"
-                    ? "border-naples bg-naples/10 text-charcoal"
-                    : "border-gray-200 hover:border-gray-300 text-gray-600"
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${downloadFormat === "png"
+                  ? "border-naples bg-naples/10 text-charcoal"
+                  : "border-gray-200 hover:border-gray-300 text-gray-600"
+                  }`}
               >
                 <FileIcon className="w-4 h-4" />
                 <span className="text-sm font-medium">PNG</span>
@@ -323,11 +319,10 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
               </button>
               <button
                 onClick={() => setDownloadFormat("pdf")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
-                  downloadFormat === "pdf"
-                    ? "border-naples bg-naples/10 text-charcoal"
-                    : "border-gray-200 hover:border-gray-300 text-gray-600"
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${downloadFormat === "pdf"
+                  ? "border-naples bg-naples/10 text-charcoal"
+                  : "border-gray-200 hover:border-gray-300 text-gray-600"
+                  }`}
               >
                 <FileTextIcon className="w-4 h-4" />
                 <span className="text-sm font-medium">PDF</span>

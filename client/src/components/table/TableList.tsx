@@ -23,7 +23,7 @@ interface TableListProps {
   tables: Table[];
   onEdit: (table: Table) => void;
   onDelete: (table: Table) => void;
-  onRegenerateQR: (tableId: string) => void;
+  onRegenerateQR: (tableId: string) => Promise<void>;
   onUpdateStatus: (tableId: string, status: TableStatus) => void;
   onToggleActive?: (
     tableId: string,
@@ -44,6 +44,16 @@ export const TableList: React.FC<TableListProps> = ({
     null
   );
 
+  // Update selectedTableForQR when tables data changes (e.g., after QR regeneration)
+  React.useEffect(() => {
+    if (selectedTableForQR) {
+      const updatedTable = tables.find(t => t.id === selectedTableForQR.id);
+      if (updatedTable) {
+        setSelectedTableForQR(updatedTable);
+      }
+    }
+  }, [tables, selectedTableForQR]);
+
   // M6: Active orders warning state
   const [warningDialogOpen, setWarningDialogOpen] = useState(false);
   const [pendingDeactivation, setPendingDeactivation] = useState<{
@@ -63,15 +73,20 @@ export const TableList: React.FC<TableListProps> = ({
     }
   };
 
-  const handleQuickRegenerate = (e: React.MouseEvent, table: Table) => {
+  const handleQuickRegenerate = async (e: React.MouseEvent, table: Table) => {
     e.stopPropagation();
     if (
       confirm(
         `Regenerate QR code for Table ${table.tableNumber}? The old QR code will be invalidated.`
       )
     ) {
-      onRegenerateQR(table.id);
-      alert(`QR code regenerated for Table ${table.tableNumber}`);
+      try {
+        await onRegenerateQR(table.id);
+        alert(`QR code regenerated for Table ${table.tableNumber}`);
+      } catch (error) {
+        console.error("Error regenerating QR code:", error);
+        alert("Failed to regenerate QR code. Please try again.");
+      }
     }
   };
 
@@ -165,25 +180,21 @@ export const TableList: React.FC<TableListProps> = ({
         {tables.map((table) => (
           <div
             key={table.id}
-            className={`bg-white rounded-lg shadow-md border-2 transition-all duration-200 overflow-hidden group ${
-              table.isActive === false
-                ? "border-gray-300 opacity-60"
-                : "border-white hover:border-naples/80 hover:shadow-lg hover:shadow-naples/30"
-            }`}
+            className={`bg-white rounded-lg shadow-md border-2 transition-all duration-200 overflow-hidden group ${table.isActive === false
+              ? "border-gray-300 opacity-60"
+              : "border-white hover:border-naples/80 hover:shadow-lg hover:shadow-naples/30"
+              }`}
           >
             {/* Header with table number */}
             <div
-              className={`${
-                table.isActive === false ? "bg-gray-500" : "bg-charcoal"
-              } text-white p-4 flex items-center justify-between`}
+              className={`${table.isActive === false ? "bg-gray-500" : "bg-charcoal"
+                } text-white p-4 flex items-center justify-between`}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-12 h-12 rounded-full ${
-                    table.isActive === false ? "bg-gray-400" : "bg-naples"
-                  } flex items-center justify-center ${
-                    table.isActive === false ? "text-gray-700" : "text-charcoal"
-                  } font-bold text-xl mr-3`}
+                  className={`w-12 h-12 rounded-full ${table.isActive === false ? "bg-gray-400" : "bg-naples"
+                    } flex items-center justify-center ${table.isActive === false ? "text-gray-700" : "text-charcoal"
+                    } font-bold text-xl mr-3`}
                 >
                   {table.tableNumber}
                 </div>
@@ -236,18 +247,17 @@ export const TableList: React.FC<TableListProps> = ({
                       <button
                         key={status}
                         onClick={() => onUpdateStatus(table.id, status)}
-                        className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
-                          table.status === status
-                            ? getStatusColor(status)
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        }`}
+                        className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${table.status === status
+                          ? getStatusColor(status)
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          }`}
                         title={`Set to ${getStatusLabel(status)}`}
                       >
                         {status === "AVAILABLE"
                           ? "Avail"
                           : status === "OCCUPIED"
-                          ? "Occup"
-                          : "Reserv"}
+                            ? "Occup"
+                            : "Reserv"}
                       </button>
                     )
                   )}
@@ -292,11 +302,10 @@ export const TableList: React.FC<TableListProps> = ({
                   <button
                     onClick={() => handleToggleActive(table)}
                     disabled={isTogglingActive}
-                    className={`flex-1 flex items-center justify-center px-2 py-1.5 rounded text-xs font-medium transition-colors ${
-                      table.isActive === false
-                        ? "bg-green-50 hover:bg-green-100 text-green-700"
-                        : "bg-amber-50 hover:bg-amber-100 text-amber-700"
-                    } disabled:opacity-50`}
+                    className={`flex-1 flex items-center justify-center px-2 py-1.5 rounded text-xs font-medium transition-colors ${table.isActive === false
+                      ? "bg-green-50 hover:bg-green-100 text-green-700"
+                      : "bg-amber-50 hover:bg-amber-100 text-amber-700"
+                      } disabled:opacity-50`}
                     title={
                       table.isActive === false
                         ? "Activate table"
@@ -355,8 +364,8 @@ export const TableList: React.FC<TableListProps> = ({
         >
           <QRCodeDisplay
             table={selectedTableForQR}
-            onRegenerateQR={(tableId) => {
-              onRegenerateQR(tableId);
+            onRegenerateQR={async (tableId) => {
+              await onRegenerateQR(tableId);
               // Keep modal open to show new QR code
             }}
           />
