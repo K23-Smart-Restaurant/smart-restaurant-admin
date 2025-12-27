@@ -8,11 +8,12 @@ import { ModifierGroupForm } from "../components/menuItem/ModifierGroupForm";
 import { Modal } from "../components/common/Modal";
 import { Button } from "../components/common/Button";
 import { ConfirmDeleteDialog } from "../components/common/ConfirmDeleteDialog";
+import { PageLoading } from "../components/common/LoadingSpinner";
 import { useToastContext } from "../contexts/ToastContext";
 
 const MenuManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
-  
+
   // Local filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'ALL'>('ALL');
@@ -24,6 +25,8 @@ const MenuManagementPage: React.FC = () => {
   const {
     menuItems,
     total,
+    isLoading,
+    isError,
     createMenuItem,
     updateMenuItem,
     deleteMenuItem,
@@ -165,6 +168,23 @@ const MenuManagementPage: React.FC = () => {
     setSortBy(value);
     setPage(1);
   };
+
+  // Loading state
+  if (isLoading) {
+    return <PageLoading message="Loading menu items..." />;
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load menu items</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

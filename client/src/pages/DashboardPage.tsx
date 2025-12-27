@@ -11,6 +11,7 @@ import {
   ClockIcon,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { PageLoading, StatsSkeleton } from '../components/common/LoadingSpinner';
 import { useOrders } from '../hooks/useOrders';
 import { useTables } from '../hooks/useTables';
 import { useStaff } from '../hooks/useStaff';
@@ -101,8 +102,13 @@ const DashboardPage: React.FC = () => {
   // Show loading state
   if (ordersLoading || tablesLoading || staffLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples"></div>
+      <div>
+        <div className="mb-8 animate-fade-in-down">
+          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">Dashboard</h1>
+          <p className="font-medium text-gray-600">Welcome back! Here's what's happening today.</p>
+        </div>
+        <StatsSkeleton count={4} />
+        <PageLoading message="Loading dashboard data..." />
       </div>
     );
   }

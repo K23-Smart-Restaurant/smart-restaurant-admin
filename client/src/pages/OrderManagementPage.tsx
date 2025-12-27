@@ -4,10 +4,14 @@ import { useOrders } from "../hooks/useOrders";
 import type { Order } from "../hooks/useOrders";
 import { OrderList } from "../components/order/OrderList";
 import { OrderDetailModal } from "../components/order/OrderDetailModal";
+import { PageLoading, StatsSkeleton } from "../components/common/LoadingSpinner";
+import { Button } from "../components/common/Button";
 
 const OrderManagementPage: React.FC = () => {
   const {
     orders,
+    isLoading,
+    isError,
     updateStatus
   } = useOrders();
 
@@ -66,6 +70,32 @@ const OrderManagementPage: React.FC = () => {
 
     return () => clearInterval(simulationInterval);
   }, []);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-charcoal">Order Management</h1>
+          <p className="text-gray-600 mt-1">Monitor and manage all restaurant orders</p>
+        </div>
+        <StatsSkeleton count={4} />
+        <PageLoading message="Loading orders..." />
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load orders</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

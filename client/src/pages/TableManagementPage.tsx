@@ -17,11 +17,12 @@ import { BatchQROperations } from "../components/table/BatchQROperations";
 import { Modal } from "../components/common/Modal";
 import { Button } from "../components/common/Button";
 import { ConfirmDeleteDialog } from "../components/common/ConfirmDeleteDialog";
+import { PageLoading } from "../components/common/LoadingSpinner";
 import { useToastContext } from "../contexts/ToastContext";
 
 const TableManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
-  
+
   const {
     tables: allTables,
     statistics,
@@ -52,7 +53,7 @@ const TableManagementPage: React.FC = () => {
 
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
-  
+
   // Delete confirmation state
   const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -169,7 +170,7 @@ const TableManagementPage: React.FC = () => {
   const handleDeleteTable = async (table: Table) => {
     setTableToDelete(table);
   };
-  
+
   const confirmDelete = async () => {
     if (!tableToDelete) return;
 
@@ -193,7 +194,7 @@ const TableManagementPage: React.FC = () => {
       setIsDeleting(false);
     }
   };
-  
+
   const cancelDelete = () => {
     setTableToDelete(null);
   };
@@ -214,11 +215,7 @@ const TableManagementPage: React.FC = () => {
 
   // Show loading state
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-b-2 rounded-full animate-spin border-naples"></div>
-      </div>
-    );
+    return <PageLoading message="Loading tables..." />;
   }
 
   // Show error state
@@ -424,9 +421,8 @@ const TableManagementPage: React.FC = () => {
               <button
                 onClick={toggleSortOrder}
                 className="px-3 py-2 transition-colors bg-gray-200 border rounded-md hover:bg-gray-300 text-charcoal border-antiflash"
-                title={`Sort ${
-                  sortOrder === "asc" ? "Descending" : "Ascending"
-                }`}
+                title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"
+                  }`}
               >
                 {sortOrder === "asc" ? "↑" : "↓"}
               </button>
@@ -479,7 +475,7 @@ const TableManagementPage: React.FC = () => {
           existingLocations={uniqueLocations}
         />
       </Modal>
-      
+
       {/* Delete Confirmation Dialog */}
       <ConfirmDeleteDialog
         isOpen={tableToDelete !== null}

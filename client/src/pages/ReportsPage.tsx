@@ -11,6 +11,7 @@ import { useReports, type DateRange } from "../hooks/useReports";
 import { RevenueChart } from "../components/reports/RevenueChart";
 import { TopItemsChart } from "../components/reports/TopItemsChart";
 import { OrderAnalyticsChart } from "../components/reports/OrderAnalyticsChart";
+import { PageLoading, StatsSkeleton } from "../components/common/LoadingSpinner";
 import { useToastContext } from "../contexts/ToastContext";
 
 const ReportsPage: React.FC = () => {
@@ -79,8 +80,13 @@ const ReportsPage: React.FC = () => {
   // Show loading state AFTER all hooks have been called
   if (isLoadingRevenue || isLoadingTopItems || isLoadingAnalytics) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples"></div>
+      <div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
+          <p className="text-gray-600 mt-1">Comprehensive insights into your restaurant performance</p>
+        </div>
+        <StatsSkeleton count={4} />
+        <PageLoading message="Loading reports..." />
       </div>
     );
   }

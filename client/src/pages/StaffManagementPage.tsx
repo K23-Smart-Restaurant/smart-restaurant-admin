@@ -9,13 +9,16 @@ import { CreateKitchenStaffForm } from '../components/staff/CreateKitchenStaffFo
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 
 const StaffManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
-  
+
   const {
     staff,
+    isLoading,
+    isError,
     createWaiter,
     createKitchenStaff,
     updateStaff,
@@ -25,7 +28,7 @@ const StaffManagementPage: React.FC = () => {
   const [isWaiterModalOpen, setIsWaiterModalOpen] = useState(false);
   const [isKitchenStaffModalOpen, setIsKitchenStaffModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
-  
+
   // Toggle active confirmation state
   const [staffToToggle, setStaffToToggle] = useState<Staff | null>(null);
   const [isTogglingActive, setIsTogglingActive] = useState(false);
@@ -98,7 +101,7 @@ const StaffManagementPage: React.FC = () => {
       setStaffToToggle(staffMember);
     }
   };
-  
+
   const confirmToggleActive = async () => {
     if (!staffToToggle) return;
 
@@ -109,7 +112,7 @@ const StaffManagementPage: React.FC = () => {
       await deleteStaff(staffToToggle.id); // This actually toggles active status
       showSuccess(
         `Staff ${action === 'activate' ? 'Activated' : 'Deactivated'}`,
-        `${staffToToggle.username} has been successfully ${action}d.`
+        `${staffToToggle.name || staffToToggle.email} has been successfully ${action}d.`
       );
       setStaffToToggle(null);
     } catch (error) {
@@ -123,7 +126,7 @@ const StaffManagementPage: React.FC = () => {
       setIsTogglingActive(false);
     }
   };
-  
+
   const cancelToggleActive = () => {
     setStaffToToggle(null);
   };
@@ -137,6 +140,23 @@ const StaffManagementPage: React.FC = () => {
     setIsKitchenStaffModalOpen(false);
     setEditingStaff(null);
   };
+
+  // Loading state
+  if (isLoading) {
+    return <PageLoading message="Loading staff members..." />;
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load staff members</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -243,14 +263,14 @@ const StaffManagementPage: React.FC = () => {
           onClose={closeKitchenStaffModal}
         />
       </Modal>
-      
+
       {/* Toggle Active Confirmation Dialog */}
       <ConfirmDeleteDialog
         isOpen={staffToToggle !== null}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
         title={staffToToggle?.isActive ? 'Deactivate Staff Member' : 'Activate Staff Member'}
-        itemName={staffToToggle?.username}
+        itemName={staffToToggle?.name || staffToToggle?.email}
         message={
           staffToToggle?.isActive
             ? 'Are you sure you want to deactivate this staff member? They will no longer be able to access the system.'

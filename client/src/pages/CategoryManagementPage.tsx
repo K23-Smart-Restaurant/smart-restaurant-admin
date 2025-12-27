@@ -7,12 +7,13 @@ import { CategoryForm } from '../components/category/CategoryForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
-  
+
   const {
     categories: _categories,
     isLoading,
@@ -128,14 +129,7 @@ const CategoryManagementPage: React.FC = () => {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading categories...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading message="Loading categories..." />;
   }
 
   // Error state
