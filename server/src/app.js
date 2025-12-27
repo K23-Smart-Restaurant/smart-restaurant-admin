@@ -16,10 +16,8 @@ app.use(helmet());
 
 // CORS configuration
 const allowedOrigins = [
-  // Production URLs (Render.com deployments)
-  "https://smart-restaurant-admin-app.onrender.com",
-  "https://smart-restaurant-customer-app.onrender.com",
-  // Production URLs from environment variables (for custom domains)
+  process.env.RENDER_ADMIN_URL,
+  process.env.VERCEL_ADMIN_URL,
   process.env.CLIENT_URL,
   process.env.CUSTOMER_APP_URL,
   // Development URLs
