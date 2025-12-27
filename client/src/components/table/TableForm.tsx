@@ -82,11 +82,11 @@ export const TableForm: React.FC<TableFormProps> = ({
 
   const onFormSubmit = async (data: TableFormData) => {
     try {
-      // Call parent's onSubmit with table data
-      onSubmit(data);
-
-      // Show success message
-      alert(`Table ${isEditMode ? "updated" : "created"} successfully!`);
+      // Call parent's onSubmit with table data, including isActive (default true)
+      onSubmit({
+        ...data,
+        isActive: table?.isActive ?? true,
+      });
 
       // Reset form if creating new
       if (!isEditMode) {
@@ -94,11 +94,7 @@ export const TableForm: React.FC<TableFormProps> = ({
       }
     } catch (error) {
       console.error("Error saving table:", error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Failed to save table");
-      }
+      throw error; // Let parent handle the error
     }
   };
 

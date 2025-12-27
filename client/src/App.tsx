@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SocketProvider } from "./contexts/SocketContext";
+import { ToastProvider } from "./contexts/ToastContext";
 import { ProtectedRoute } from "./components/common/ProtectedRoute";
 
 // Lazy load pages for code splitting
@@ -16,6 +17,7 @@ const CategoryManagementPage = lazy(
   () => import("./pages/CategoryManagementPage")
 );
 const MenuManagementPage = lazy(() => import("./pages/MenuManagementPage"));
+const MenuItemDetailsPage = lazy(() => import("./pages/MenuItemDetailsPage"));
 const TableManagementPage = lazy(() => import("./pages/TableManagementPage"));
 const OrderManagementPage = lazy(() => import("./pages/OrderManagementPage"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage"));
@@ -43,8 +45,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SocketProvider>
-          <BrowserRouter>
-            <Suspense fallback={<LoadingFallback />}>
+          <ToastProvider>
+            <BrowserRouter>
+              <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<LoginPage />} />
@@ -99,6 +102,16 @@ function App() {
                     }
                   />
 
+                  {/* Menu Item Details - Admin only */}
+                  <Route
+                    path="menu/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                        <MenuItemDetailsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
                   {/* Table management - Admin only */}
                   <Route
                     path="tables"
@@ -145,6 +158,7 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
+          </ToastProvider>
         </SocketProvider>
       </AuthProvider>
     </QueryClientProvider>

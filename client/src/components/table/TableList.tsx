@@ -64,29 +64,17 @@ export const TableList: React.FC<TableListProps> = ({
   const [isTogglingActive, setIsTogglingActive] = useState(false);
 
   const handleDelete = (table: Table) => {
-    if (
-      confirm(
-        `Are you sure you want to delete Table ${table.tableNumber}? This action cannot be undone.`
-      )
-    ) {
-      onDelete(table);
-    }
+    // Parent page handles confirmation dialog
+    onDelete(table);
   };
 
   const handleQuickRegenerate = async (e: React.MouseEvent, table: Table) => {
     e.stopPropagation();
-    if (
-      confirm(
-        `Regenerate QR code for Table ${table.tableNumber}? The old QR code will be invalidated.`
-      )
-    ) {
-      try {
-        await onRegenerateQR(table.id);
-        alert(`QR code regenerated for Table ${table.tableNumber}`);
-      } catch (error) {
-        console.error("Error regenerating QR code:", error);
-        alert("Failed to regenerate QR code. Please try again.");
-      }
+    // Simply call the regenerate function - any confirmation should be handled by parent
+    try {
+      await onRegenerateQR(table.id);
+    } catch (error) {
+      console.error("Error regenerating QR code:", error);
     }
   };
 
@@ -108,17 +96,10 @@ export const TableList: React.FC<TableListProps> = ({
           orders: result.warning.orders,
         });
         setWarningDialogOpen(true);
-      } else if (result.success) {
-        // Success without warning
-        alert(
-          newActiveStatus
-            ? `Table ${table.tableNumber} has been activated.`
-            : `Table ${table.tableNumber} has been deactivated.`
-        );
       }
+      // Success is handled silently or by parent component
     } catch (error) {
       console.error("Error toggling table active status:", error);
-      alert("Failed to update table status. Please try again.");
     } finally {
       setIsTogglingActive(false);
     }
@@ -137,15 +118,11 @@ export const TableList: React.FC<TableListProps> = ({
       );
 
       if (result.success) {
-        alert(
-          `Table ${pendingDeactivation.table.tableNumber} has been deactivated. ${pendingDeactivation.activeOrdersCount} active order(s) remain.`
-        );
         setWarningDialogOpen(false);
         setPendingDeactivation(null);
       }
     } catch (error) {
       console.error("Error force deactivating table:", error);
-      alert("Failed to deactivate table. Please try again.");
     } finally {
       setIsTogglingActive(false);
     }

@@ -8,10 +8,17 @@ import { CreateWaiterForm } from '../components/staff/CreateWaiterForm';
 import { CreateKitchenStaffForm } from '../components/staff/CreateKitchenStaffForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
+import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { PageLoading } from '../components/common/LoadingSpinner';
+import { useToastContext } from '../contexts/ToastContext';
 
 const StaffManagementPage: React.FC = () => {
+  const { showSuccess, showError } = useToastContext();
+
   const {
     staff,
+    isLoading,
+    isError,
     createWaiter,
     createKitchenStaff,
     updateStaff,
@@ -22,19 +29,33 @@ const StaffManagementPage: React.FC = () => {
   const [isKitchenStaffModalOpen, setIsKitchenStaffModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
 
+  // Toggle active confirmation state
+  const [staffToToggle, setStaffToToggle] = useState<Staff | null>(null);
+  const [isTogglingActive, setIsTogglingActive] = useState(false);
+
   const handleAddWaiter = async (staffData: any) => {
     try {
       if (editingStaff) {
         await updateStaff(editingStaff.id, staffData);
-        alert('Waiter updated successfully!');
+        showSuccess(
+          'Waiter Updated',
+          `${staffData.username} has been successfully updated.`
+        );
       } else {
         await createWaiter(staffData);
-        alert('Waiter created successfully!');
+        showSuccess(
+          'Waiter Created',
+          `${staffData.username} has been successfully added to the team.`
+        );
       }
       closeWaiterModal();
     } catch (error) {
       console.error('Error saving waiter:', error);
-      alert('Failed to save waiter. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Waiter',
+        errorMessage
+      );
     }
   };
 
@@ -42,15 +63,25 @@ const StaffManagementPage: React.FC = () => {
     try {
       if (editingStaff) {
         await updateStaff(editingStaff.id, staffData);
-        alert('Kitchen staff updated successfully!');
+        showSuccess(
+          'Kitchen Staff Updated',
+          `${staffData.username} has been successfully updated.`
+        );
       } else {
         await createKitchenStaff(staffData);
-        alert('Kitchen staff created successfully!');
+        showSuccess(
+          'Kitchen Staff Created',
+          `${staffData.username} has been successfully added to the team.`
+        );
       }
       closeKitchenStaffModal();
     } catch (error) {
       console.error('Error saving kitchen staff:', error);
-      alert('Failed to save kitchen staff. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Kitchen Staff',
+        errorMessage
+      );
     }
   };
 
@@ -67,17 +98,37 @@ const StaffManagementPage: React.FC = () => {
   const handleToggleActive = async (id: string) => {
     const staffMember = staff.find(s => s.id === id);
     if (staffMember) {
-      const action = staffMember.isActive ? 'deactivate' : 'activate';
-      if (confirm(`Are you sure you want to ${action} this staff member?`)) {
-        try {
-          await deleteStaff(id); // This actually toggles active status
-          alert(`Staff member ${action}d successfully!`);
-        } catch (error) {
-          console.error('Error toggling staff status:', error);
-          alert('Failed to update staff status. Please try again.');
-        }
-      }
+      setStaffToToggle(staffMember);
     }
+  };
+
+  const confirmToggleActive = async () => {
+    if (!staffToToggle) return;
+
+    setIsTogglingActive(true);
+    const action = staffToToggle.isActive ? 'deactivate' : 'activate';
+
+    try {
+      await deleteStaff(staffToToggle.id); // This actually toggles active status
+      showSuccess(
+        `Staff ${action === 'activate' ? 'Activated' : 'Deactivated'}`,
+        `${staffToToggle.name || staffToToggle.email} has been successfully ${action}d.`
+      );
+      setStaffToToggle(null);
+    } catch (error) {
+      console.error('Error toggling staff status:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Update Status',
+        errorMessage
+      );
+    } finally {
+      setIsTogglingActive(false);
+    }
+  };
+
+  const cancelToggleActive = () => {
+    setStaffToToggle(null);
   };
 
   const closeWaiterModal = () => {
@@ -90,6 +141,23 @@ const StaffManagementPage: React.FC = () => {
     setEditingStaff(null);
   };
 
+  // Loading state
+  if (isLoading) {
+    return <PageLoading message="Loading staff members..." />;
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load staff members</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Page title */}
@@ -100,7 +168,7 @@ const StaffManagementPage: React.FC = () => {
 
       {/* Tabs */}
       <Tab.Group>
-        <Tab.List className="flex space-x-1 rounded-lg bg-white bg-antiflash p-1 mb-6">
+        <Tab.List className="flex space-x-1 rounded-lg bg-antiflash p-1 mb-6">
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
@@ -195,6 +263,21 @@ const StaffManagementPage: React.FC = () => {
           onClose={closeKitchenStaffModal}
         />
       </Modal>
+
+      {/* Toggle Active Confirmation Dialog */}
+      <ConfirmDeleteDialog
+        isOpen={staffToToggle !== null}
+        onClose={cancelToggleActive}
+        onConfirm={confirmToggleActive}
+        title={staffToToggle?.isActive ? 'Deactivate Staff Member' : 'Activate Staff Member'}
+        itemName={staffToToggle?.name || staffToToggle?.email}
+        message={
+          staffToToggle?.isActive
+            ? 'Are you sure you want to deactivate this staff member? They will no longer be able to access the system.'
+            : 'Are you sure you want to activate this staff member? They will be able to access the system again.'
+        }
+        isLoading={isTogglingActive}
+      />
     </div>
   );
 };

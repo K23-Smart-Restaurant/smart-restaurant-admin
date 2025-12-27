@@ -120,7 +120,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
 
     try {
       if (photos.length === 0) {
-        alert("Please add at least one image");
+        // Validation: at least one photo required
+        console.warn("At least one image is required");
         return;
       }
 
@@ -153,7 +154,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
       }
     } catch (error) {
       console.error("Error saving menu item:", error);
-      alert("Failed to save menu item");
+      throw error; // Let parent handle the error
     } finally {
       setIsLoading(false);
     }

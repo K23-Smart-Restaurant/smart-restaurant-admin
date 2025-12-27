@@ -7,9 +7,13 @@ import { CategoryForm } from '../components/category/CategoryForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { PageLoading } from '../components/common/LoadingSpinner';
+import { useToastContext } from '../contexts/ToastContext';
 import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
+  const { showSuccess, showError } = useToastContext();
+
   const {
     categories: _categories,
     isLoading,
@@ -34,14 +38,26 @@ const CategoryManagementPage: React.FC = () => {
       if (editingCategory) {
         // Update existing category
         await updateCategory(editingCategory.id, categoryData);
+        showSuccess(
+          'Category Updated',
+          `"${categoryData.name}" has been successfully updated.`
+        );
       } else {
         // Add new category
         await addCategory(categoryData);
+        showSuccess(
+          'Category Created',
+          `"${categoryData.name}" has been successfully added.`
+        );
       }
       closeCategoryModal();
     } catch (error) {
       console.error('Failed to save category:', error);
-      // You can add toast notification here
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Category',
+        errorMessage
+      );
     }
   };
 
@@ -64,13 +80,20 @@ const CategoryManagementPage: React.FC = () => {
 
     try {
       await deleteCategory(categoryToDelete.id);
+      showSuccess(
+        'Category Deleted',
+        `"${categoryToDelete.name}" has been permanently removed.`
+      );
       setCategoryToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete category:', error);
-      // Show error in dialog
       const errorMessage = error instanceof Error
         ? error.message
         : 'Failed to delete category. Please try again.';
+      showError(
+        'Delete Failed',
+        errorMessage
+      );
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -106,14 +129,7 @@ const CategoryManagementPage: React.FC = () => {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading categories...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading message="Loading categories..." />;
   }
 
   // Error state

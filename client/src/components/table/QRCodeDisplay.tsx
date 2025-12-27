@@ -70,7 +70,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
       saveAs(blob, filename);
     } catch (error) {
       console.error("Error downloading QR code:", error);
-      alert("Failed to download QR code. Please try again.");
+      // Error is logged, UI shows download button still available for retry
     } finally {
       setIsDownloading(false);
     }
@@ -82,7 +82,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
     // Create a new window for printing
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      alert("Please allow pop-ups to print QR codes");
+      console.warn("Print window blocked by browser");
       return;
     }
 
@@ -195,20 +195,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   };
 
   const handleRegenerate = async () => {
-    if (
-      !confirm(
-        `Are you sure you want to regenerate the QR code for Table ${table.tableNumber}?\n\nThe old QR code will no longer work and customers will need to scan the new one.`
-      )
-    ) {
-      return;
-    }
-
+    // Confirmation should be handled by parent or via a proper dialog
     setIsRegenerating(true);
     try {
       await onRegenerateQR(table.id);
     } catch (error) {
       console.error("Error regenerating QR code:", error);
-      alert("Failed to regenerate QR code. Please try again.");
     } finally {
       setIsRegenerating(false);
     }
@@ -384,19 +376,24 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           onClick={() => setIsEnlarged(false)}
         >
-          <div className="relative max-w-2xl animate-in fade-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsEnlarged(false)}
-              className="absolute -top-12 right-0 p-2 bg-white text-charcoal rounded-full hover:bg-naples transition-colors"
-              title="Close"
-            >
-              <XIcon className="w-6 h-6" />
-            </button>
-            <div className="bg-white rounded-xl p-8 border-4 border-naples shadow-2xl">
+          {/* Close button with fixed positioning to always stay visible */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEnlarged(false);
+            }}
+            className="fixed top-4 right-4 z-[60] p-3 bg-white text-charcoal rounded-full hover:bg-naples transition-colors shadow-lg"
+            title="Close"
+          >
+            <XIcon className="w-6 h-6" />
+          </button>
+          
+          <div className="relative max-w-2xl w-full animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-xl p-8 border-4 border-naples shadow-2xl mx-auto" onClick={(e) => e.stopPropagation()}>
               <img
                 src={table.qrCode}
                 alt={`QR Code for Table ${table.tableNumber}`}
-                className="w-full h-auto max-w-[450px]"
+                className="w-full h-auto max-w-[450px] mx-auto"
                 style={{ imageRendering: "pixelated" }}
               />
               <div className="text-center mt-6">

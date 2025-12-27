@@ -10,10 +10,8 @@ interface CategoryListProps {
 
 export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, onDelete }) => {
   const handleDelete = (category: Category) => {
-    const confirmMessage = `Are you sure? This will unassign ${category.itemCount} menu items.`;
-    if (confirm(confirmMessage)) {
-      onDelete(category);
-    }
+    // Parent page handles confirmation dialog
+    onDelete(category);
   };
 
   return (
