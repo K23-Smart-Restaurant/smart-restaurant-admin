@@ -4,6 +4,10 @@ import {
   SearchIcon,
   FilterIcon,
   ArrowUpDownIcon,
+  LayoutGrid,
+  Check,
+  Users,
+  Calendar,
 } from "lucide-react";
 import { useTables } from "../hooks/useTables";
 import type { Table, TableStatus } from "../hooks/useTables";
@@ -178,7 +182,7 @@ const TableManagementPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples"></div>
+        <div className="w-12 h-12 border-b-2 rounded-full animate-spin border-naples"></div>
       </div>
     );
   }
@@ -186,11 +190,11 @@ const TableManagementPage: React.FC = () => {
   // Show error state
   if (isError) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <p className="text-red-600 mb-4">Failed to load tables</p>
+      <div className="p-6 text-center border border-red-200 rounded-lg bg-red-50">
+        <p className="mb-4 text-red-600">Failed to load tables</p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
         >
           Retry
         </button>
@@ -218,7 +222,7 @@ const TableManagementPage: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-charcoal">Tables</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="mt-1 text-gray-600">
             Manage restaurant tables and QR codes
           </p>
         </div>
@@ -230,8 +234,8 @@ const TableManagementPage: React.FC = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-md border border-antiflash p-4">
+      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+        <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Tables</p>
@@ -239,13 +243,13 @@ const TableManagementPage: React.FC = () => {
                 {statistics.total}
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="text-2xl">🏪</span>
+            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+              <LayoutGrid className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-antiflash p-4">
+        <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Available</p>
@@ -253,13 +257,13 @@ const TableManagementPage: React.FC = () => {
                 {statistics.available}
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-              <span className="text-2xl">✅</span>
+            <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
+              <Check className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-antiflash p-4">
+        <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Occupied</p>
@@ -267,13 +271,13 @@ const TableManagementPage: React.FC = () => {
                 {statistics.occupied}
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-              <span className="text-2xl">👥</span>
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+              <Users className="w-6 h-6 text-red-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-antiflash p-4">
+        <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Reserved</p>
@@ -281,23 +285,23 @@ const TableManagementPage: React.FC = () => {
                 {statistics.reserved}
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-              <span className="text-2xl">📅</span>
+            <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full">
+              <Calendar className="w-6 h-6 text-yellow-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white rounded-lg shadow-md border border-antiflash p-4 mb-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="p-4 mb-6 bg-white border rounded-lg shadow-md border-antiflash">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Search */}
           <div>
             <label
               htmlFor="search"
-              className="block text-sm font-medium text-charcoal mb-2"
+              className="block mb-2 text-sm font-medium text-charcoal"
             >
-              <SearchIcon className="w-4 h-4 inline mr-1" />
+              <SearchIcon className="inline w-4 h-4 mr-1" />
               Search
             </label>
             <input
@@ -306,7 +310,7 @@ const TableManagementPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Table number..."
-              className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+              className="w-full px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             />
           </div>
 
@@ -314,9 +318,9 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label
               htmlFor="status"
-              className="block text-sm font-medium text-charcoal mb-2"
+              className="block mb-2 text-sm font-medium text-charcoal"
             >
-              <FilterIcon className="w-4 h-4 inline mr-1" />
+              <FilterIcon className="inline w-4 h-4 mr-1" />
               Status
             </label>
             <select
@@ -325,7 +329,7 @@ const TableManagementPage: React.FC = () => {
               onChange={(e) =>
                 setSelectedStatus(e.target.value as TableStatus | "ALL")
               }
-              className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+              className="w-full px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -339,9 +343,9 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label
               htmlFor="location"
-              className="block text-sm font-medium text-charcoal mb-2"
+              className="block mb-2 text-sm font-medium text-charcoal"
             >
-              <FilterIcon className="w-4 h-4 inline mr-1" />
+              <FilterIcon className="inline w-4 h-4 mr-1" />
               Location
             </label>
             <select
@@ -350,7 +354,7 @@ const TableManagementPage: React.FC = () => {
               onChange={(e) =>
                 setSelectedLocation(e.target.value as string | "ALL")
               }
-              className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+              className="w-full px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             >
               <option value="ALL">All Locations</option>
               {uniqueLocations.map((loc) => (
@@ -365,9 +369,9 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label
               htmlFor="sort"
-              className="block text-sm font-medium text-charcoal mb-2"
+              className="block mb-2 text-sm font-medium text-charcoal"
             >
-              <ArrowUpDownIcon className="w-4 h-4 inline mr-1" />
+              <ArrowUpDownIcon className="inline w-4 h-4 mr-1" />
               Sort By
             </label>
             <div className="flex gap-2">
@@ -375,7 +379,7 @@ const TableManagementPage: React.FC = () => {
                 id="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                className="flex-1 bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+                className="flex-1 px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -385,7 +389,7 @@ const TableManagementPage: React.FC = () => {
               </select>
               <button
                 onClick={toggleSortOrder}
-                className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-charcoal border border-antiflash rounded-md transition-colors"
+                className="px-3 py-2 transition-colors bg-gray-200 border rounded-md hover:bg-gray-300 text-charcoal border-antiflash"
                 title={`Sort ${
                   sortOrder === "asc" ? "Descending" : "Ascending"
                 }`}
