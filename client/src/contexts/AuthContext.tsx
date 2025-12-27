@@ -18,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => void;
   updateUser: (user: User) => void;
 }
@@ -75,23 +75,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
       const response = await apiClient.post<{
         success: boolean;
         message: string;
-        data: { token: string; user: User }
+        data: { token: string; user: User; refreshToken?: string }
       }>('/auth/login', {
         email,
         password,
+        rememberMe,
       });
 
-      // Extract token and user from nested data structure
-      const { token, user: userData } = response.data.data;
+      // Extract token, user, and optional refresh token from nested data structure
+      const { token, user: userData, refreshToken } = response.data.data;
 
       // Store token and user
       localStorage.setItem('admin_jwt_token', token);
       localStorage.setItem('admin_user', JSON.stringify(userData));
+
+      // Store refresh token if provided
+      if (refreshToken) {
+        localStorage.setItem('admin_refresh_token', refreshToken);
+      }
+
       setUser(userData);
     } catch (error) {
       console.error('Login failed:', error);
@@ -100,9 +107,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    const refreshToken = localStorage.getItem('admin_refresh_token');
+
+    // Invalidate refresh token on server
+    if (refreshToken) {
+      try {
+        await apiClient.post('/auth/logout', { refreshToken });
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+
     localStorage.removeItem('admin_jwt_token');
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_refresh_token');
     setUser(null);
     window.location.href = '/login';
   };

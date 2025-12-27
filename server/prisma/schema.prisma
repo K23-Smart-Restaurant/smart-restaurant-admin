@@ -92,11 +92,30 @@ model User {
 
     // Relationships
     restaurantsOwned Restaurant[] // For ADMIN role
-    ordersAsCustomer Order[]      @relation("CustomerOrders")
-    ordersAsWaiter   Order[]      @relation("WaiterOrders")
+    ordersAsCustomer Order[]        @relation("CustomerOrders")
+    ordersAsWaiter   Order[]        @relation("WaiterOrders")
+    refreshTokens    RefreshToken[] // User's refresh tokens for "Remember me"
 
     @@index([email])
     @@map("User")
+}
+
+// RefreshToken - Secure refresh tokens for "Remember me" functionality
+model RefreshToken {
+    id        String   @id @default(uuid())
+    token     String   @unique @db.VarChar(500)
+    userId    String
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relationships
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([token])
+    @@index([expiresAt])
+    @@map("RefreshToken")
 }
 
 // Restaurant - For future multi-tenant support

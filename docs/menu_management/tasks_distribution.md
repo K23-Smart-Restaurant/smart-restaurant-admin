@@ -7,14 +7,15 @@
 
 ## Task Checklist
 
-### 🔴 HIGH PRIORITY (6 tasks)
+### 🔴 HIGH PRIORITY (7 tasks)
 
 - [✓] **H1** - Implement Public Guest Menu API Endpoint
 - [✓] **H2** - Create Multi-Photo Support for Menu Items
 - [✓] **H3** - Add Primary Photo Selection Feature
-- [✓] **H4** - Implement Real File Upload for Menu Item Photos
+- [✓] **H4** - Implement File Upload for Menu Item Photos (Supabase Storage)
 - [✓] **H5** - Create Proper ModifierGroup Model with Constraints
 - [✓] **H6** - Add Filter UI for Table Management Page
+- [✓] **H7** - Implement "Remember me" with JWT Refresh Tokens
 
 ### 🟡 MEDIUM PRIORITY (8 tasks)
 
@@ -40,11 +41,11 @@
 
 ## Progress Tracker
 
-**Overall Completion: 20/20 tasks (100%)**
+**Overall Completion: 21/21 tasks (100%)**
 
 | Priority | Completed | Total | Progress |
 |----------|-----------|-------|----------|
-| High     | 6         | 6     | 100%     |
+| High     | 7         | 7     | 100%     |
 | Medium   | 8         | 8     | 100%     |
 | Low      | 6         | 6     | 100%     |
 
@@ -75,12 +76,12 @@
 - **Dependencies:** H2 (Photo table must exist)
 - **Current State:** No `isPrimary` field or selection mechanism exists
 
-#### H4: Implement Real File Upload for Menu Item Photos
-- **Description:** Replace URL-only input with actual file upload. Use multer middleware already available. Validate MIME types (JPG/PNG/WebP), file size (max 2-5MB), randomize filenames for security. Store file path in database.
+#### H4: Implement File Upload for Menu Item Photos (Supabase Storage)
+- **Description:** Replace URL-only input with actual file upload to Supabase Storage bucket. Create StorageService to handle Supabase operations. Validate MIME types (JPG/PNG/WebP), file size (max 5MB). Store public URL from Supabase in database. Implement delete functionality when photos are removed or menu items deleted.
 - **Spec Reference:** `Week_MenuManagement.md` - Sections 3.1, 3.3 (Upload Photos, Security & Validation)
 - **Priority:** **High**
 - **Dependencies:** H2, H3, M8
-- **Current State:** Frontend only accepts URL input; multer exists but not integrated in frontend
+- **Current State:** Frontend only accepts URL input; needs Supabase bucket integration
 
 #### H5: Create Proper ModifierGroup Model with Constraints
 - **Description:** Create new `ModifierGroup` model with fields: `name`, `selection_type` (single/multiple), `is_required`, `min_selections`, `max_selections`, `display_order`, `status`. Update `Modifier` to reference `ModifierGroup`. Create CRUD endpoints for modifier groups.
@@ -95,6 +96,21 @@
 - **Priority:** **High**
 - **Dependencies:** None
 - **Current State:** No filter UI exists; tables listed without filtering options
+
+#### H7: Implement "Remember me" with JWT Refresh Tokens
+- **Description:** Implement "Remember me" functionality using JWT refresh tokens. Backend already has RefreshToken model and AuthService methods (login with rememberMe, refresh, logout). Add frontend "Remember me" checkbox, store refresh token securely, implement auto-refresh logic before access token expires, handle 401 responses with token refresh.
+- **Spec Reference:** `smart-restaurant-root/prisma/schema.prisma` - RefreshToken model (lines 103-119), `server/src/services/AuthService.js`
+- **Priority:** **High**
+- **Dependencies:** None
+- **Current State:** Backend complete; frontend needs checkbox, storage, and auto-refresh logic
+- **Tasks:**
+  - [ ] Add "Remember me" checkbox to login form
+  - [ ] Store refresh token in secure storage (httpOnly cookie or localStorage)
+  - [ ] Implement token refresh interceptor for API calls
+  - [ ] Auto-refresh access token before expiration
+  - [ ] Handle 401 responses with automatic token refresh retry
+  - [ ] Clear refresh token on logout
+  - [ ] Add token rotation for enhanced security
 
 ---
 
@@ -242,12 +258,14 @@ STEP 2: H5 - Create ModifierGroup Model (4h)
 
          ⬇ (Parallel with Step 1 if time allows)
 
-STEP 3: M8 - Upload Validation Middleware (1h)
-  ├── Configure multer fileFilter for JPG/PNG/WebP
-  ├── Set limits.fileSize to 5MB
-  ├── Return descriptive error on rejection
-  ├── Setup upload directory structure
-  └── ✅ UNBLOCKS: H4 (Member 1)
+STEP 3: Supabase Storage Setup for Photos (2h)
+  ├── Create Supabase bucket for menu-item-photos
+  ├── Configure bucket permissions (public read)
+  ├── Create StorageService.js for Supabase operations
+  ├── Implement upload, delete, getPublicUrl methods
+  ├── Add MIME type validation (JPG/PNG/WebP)
+  ├── Add file size limit (5MB)
+  └── ✅ UNBLOCKS: H4 (Member 2)
 
          ⬇
 
@@ -290,7 +308,7 @@ STEP 8: L4 - Logo Configuration (1h)
   └── Create upload endpoint for logo
 ```
 
-**Member 1 Total: ~15 hours**
+**Member 1 Total: ~16 hours**
 
 ---
 
@@ -303,14 +321,15 @@ STEP 8: L4 - Logo Configuration (1h)
 
 🚧 WAIT FOR MEMBER 1 TO COMPLETE SCHEMA SETUP (H2, H5, M5) 🚧
 
-STEP 1: H4 - File Upload Integration (Backend) (2h)
-  ├── Update photo endpoint for multipart
-  ├── Use Member 1's multer configuration
-  ├── Save files to /uploads/menu-items
-  ├── Return file URL in response
-  └── Test upload with validation
+STEP 1: H4 - File Upload Integration with Supabase (Backend) (3h)
+  ├── Integrate StorageService from Member 1
+  ├── Update MenuItemService to upload photos to Supabase
+  ├── Store Supabase public URLs in MenuItemPhoto table
+  ├── Implement photo deletion from Supabase on remove
+  ├── Add cleanup when menu items are deleted
+  └── Test upload and deletion flows
 
-         ⬇ (Requires H2, H3, M8 from Member 1)
+         ⬇ (Requires H2, H3, Supabase setup from Member 1)
 
 STEP 2: H1 - Public Guest Menu API (4h)
   ├── Create GET /api/menu endpoint
@@ -350,7 +369,7 @@ STEP 6: Assist with API Integration (2h)
   └── Support frontend integration
 ```
 
-**Member 2 Total: ~14 hours**
+**Member 2 Total: ~15 hours**
 
 ---
 
@@ -400,12 +419,14 @@ STEP 5: L3 - Table Sort Options (1h)
 
          ⬇
 
-STEP 6: H4 - File Upload Integration (Frontend) (2h)
-  ├── Use Member 1's upload endpoint
+STEP 6: H4 - File Upload Integration (Frontend) (3h)
+  ├── Use Supabase upload endpoint from Member 2
   ├── Replace URL input with file input
-  ├── Show upload progress
+  ├── Show upload progress indicator
   ├── Handle multiple file selection
-  └── Display uploaded photos with primary selection
+  ├── Display uploaded photos with primary selection
+  ├── Implement photo removal UI
+  └── Preview images before upload
 
          ⬇ (Requires H3, H4 backend from Member 1)
 
@@ -424,9 +445,20 @@ STEP 8: Final UI Polish (2h)
   ├── Add modifier status toggle (L5)
   ├── Test all user flows
   └── Responsive design checks
+
+         ⬇
+
+STEP 9: H7 - "Remember me" Implementation (Frontend) (3h)
+  ├── Add "Remember me" checkbox to login form
+  ├── Store refresh token in localStorage
+  ├── Create API interceptor for token refresh
+  ├── Implement auto-refresh logic (before token expires)
+  ├── Handle 401 responses with token refresh retry
+  ├── Clear refresh token on logout
+  └── Test token refresh flow
 ```
 
-**Member 3 Total: ~13 hours**
+**Member 3 Total: ~16 hours**
 
 
 

@@ -7,6 +7,7 @@ import { UtensilsIcon } from "lucide-react";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +20,7 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       navigate("/dashboard");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -101,6 +102,22 @@ const LoginPage: React.FC = () => {
                   placeholder="••••••••"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2 cursor-pointer transition-all"
+              />
+              <label
+                htmlFor="remember-me"
+                className="ml-2 text-sm text-charcoal cursor-pointer select-none hover:text-gray-900 transition-colors"
+              >
+                Remember me for 7 days
+              </label>
             </div>
 
             <button

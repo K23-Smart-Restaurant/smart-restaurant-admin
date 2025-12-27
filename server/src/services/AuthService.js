@@ -66,9 +66,10 @@ class AuthService {
    * Login user with email and password
    * @param {string} email - User email
    * @param {string} password - User password
-   * @returns {Object} User data with JWT token
+   * @param {boolean} rememberMe - Whether to generate refresh token
+   * @returns {Object} User data with JWT token and optional refresh token
    */
-  async login(email, password) {
+  async login(email, password, rememberMe = false) {
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
@@ -91,7 +92,7 @@ class AuthService {
       throw new Error('Invalid email or password');
     }
 
-    // Generate JWT token
+    // Generate JWT access token
     const token = signToken({
       sub: user.id,
       email: user.email,
@@ -101,10 +102,36 @@ class AuthService {
     // Return user data without password hash
     const { passwordHash, ...userWithoutPassword } = user;
 
-    return {
+    const result = {
       user: userWithoutPassword,
       token,
     };
+
+    // Generate refresh token if "Remember me" is enabled
+    if (rememberMe) {
+      const { signRefreshToken, getRefreshTokenExpiration } = await import('../utils/jwt.utils.js');
+
+      const refreshToken = signRefreshToken({
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // Store refresh token in database
+      await prisma.refreshToken.create({
+        data: {
+          token: refreshToken,
+          userId: user.id,
+          expiresAt: getRefreshTokenExpiration(),
+        },
+      });
+
+      result.refreshToken = refreshToken;
+    }
+
+    console.log(result);
+
+    return result;
   }
 
   /**
@@ -131,6 +158,80 @@ class AuthService {
     }
 
     return user;
+  }
+
+  /**
+   * Refresh access token using refresh token
+   * @param {string} refreshToken - Refresh token
+   * @returns {Object} New access token
+   */
+  async refreshAccessToken(refreshToken) {
+    const { verifyRefreshToken } = await import('../utils/jwt.utils.js');
+
+    // Verify refresh token
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (error) {
+      throw new Error('Invalid or expired refresh token');
+    }
+
+    // Check if refresh token exists in database and is not expired
+    const storedToken = await prisma.refreshToken.findUnique({
+      where: { token: refreshToken },
+    });
+
+    if (!storedToken) {
+      throw new Error('Refresh token not found');
+    }
+
+    if (storedToken.expiresAt < new Date()) {
+      // Remove expired token
+      await prisma.refreshToken.delete({
+        where: { id: storedToken.id },
+      });
+      throw new Error('Refresh token expired');
+    }
+
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.sub },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Generate new access token
+    const token = signToken({
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      token,
+    };
+  }
+
+  /**
+   * Logout user and invalidate refresh token
+   * @param {string} refreshToken - Refresh token to invalidate
+   */
+  async logout(refreshToken) {
+    if (!refreshToken) {
+      return; // No refresh token to invalidate
+    }
+
+    try {
+      // Delete refresh token from database
+      await prisma.refreshToken.deleteMany({
+        where: { token: refreshToken },
+      });
+    } catch (error) {
+      // Ignore errors during logout
+      console.error('Error during logout:', error);
+    }
   }
 }
 

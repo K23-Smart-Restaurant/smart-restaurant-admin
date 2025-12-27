@@ -22,7 +22,7 @@ const loginLimiter = rateLimit({
 
 const registerLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100  , // 100 requests per 15 minutes (used in development only)
+  max: 100, // 100 requests per 15 minutes (used in development only)
   message: {
     success: false,
     message: 'Too many registration attempts, please try again after 15 minutes',
@@ -46,9 +46,20 @@ router.post(
   (req, res, next) => authController.login(req, res, next)
 );
 
+// Refresh token endpoint
+router.post('/refresh', (req, res, next) =>
+  authController.refresh(req, res, next)
+);
+
+// Logout endpoint
+router.post('/logout', (req, res, next) =>
+  authController.logout(req, res, next)
+);
+
 // Protected routes
 router.get('/me', authenticate, (req, res, next) =>
   authController.getMe(req, res, next)
 );
 
 export default router;
+
