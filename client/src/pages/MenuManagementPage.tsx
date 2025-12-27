@@ -8,8 +8,11 @@ import { ModifierGroupForm } from "../components/menuItem/ModifierGroupForm";
 import { Modal } from "../components/common/Modal";
 import { Button } from "../components/common/Button";
 import { ConfirmDeleteDialog } from "../components/common/ConfirmDeleteDialog";
+import { useToastContext } from "../contexts/ToastContext";
 
 const MenuManagementPage: React.FC = () => {
+  const { showSuccess, showError } = useToastContext();
+  
   // Local filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'ALL'>('ALL');
@@ -55,7 +58,10 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        alert("Menu item updated successfully!");
+        showSuccess(
+          'Menu Item Updated',
+          `"${data.name}" has been successfully updated.`
+        );
       } else {
         await createMenuItem({
           data,
@@ -63,14 +69,21 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        alert("Menu item created successfully!");
+        showSuccess(
+          'Menu Item Created',
+          `"${data.name}" has been successfully added to the menu.`
+        );
       }
 
       setCurrentModifiers([]);
       closeMenuItemModal();
     } catch (error) {
       console.error("Error saving menu item:", error);
-      alert("Failed to save menu item. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Menu Item',
+        errorMessage
+      );
     }
   };
 
@@ -84,7 +97,7 @@ const MenuManagementPage: React.FC = () => {
   };
 
   const handleDeleteMenuItem = (menuItem: MenuItem) => {
-    // Open confirmation dialog instead of window.confirm
+    // Open confirmation dialog
     setMenuItemToDelete(menuItem);
     setDeleteError(null);
   };
@@ -97,12 +110,20 @@ const MenuManagementPage: React.FC = () => {
 
     try {
       await deleteMenuItem(menuItemToDelete.id);
+      showSuccess(
+        'Menu Item Deleted',
+        `"${menuItemToDelete.name}" has been permanently removed from the menu.`
+      );
       setMenuItemToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete menu item:', error);
       const errorMessage = error instanceof Error
         ? error.message
         : 'Failed to delete menu item. Please try again.';
+      showError(
+        'Delete Failed',
+        errorMessage
+      );
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);

@@ -16,8 +16,12 @@ import { TableForm } from "../components/table/TableForm";
 import { BatchQROperations } from "../components/table/BatchQROperations";
 import { Modal } from "../components/common/Modal";
 import { Button } from "../components/common/Button";
+import { ConfirmDeleteDialog } from "../components/common/ConfirmDeleteDialog";
+import { useToastContext } from "../contexts/ToastContext";
 
 const TableManagementPage: React.FC = () => {
+  const { showSuccess, showError } = useToastContext();
+  
   const {
     tables: allTables,
     statistics,
@@ -48,6 +52,10 @@ const TableManagementPage: React.FC = () => {
 
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
+  
+  // Delete confirmation state
+  const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Apply filters and sorting
   const tables = React.useMemo(() => {
@@ -131,15 +139,25 @@ const TableManagementPage: React.FC = () => {
 
       if (editingTable) {
         await updateTable(editingTable.id, dto);
-        alert("Table updated successfully!");
+        showSuccess(
+          'Table Updated',
+          `Table ${tableData.tableNumber} has been successfully updated.`
+        );
       } else {
         await createTable(dto);
-        alert("Table created successfully!");
+        showSuccess(
+          'Table Created',
+          `Table ${tableData.tableNumber} has been successfully created.`
+        );
       }
       closeTableModal();
     } catch (error) {
       console.error("Error saving table:", error);
-      alert("Failed to save table. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Table',
+        errorMessage
+      );
     }
   };
 
@@ -149,19 +167,35 @@ const TableManagementPage: React.FC = () => {
   };
 
   const handleDeleteTable = async (table: Table) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete Table ${table.tableNumber}?`
-      )
-    ) {
-      try {
-        await deleteTable(table.id);
-        alert("Table deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting table:", error);
-        alert("Failed to delete table. Please try again.");
-      }
+    setTableToDelete(table);
+  };
+  
+  const confirmDelete = async () => {
+    if (!tableToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      await deleteTable(tableToDelete.id);
+      showSuccess(
+        'Table Deleted',
+        `Table ${tableToDelete.tableNumber} has been permanently removed.`
+      );
+      setTableToDelete(null);
+    } catch (error) {
+      console.error("Error deleting table:", error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Delete Failed',
+        errorMessage
+      );
+    } finally {
+      setIsDeleting(false);
     }
+  };
+  
+  const cancelDelete = () => {
+    setTableToDelete(null);
   };
 
   const closeTableModal = () => {
@@ -425,7 +459,9 @@ const TableManagementPage: React.FC = () => {
         tables={tables}
         onEdit={handleEditTable}
         onDelete={handleDeleteTable}
-        onRegenerateQR={regenerateQRCode}
+        onRegenerateQR={async (tableId: string) => {
+          await regenerateQRCode(tableId);
+        }}
         onUpdateStatus={updateStatus}
         onToggleActive={toggleActive}
       />
@@ -443,6 +479,17 @@ const TableManagementPage: React.FC = () => {
           existingLocations={uniqueLocations}
         />
       </Modal>
+      
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDeleteDialog
+        isOpen={tableToDelete !== null}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Table"
+        itemName={tableToDelete ? `Table ${tableToDelete.tableNumber}` : undefined}
+        message="Are you sure you want to delete this table? This will permanently remove it from the system, including any associated QR codes."
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

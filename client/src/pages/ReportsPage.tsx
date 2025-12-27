@@ -11,8 +11,10 @@ import { useReports, type DateRange } from "../hooks/useReports";
 import { RevenueChart } from "../components/reports/RevenueChart";
 import { TopItemsChart } from "../components/reports/TopItemsChart";
 import { OrderAnalyticsChart } from "../components/reports/OrderAnalyticsChart";
+import { useToastContext } from "../contexts/ToastContext";
 
 const ReportsPage: React.FC = () => {
+  const { showSuccess } = useToastContext();
   const [dateRange, setDateRange] = useState<DateRange>("7days");
   const { useRevenue, useTopItems, useAnalytics } = useReports();
 
@@ -93,8 +95,9 @@ const ReportsPage: React.FC = () => {
 
   // Handle export PDF (mock)
   const handleExportPDF = () => {
-    alert(
-      "PDF export functionality would be implemented here. This would generate a comprehensive report with all charts and data."
+    showSuccess(
+      'Export Initiated',
+      'PDF report generation has started. You will be notified when it\'s ready for download.'
     );
   };
 

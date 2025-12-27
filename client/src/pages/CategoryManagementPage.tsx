@@ -7,9 +7,12 @@ import { CategoryForm } from '../components/category/CategoryForm';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { useToastContext } from '../contexts/ToastContext';
 import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
+  const { showSuccess, showError } = useToastContext();
+  
   const {
     categories: _categories,
     isLoading,
@@ -34,14 +37,26 @@ const CategoryManagementPage: React.FC = () => {
       if (editingCategory) {
         // Update existing category
         await updateCategory(editingCategory.id, categoryData);
+        showSuccess(
+          'Category Updated',
+          `"${categoryData.name}" has been successfully updated.`
+        );
       } else {
         // Add new category
         await addCategory(categoryData);
+        showSuccess(
+          'Category Created',
+          `"${categoryData.name}" has been successfully added.`
+        );
       }
       closeCategoryModal();
     } catch (error) {
       console.error('Failed to save category:', error);
-      // You can add toast notification here
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      showError(
+        'Failed to Save Category',
+        errorMessage
+      );
     }
   };
 
@@ -64,13 +79,20 @@ const CategoryManagementPage: React.FC = () => {
 
     try {
       await deleteCategory(categoryToDelete.id);
+      showSuccess(
+        'Category Deleted',
+        `"${categoryToDelete.name}" has been permanently removed.`
+      );
       setCategoryToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete category:', error);
-      // Show error in dialog
       const errorMessage = error instanceof Error
         ? error.message
         : 'Failed to delete category. Please try again.';
+      showError(
+        'Delete Failed',
+        errorMessage
+      );
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);

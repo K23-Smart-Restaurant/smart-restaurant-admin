@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SocketProvider } from "./contexts/SocketContext";
+import { ToastProvider } from "./contexts/ToastContext";
 import { ProtectedRoute } from "./components/common/ProtectedRoute";
 
 // Lazy load pages for code splitting
@@ -43,8 +44,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SocketProvider>
-          <BrowserRouter>
-            <Suspense fallback={<LoadingFallback />}>
+          <ToastProvider>
+            <BrowserRouter>
+              <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<LoginPage />} />
@@ -145,6 +147,7 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
+          </ToastProvider>
         </SocketProvider>
       </AuthProvider>
     </QueryClientProvider>
