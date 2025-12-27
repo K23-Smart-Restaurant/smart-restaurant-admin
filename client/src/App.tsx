@@ -17,6 +17,7 @@ const CategoryManagementPage = lazy(
   () => import("./pages/CategoryManagementPage")
 );
 const MenuManagementPage = lazy(() => import("./pages/MenuManagementPage"));
+const MenuItemDetailsPage = lazy(() => import("./pages/MenuItemDetailsPage"));
 const TableManagementPage = lazy(() => import("./pages/TableManagementPage"));
 const OrderManagementPage = lazy(() => import("./pages/OrderManagementPage"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage"));
@@ -97,6 +98,16 @@ function App() {
                     element={
                       <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                         <MenuManagementPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Menu Item Details - Admin only */}
+                  <Route
+                    path="menu/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                        <MenuItemDetailsPage />
                       </ProtectedRoute>
                     }
                   />

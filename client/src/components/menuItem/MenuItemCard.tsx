@@ -1,5 +1,6 @@
 import React from 'react';
-import { PencilIcon, Trash2Icon, ClockIcon, DollarSignIcon, StarIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { PencilIcon, Trash2Icon, ClockIcon, DollarSignIcon, StarIcon, EyeIcon } from 'lucide-react';
 import type { MenuItem } from '../../hooks/useMenuItems';
 
 interface MenuItemCardProps {
@@ -17,8 +18,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onToggleAvailability,
   onToggleSoldOut,
 }) => {
+  const navigate = useNavigate();
+
   const handleDelete = () => {
     onDelete(menuItem);
+  };
+
+  const handleViewDetails = () => {
+    navigate(`/menu/${menuItem.id}`);
   };
 
   const primaryPhotoUrl =
@@ -81,6 +88,13 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
         {/* Action Buttons */}
         <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          <button
+            onClick={handleViewDetails}
+            className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 text-blue-600 hover:text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-110"
+            title="View details"
+          >
+            <EyeIcon className="w-4 h-4" />
+          </button>
           <button
             onClick={() => onEdit(menuItem)}
             className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gradient-primary hover:to-gradient-secondary text-gray-600 hover:text-white rounded-xl shadow-md hover:shadow-glow transition-all duration-300 transform hover:scale-110"
