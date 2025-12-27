@@ -51,6 +51,50 @@ const MenuItemDetailsPage: React.FC = () => {
     fetchMenuItem();
   }, [id]);
 
+  // Prepare images for gallery with deduplication
+  // This hook must be called before any early returns to satisfy Rules of Hooks
+  // The backend stores primary photo URL in both photos array and imageUrl field,
+  // so we need to merge and deduplicate to avoid rendering the same image twice.
+  const galleryImages = React.useMemo(() => {
+    // Return empty array if menuItem is not loaded yet
+    if (!menuItem) return [];
+
+    const imageMap = new Map<string, { id: string; url: string; isPrimary: boolean }>();
+
+    // First, add all photos from the photos array (these have proper IDs)
+    if (menuItem.photos && menuItem.photos.length > 0) {
+      menuItem.photos.forEach((photo) => {
+        if (photo.url && !imageMap.has(photo.url)) {
+          imageMap.set(photo.url, {
+            id: photo.id || `photo-${photo.url}`,
+            url: photo.url,
+            isPrimary: photo.isPrimary || false,
+          });
+        }
+      });
+    }
+
+    // Then, add the legacy imageUrl only if it's not already in the map
+    // This handles cases where photos array is empty but imageUrl exists
+    if (menuItem.imageUrl && !imageMap.has(menuItem.imageUrl)) {
+      imageMap.set(menuItem.imageUrl, {
+        id: `legacy-${menuItem.imageUrl}`,
+        url: menuItem.imageUrl,
+        isPrimary: true,
+      });
+    }
+
+    // Convert map to array and sort to put primary image first
+    const images = Array.from(imageMap.values());
+    images.sort((a, b) => {
+      if (a.isPrimary && !b.isPrimary) return -1;
+      if (!a.isPrimary && b.isPrimary) return 1;
+      return 0;
+    });
+
+    return images;
+  }, [menuItem]);
+
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
       APPETIZER: 'Appetizer',
@@ -78,11 +122,11 @@ const MenuItemDetailsPage: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           {/* Back button skeleton */}
           <div className="h-10 w-32 bg-gray-200 rounded-lg animate-pulse mb-8" />
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Image skeleton */}
             <div className="aspect-[4/3] bg-gray-200 rounded-2xl animate-pulse" />
-            
+
             {/* Content skeleton */}
             <div className="space-y-6">
               <div className="h-10 w-3/4 bg-gray-200 rounded-lg animate-pulse" />
@@ -113,7 +157,7 @@ const MenuItemDetailsPage: React.FC = () => {
           >
             Back to Menu
           </Button>
-          
+
           <div className="bg-white rounded-2xl shadow-elevation-2 p-12 text-center">
             <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
               <AlertCircleIcon className="w-10 h-10 text-red-500" />
@@ -136,16 +180,7 @@ const MenuItemDetailsPage: React.FC = () => {
     );
   }
 
-  // Prepare images for gallery
-  const galleryImages = menuItem.photos?.length
-    ? menuItem.photos.map((photo) => ({
-        id: photo.id,
-        url: photo.url,
-        isPrimary: photo.isPrimary,
-      }))
-    : menuItem.imageUrl
-    ? [{ url: menuItem.imageUrl, isPrimary: true }]
-    : [];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -160,7 +195,7 @@ const MenuItemDetailsPage: React.FC = () => {
             >
               Back to Menu
             </Button>
-            
+
             <Button
               variant="primary"
               icon={PencilIcon}
@@ -195,7 +230,7 @@ const MenuItemDetailsPage: React.FC = () => {
                     Chef's Recommendation
                   </span>
                 )}
-                
+
                 {/* Category Badge */}
                 <span className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full shadow-sm ${getCategoryBg(menuItem.category)}`}>
                   <TagIcon className="w-4 h-4 mr-1.5" />
@@ -220,7 +255,7 @@ const MenuItemDetailsPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 {menuItem.preparationTime && (
                   <div className="text-right">
                     <p className="text-sm text-gray-500 font-medium mb-1">Prep Time</p>
@@ -237,11 +272,10 @@ const MenuItemDetailsPage: React.FC = () => {
             {/* Status Cards */}
             <div className="grid grid-cols-2 gap-4">
               {/* Availability Status */}
-              <div className={`rounded-xl p-4 border transition-all duration-300 ${
-                menuItem.isAvailable
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-red-50 border-red-200'
-              }`}>
+              <div className={`rounded-xl p-4 border transition-all duration-300 ${menuItem.isAvailable
+                ? 'bg-green-50 border-green-200'
+                : 'bg-red-50 border-red-200'
+                }`}>
                 <div className="flex items-center">
                   {menuItem.isAvailable ? (
                     <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3" />
@@ -258,11 +292,10 @@ const MenuItemDetailsPage: React.FC = () => {
               </div>
 
               {/* Sold Out Status */}
-              <div className={`rounded-xl p-4 border transition-all duration-300 ${
-                !menuItem.isSoldOut
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-orange-50 border-orange-200'
-              }`}>
+              <div className={`rounded-xl p-4 border transition-all duration-300 ${!menuItem.isSoldOut
+                ? 'bg-green-50 border-green-200'
+                : 'bg-orange-50 border-orange-200'
+                }`}>
                 <div className="flex items-center">
                   {!menuItem.isSoldOut ? (
                     <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3" />
@@ -304,7 +337,7 @@ const MenuItemDetailsPage: React.FC = () => {
                     {menuItem.modifiers.length} group{menuItem.modifiers.length !== 1 ? 's' : ''}
                   </span>
                 </div>
-                
+
                 <div className="space-y-4">
                   {menuItem.modifiers.map((group, groupIndex) => (
                     <div
@@ -315,11 +348,10 @@ const MenuItemDetailsPage: React.FC = () => {
                         <div>
                           <h4 className="font-semibold text-charcoal">{group.name}</h4>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              group.selectionType === 'single'
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-purple-100 text-purple-700'
-                            }`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${group.selectionType === 'single'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-purple-100 text-purple-700'
+                              }`}>
                               {group.selectionType === 'single' ? 'Single Select' : 'Multiple Select'}
                             </span>
                             {group.isRequired && (
@@ -330,7 +362,7 @@ const MenuItemDetailsPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {group.options && group.options.length > 0 && (
                         <div className="space-y-2">
                           {group.options.map((option, optionIndex) => (

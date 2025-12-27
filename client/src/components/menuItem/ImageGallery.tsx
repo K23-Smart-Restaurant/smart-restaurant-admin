@@ -16,10 +16,21 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   alt = 'Menu item image',
   className = '',
 }) => {
-  // Sort images to put primary first
+  // Deduplicate and sort images to put primary first
+  // Uses URL as the deduplication key to ensure no duplicate images are rendered
   const sortedImages = React.useMemo(() => {
     if (!images || images.length === 0) return [];
-    const sorted = [...images].sort((a, b) => {
+
+    // Deduplicate by URL, keeping the first occurrence (which should have proper id/isPrimary)
+    const seen = new Set<string>();
+    const uniqueImages = images.filter((img) => {
+      if (!img.url || seen.has(img.url)) return false;
+      seen.add(img.url);
+      return true;
+    });
+
+    // Sort to put primary image first
+    const sorted = [...uniqueImages].sort((a, b) => {
       if (a.isPrimary && !b.isPrimary) return -1;
       if (!a.isPrimary && b.isPrimary) return 1;
       return 0;
@@ -29,31 +40,27 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(true);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   // Reset current index when images change
   useEffect(() => {
     setCurrentIndex(0);
-    setIsImageLoaded(false);
   }, [images]);
 
   const hasImages = sortedImages.length > 0;
   const hasMultipleImages = sortedImages.length > 1;
 
   const goToPrevious = useCallback(() => {
-    setIsImageLoaded(false);
     setCurrentIndex((prev) => (prev === 0 ? sortedImages.length - 1 : prev - 1));
   }, [sortedImages.length]);
 
   const goToNext = useCallback(() => {
-    setIsImageLoaded(false);
     setCurrentIndex((prev) => (prev === sortedImages.length - 1 ? 0 : prev + 1));
   }, [sortedImages.length]);
 
   const goToSlide = useCallback((index: number) => {
-    setIsImageLoaded(false);
     setCurrentIndex(index);
   }, []);
 
@@ -131,13 +138,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
             <img
               src={sortedImages[currentIndex]?.url}
               alt={`${alt} ${currentIndex + 1}`}
-              className={`w-full h-full object-cover transition-all duration-500 ${
-                isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-              }`}
+              className={`w-full h-full object-cover transition-all duration-500 ${isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                }`}
               onLoad={() => setIsImageLoaded(true)}
               onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://placehold.co/800x600?text=Image+Not+Found';
-                setIsImageLoaded(true);
+                (e.target as HTMLImageElement).src = 'https://placehold.co/800x600/e5e7eb/9ca3af?text=No+Image';
               }}
             />
 
@@ -202,16 +207,16 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                 className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden
                            transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-naples
                            ${currentIndex === index
-                             ? 'ring-2 ring-naples shadow-glow-yellow scale-105'
-                             : 'ring-1 ring-gray-200 hover:ring-naples/50 hover:scale-105 opacity-70 hover:opacity-100'
-                           }`}
+                    ? 'ring-2 ring-naples shadow-glow-yellow scale-105'
+                    : 'ring-1 ring-gray-200 hover:ring-naples/50 hover:scale-105 opacity-70 hover:opacity-100'
+                  }`}
               >
                 <img
                   src={image.url}
                   alt={`${alt} thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Error';
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/200x200/e5e7eb/9ca3af?text=No+Image';
                   }}
                 />
                 {/* Active indicator overlay */}
@@ -232,9 +237,9 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                 onClick={() => goToSlide(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none
                            ${currentIndex === index
-                             ? 'bg-naples w-6 shadow-glow-yellow'
-                             : 'bg-gray-300 hover:bg-naples/50'
-                           }`}
+                    ? 'bg-naples w-6 shadow-glow-yellow'
+                    : 'bg-gray-300 hover:bg-naples/50'
+                  }`}
                 aria-label={`Go to image ${index + 1}`}
               />
             ))}
@@ -299,7 +304,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
               alt={`${alt} ${currentIndex + 1} (full size)`}
               className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl animate-scale-in"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://placehold.co/1200x900?text=Image+Not+Found';
+                (e.target as HTMLImageElement).src = 'https://placehold.co/1200x900/e5e7eb/9ca3af?text=No+Image';
               }}
             />
           </div>
@@ -324,9 +329,9 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                   }}
                   className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all duration-300
                              ${currentIndex === index
-                               ? 'ring-2 ring-white scale-110'
-                               : 'ring-1 ring-white/30 opacity-60 hover:opacity-100 hover:scale-105'
-                             }`}
+                      ? 'ring-2 ring-white scale-110'
+                      : 'ring-1 ring-white/30 opacity-60 hover:opacity-100 hover:scale-105'
+                    }`}
                 >
                   <img
                     src={image.url}
