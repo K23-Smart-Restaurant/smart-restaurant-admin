@@ -384,19 +384,24 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           onClick={() => setIsEnlarged(false)}
         >
-          <div className="relative max-w-2xl animate-in fade-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsEnlarged(false)}
-              className="absolute -top-12 right-0 p-2 bg-white text-charcoal rounded-full hover:bg-naples transition-colors"
-              title="Close"
-            >
-              <XIcon className="w-6 h-6" />
-            </button>
-            <div className="bg-white rounded-xl p-8 border-4 border-naples shadow-2xl">
+          {/* Close button with fixed positioning to always stay visible */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEnlarged(false);
+            }}
+            className="fixed top-4 right-4 z-[60] p-3 bg-white text-charcoal rounded-full hover:bg-naples transition-colors shadow-lg"
+            title="Close"
+          >
+            <XIcon className="w-6 h-6" />
+          </button>
+          
+          <div className="relative max-w-2xl w-full animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-xl p-8 border-4 border-naples shadow-2xl mx-auto" onClick={(e) => e.stopPropagation()}>
               <img
                 src={table.qrCode}
                 alt={`QR Code for Table ${table.tableNumber}`}
-                className="w-full h-auto max-w-[450px]"
+                className="w-full h-auto max-w-[450px] mx-auto"
                 style={{ imageRendering: "pixelated" }}
               />
               <div className="text-center mt-6">
