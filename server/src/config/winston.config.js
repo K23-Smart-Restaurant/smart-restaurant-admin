@@ -20,6 +20,12 @@ const consoleFormat = _format.combine(
   })
 );
 
+// Create logs directory if it doesn't exist
+const logsDir = './logs';
+if (!existsSync(logsDir)) {
+  mkdirSync(logsDir);
+}
+
 // Create logger instance
 const logger = createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
@@ -51,10 +57,6 @@ const logger = createLogger({
   ],
 });
 
-// Create logs directory if it doesn't exist
-const logsDir = './logs';
-if (!existsSync(logsDir)) {
-  mkdirSync(logsDir);
-}
+
 
 export { logger };
