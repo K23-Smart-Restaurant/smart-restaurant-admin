@@ -62,7 +62,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
 
   const handleBatchDownload = async () => {
     if (tablesWithQR.length === 0) {
-      alert("No tables with QR codes to download");
+      console.warn("No tables with QR codes to download");
       return;
     }
 
@@ -87,7 +87,6 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
       setShowDownloadOptions(false);
     } catch (error) {
       console.error("Error downloading batch QR codes:", error);
-      alert("Failed to download QR codes. Please try again.");
     } finally {
       setIsDownloading(false);
     }
@@ -103,7 +102,6 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
       onBulkRegenerateComplete();
     } catch (error) {
       console.error("Error bulk regenerating QR codes:", error);
-      alert("Failed to regenerate QR codes. Please try again.");
     } finally {
       setIsRegenerating(false);
     }
@@ -111,13 +109,13 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
 
   const handlePrintAll = () => {
     if (tablesWithQR.length === 0) {
-      alert("No tables with QR codes to print");
+      console.warn("No tables with QR codes to print");
       return;
     }
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      alert("Please allow pop-ups to print QR codes");
+      console.warn("Print window blocked by browser");
       return;
     }
 

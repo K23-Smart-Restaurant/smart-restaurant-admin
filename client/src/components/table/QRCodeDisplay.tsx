@@ -70,7 +70,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
       saveAs(blob, filename);
     } catch (error) {
       console.error("Error downloading QR code:", error);
-      alert("Failed to download QR code. Please try again.");
+      // Error is logged, UI shows download button still available for retry
     } finally {
       setIsDownloading(false);
     }
@@ -82,7 +82,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
     // Create a new window for printing
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      alert("Please allow pop-ups to print QR codes");
+      console.warn("Print window blocked by browser");
       return;
     }
 
@@ -195,20 +195,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   };
 
   const handleRegenerate = async () => {
-    if (
-      !confirm(
-        `Are you sure you want to regenerate the QR code for Table ${table.tableNumber}?\n\nThe old QR code will no longer work and customers will need to scan the new one.`
-      )
-    ) {
-      return;
-    }
-
+    // Confirmation should be handled by parent or via a proper dialog
     setIsRegenerating(true);
     try {
       await onRegenerateQR(table.id);
     } catch (error) {
       console.error("Error regenerating QR code:", error);
-      alert("Failed to regenerate QR code. Please try again.");
     } finally {
       setIsRegenerating(false);
     }

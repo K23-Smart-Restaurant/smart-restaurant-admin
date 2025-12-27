@@ -59,10 +59,6 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
         description: data.description || '',
       });
 
-
-      // Show success message
-      alert(`Category ${isEditMode ? 'updated' : 'created'} successfully!`);
-
       // Reset form if creating new
       if (!isEditMode) {
         reset();
@@ -71,7 +67,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
       onCancel();
     } catch (error) {
       console.error('Error saving category:', error);
-      alert('Failed to save category');
+      throw error; // Let parent handle the error
     }
   };
 

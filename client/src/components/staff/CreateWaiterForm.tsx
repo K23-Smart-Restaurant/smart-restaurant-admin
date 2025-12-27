@@ -54,9 +54,6 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         role: 'WAITER',
         isActive: staff?.isActive ?? true,
       });
-
-      // Show success message (you can use a toast library here)
-      alert(`Waiter account ${isEditMode ? 'updated' : 'created'} successfully!`);
       
       // Reset form and close modal
       if (!isEditMode) {
@@ -65,7 +62,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
       onClose();
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} waiter:`, error);
-      alert(`Failed to ${isEditMode ? 'update' : 'create'} waiter account`);
+      throw error; // Let parent handle the error
     }
   };
 

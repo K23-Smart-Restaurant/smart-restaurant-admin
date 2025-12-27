@@ -41,13 +41,13 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
 
   const addModifier = () => {
     if (!groupName.trim() || !modifierName.trim()) {
-      alert("Please enter group name and modifier name");
+      // Silently return - required fields will show validation on blur
       return;
     }
 
     const price = parseFloat(modifierPrice) || 0;
     if (price < 0) {
-      alert("Price cannot be negative");
+      // Silently return - validation handled by input type
       return;
     }
 
@@ -281,9 +281,8 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm(`Delete the entire "${group.name}" modifier group?`)) {
-                        onChange(modifiers.filter(g => g.id !== group.id && g.name !== group.name));
-                      }
+                      // Delete without confirmation - user can undo by not saving the form
+                      onChange(modifiers.filter(g => g.id !== group.id && g.name !== group.name));
                     }}
                     className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors"
                     title="Delete entire group"

@@ -54,9 +54,6 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
         role: 'KITCHEN_STAFF',
         isActive: staff?.isActive ?? true,
       });
-
-      // Show success message (you can use a toast library here)
-      alert(`Kitchen staff account ${isEditMode ? 'updated' : 'created'} successfully!`);
       
       // Reset form and close modal
       if (!isEditMode) {
@@ -65,7 +62,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
       onClose();
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} kitchen staff:`, error);
-      alert(`Failed to ${isEditMode ? 'update' : 'create'} kitchen staff account`);
+      throw error; // Let parent handle the error
     }
   };
 
