@@ -6,7 +6,8 @@
 
 generator client {
     provider = "prisma-client-js"
-    output   = "../node_modules/.prisma/client"
+    // Output to default location in root's node_modules
+    // Other apps can reference via symlink or relative path
 }
 
 datasource db {
@@ -45,7 +46,7 @@ enum OrderStatus {
     PREPARING // Kitchen is preparing
     READY // Ready for pickup/serving
     SERVED // Delivered to customer
-    PAID // Payment completed
+    COMPLETED // Order completed (served and bill requested/ready to pay)
     CANCELLED // Order cancelled
 }
 
@@ -83,20 +84,29 @@ enum OrderItemStatus {
 model User {
     id           String   @id @default(uuid())
     email        String   @unique
-    passwordHash String
+    passwordHash String? // Nullable for OAuth users
     role         UserRole
     name         String?
     phoneNumber  String?
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+
+    // Authentication fields
+    isVerified   Boolean @default(false) // Email verification status
+    isActive     Boolean @default(true) // Account active status
+    googleId     String? @unique // Google OAuth ID
+    authProvider String  @default("email") // "email", "google", etc.
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     // Relationships
     restaurantsOwned Restaurant[] // For ADMIN role
     ordersAsCustomer Order[]        @relation("CustomerOrders")
     ordersAsWaiter   Order[]        @relation("WaiterOrders")
     refreshTokens    RefreshToken[] // User's refresh tokens for "Remember me"
+    reviews          Review[] // User's menu item reviews
 
     @@index([email])
+    @@index([googleId])
     @@map("User")
 }
 
@@ -252,6 +262,7 @@ model MenuItem {
     orderItems    OrderItem[]
     modifiers     ModifierGroup[]
     photos        MenuItemPhoto[] // H2: Multiple photos support
+    reviews       Review[] // Menu item reviews
 
     @@index([category, isAvailable])
     @@index([isAvailable])
@@ -291,11 +302,13 @@ model Order {
     status          OrderStatus   @default(PENDING)
     totalAmount     Decimal       @default(0) @db.Decimal(10, 2)
     paymentStatus   PaymentStatus @default(UNPAID)
-    paymentIntentId String? // Stripe payment intent ID
+    orderToken      String? // JWT token for guest order access (7 days)
+    billRequested   Boolean       @default(false) // Customer requested bill
+    billRequestedAt DateTime? // When bill was requested
     notes           String?
     createdAt       DateTime      @default(now())
     updatedAt       DateTime      @updatedAt
-    paidAt          DateTime?
+    paidAt          DateTime? // When payment was completed (business timestamp)
 
     // Relationships
     table      Table       @relation(fields: [tableId], references: [id], onDelete: Restrict)
@@ -354,4 +367,26 @@ model Payment {
     @@index([stripePaymentIntentId])
     @@index([status])
     @@map("Payment")
+}
+
+// Review - Customer reviews for menu items (T187-T188)
+model Review {
+    id         String   @id @default(uuid())
+    rating     Int // 1-5 stars
+    comment    String   @db.Text
+    userId     String
+    menuItemId String
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    // Relationships
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+    // T188: Unique constraint to prevent duplicate reviews
+    @@unique([userId, menuItemId])
+    @@index([menuItemId])
+    @@index([userId])
+    @@index([createdAt])
+    @@map("Review")
 }
