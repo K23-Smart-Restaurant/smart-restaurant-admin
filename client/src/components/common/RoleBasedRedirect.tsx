@@ -11,37 +11,38 @@ export const RoleBasedRedirect: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!isLoading && isAuthenticated && user) {
-            // Redirect based on user role
-            switch (user.role) {
-                case 'KITCHEN_STAFF':
-                    navigate('/kitchen', { replace: true });
-                    break;
-                case 'WAITER':
-                    navigate('/waiter', { replace: true });
-                    break;
-                case 'ADMIN':
-                case 'SUPER_ADMIN':
-                    navigate('/dashboard', { replace: true });
-                    break;
-                default:
-                    // Default to dashboard for unknown roles
-                    navigate('/dashboard', { replace: true });
+        if (!isLoading) {
+            if (!isAuthenticated) {
+                // Not authenticated - redirect to login
+                navigate('/login', { replace: true });
+            } else if (user) {
+                // Authenticated - redirect based on user role
+                switch (user.role) {
+                    case 'KITCHEN_STAFF':
+                        navigate('/kitchen', { replace: true });
+                        break;
+                    case 'WAITER':
+                        navigate('/waiter', { replace: true });
+                        break;
+                    case 'ADMIN':
+                    case 'SUPER_ADMIN':
+                        navigate('/dashboard', { replace: true });
+                        break;
+                    default:
+                        // Default to dashboard for unknown roles
+                        navigate('/dashboard', { replace: true });
+                }
             }
         }
     }, [user, isAuthenticated, isLoading, navigate]);
 
     // Show loading state while checking authentication
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples mx-auto mb-4"></div>
-                    <p className="text-gray-600">Redirecting...</p>
-                </div>
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-naples mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading...</p>
             </div>
-        );
-    }
-
-    return null;
+        </div>
+    );
 };
