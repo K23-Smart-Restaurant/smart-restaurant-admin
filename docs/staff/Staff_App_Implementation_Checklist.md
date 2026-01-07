@@ -52,14 +52,14 @@
 
 ### 2.1 Routing & Layouts (All)
 
-- [ ] **T420:** Create `RoleBasedRedirect` component in `components/common/RoleBasedRedirect.tsx`
-- [ ] **T421:** Update `App.tsx`:
+- [✓] **T420:** Create `RoleBasedRedirect` component in `components/common/RoleBasedRedirect.tsx`
+- [✓] **T421:** Update `App.tsx`:
   - `/` -> Login
   - `/dashboard` -> Admin Layout (Protect: ADMIN)
   - `/kitchen` -> Kitchen Layout (Protect: KITCHEN_STAFF)
   - `/waiter` -> Waiter Layout (Protect: WAITER)
-- [ ] **T422:** Create `StaffLayout.tsx`: Minimal header (Clock, WiFi status, Logout), Max screen space
-- [ ] **T423:** Update `AuthContext` to handle redirection after login based on role
+- [✓] **T422:** Create `StaffLayout.tsx`: Minimal header (Clock, WiFi status, Logout), Max screen space
+- [✓] **T423:** Update `AuthContext` to handle redirection after login based on role
 
 ---
 

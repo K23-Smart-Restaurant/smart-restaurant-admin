@@ -100,6 +100,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       setUser(userData);
+
+      // T423: Role-based redirection after login
+      switch (userData.role) {
+        case 'KITCHEN_STAFF':
+          window.location.href = '/kitchen';
+          break;
+        case 'WAITER':
+          window.location.href = '/waiter';
+          break;
+        case 'ADMIN':
+        case 'SUPER_ADMIN':
+          window.location.href = '/dashboard';
+          break;
+        default:
+          // Default to dashboard for unknown roles
+          window.location.href = '/dashboard';
+      }
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
