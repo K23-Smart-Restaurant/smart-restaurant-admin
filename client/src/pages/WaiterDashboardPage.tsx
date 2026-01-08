@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Layout, Bell, Utensils } from 'lucide-react';
+import { ClipboardList, Layout, Bell, Utensils, RefreshCw } from 'lucide-react';
 import PendingOrderCard from '../components/waiter/PendingOrderCard';
 import ReadyOrderCard from '../components/waiter/ReadyOrderCard';
 import TableGridView, { type TableStatus } from '../components/waiter/TableGridView';
@@ -220,6 +220,21 @@ const WaiterDashboardPage: React.FC = () => {
         }
     };
 
+    // Handle refresh tab
+    const refreshTab = (tab: TabType) => {
+        switch (tab) {
+            case 'pending':
+                fetchPendingOrders();
+                break;
+            case 'ready':
+                fetchReadyOrders();
+                break;
+            case 'tables':
+                fetchTables();
+                break;
+        }
+    };
+
     const tabs = [
         { id: 'pending' as TabType, label: 'Pending Orders', icon: ClipboardList, count: notifications.pending },
         { id: 'ready' as TabType, label: 'Ready to Serve', icon: Utensils, count: notifications.ready },
@@ -244,6 +259,7 @@ const WaiterDashboardPage: React.FC = () => {
                         )}
                     </div>
 
+                    <div className='flex justify-between'>
                     {/* Tabs */}
                     <div className="flex gap-2">
                         {tabs.map((tab) => {
@@ -267,6 +283,15 @@ const WaiterDashboardPage: React.FC = () => {
                                 </button>
                             );
                         })}
+                    </div>
+                    {/* Refresh button */}
+                    <button
+                        onClick={() => refreshTab(activeTab)}
+                        className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200"
+                    >
+                        <RefreshCw className="w-5 h-5" />
+                        Refresh
+                    </button>
                     </div>
                 </div>
             </div>

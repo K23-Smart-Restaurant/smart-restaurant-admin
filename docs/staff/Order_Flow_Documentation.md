@@ -15,11 +15,13 @@ This document describes the complete order lifecycle in the Smart Restaurant sys
 
     CUSTOMER                WAITER              KITCHEN              WAITER
        │                       │                    │                   │
-       │  1. Create Order      │                    │                   │
+       │  1. Place Order       │                    │                   │
+       │  (NO PAYMENT YET!)    │                    │                   │
        │──────────────────────>│                    │                   │
        │                       │                    │                   │
        │   [PENDING]           │                    │                   │
-       │   (New order)         │                    │                   │
+       │   paymentStatus:      │                    │                   │
+       │   UNPAID              │                    │                   │
        │                       │                    │                   │
        │                       │ 2. Accept Order    │                   │
        │                       │───────────────────>│                   │
@@ -46,18 +48,30 @@ This document describes the complete order lifecycle in the Smart Restaurant sys
        │                       │                    │                   │
        │  [SERVED]             │                    │                   │
        │  (Food delivered)     │                    │                   │
+       │  paymentStatus:       │                    │                   │
+       │  UNPAID               │                    │                   │
        │                       │                    │                   │
        │  6. Request Bill      │                    │                   │
        │──────────────────────>│                    │                   │
        │                       │                    │                   │
-       │  [SERVED]             │ 7. Process Payment │                   │
-       │  (Bill requested)     │                    │                   │
+       │  [SERVED]             │                    │                   │
+       │  billRequested: true  │                    │                   │
        │                       │                    │                   │
-       │  8. Payment           │                    │                   │
-       │<──────────────────────│                    │                   │
+       │  7. Choose Payment    │                    │                   │
+       │     Method:           │                    │                   │
+       │  ┌─────────────────┐  │                    │                   │
+       │  │ • Online (Card) │  │                    │                   │
+       │  │ • Restaurant    │  │                    │                   │
+       │  └─────────────────┘  │                    │                   │
+       │                       │                    │                   │
+       │  8a. Pay Online       │                    │                   │
+       │  ────> Stripe ────>   │                    │                   │
+       │     OR                │                    │                   │
+       │  8b. Pay Cash/Card ──>│ Process Payment    │                   │
        │                       │                    │                   │
        │    [PAID]             │                    │                   │
        │    (Order complete)   │                    │                   │
+       │    Table: AVAILABLE   │                    │                   │
        └───────────────────────┴────────────────────┴───────────────────┘
 ```
 
@@ -93,12 +107,42 @@ Order items track their own status during the preparation phase:
 
 ### 🍽️ Customer Actions
 
-**Customer App:**
-- ✅ Create new order (→ PENDING)
-- ✅ View order status in real-time
-- ✅ Request bill when ready
-- ✅ Make payment (→ PAID)
-- ✅ Cancel order if PENDING
+**Customer App - New "Order First, Pay Later" Flow:**
+
+#### Placing an Order (No Payment Required!)
+- ✅ **Browse Menu** → View available dishes and add to cart
+- ✅ **Place Order** → Creates order with `paymentStatus: UNPAID`
+  - No payment required at this step
+  - Order sent to waiter for approval
+  - Customer redirected to Order Detail page
+  
+#### During the Meal
+- ✅ **View order status** in real-time (PENDING → CONFIRMED → PREPARING → READY → SERVED)
+- ✅ **Track individual items** (QUEUED → COOKING → READY)
+- ✅ **Add more items** to existing order (if order not yet paid)
+
+#### Requesting the Bill
+- ✅ **Request Bill** → Available when order status is READY or SERVED
+  - Sets `billRequested: true`
+  - Notifies waiter
+  - Shows payment method selection
+
+#### Payment Options (After Bill Request)
+- ✅ **Option 1: Pay Online Now**
+  - Click "Pay Online Now" button
+  - Redirected to Stripe checkout
+  - Complete payment with credit/debit card
+  - Order status → PAID
+  
+- ✅ **Option 2: Pay at Restaurant**  
+  - Display: "Pay with Cash/Card at restaurant"
+  - Waiter processes payment manually
+  - Waiter marks order as PAID
+  - Table becomes AVAILABLE
+
+#### Other Actions  
+- ✅ **Cancel order** if status is PENDING (before waiter accepts)
+- ✅ **View order history** (authenticated users only)
 
 ### 👔 Waiter Actions
 
@@ -196,15 +240,33 @@ Order items track their own status during the preparation phase:
 ┌─────────────────────────────┐
 │  Current Order              │
 ├─────────────────────────────┤
-│  Status: PREPARING          │
+│  Status: SERVED             │
 │  Table: #5                  │
+│  Payment: UNPAID            │
 │                             │
 │  Items:                     │
-│  • Burger      [COOKING]    │
-│  • Fries       [READY]      │
-│  • Soda        [QUEUED]     │
+│  • Burger      [READY] ✓    │
+│  • Fries       [READY] ✓    │
+│  • Soda        [READY] ✓    │
 │                             │
-│  [Request Bill]             │
+│  Total: $25.50              │
+│                             │
+│  ┌───────────────────────┐  │
+│  │ ✓ Bill Requested      │  │
+│  └───────────────────────┘  │
+│                             │
+│  Choose Payment Method:     │
+│  ┌───────────────────────┐  │
+│  │ 💳 Pay Online Now     │  │
+│  │  Credit/Debit Card    │  │
+│  └───────────────────────┘  │
+│                             │
+│  ┌───────────────────────┐  │
+│  │ 💵 Pay at Restaurant  │  │
+│  │  Cash/Card w/ Waiter  │  │
+│  └───────────────────────┘  │
+│                             │
+│  [Add More Items]           │
 └─────────────────────────────┘
 ```
 
@@ -272,7 +334,99 @@ Order items track their own status during the preparation phase:
 
 ---
 
-## 🔍 Error Handling & Edge Cases
+## � Payment Flow & Methods
+
+### Payment Status Lifecycle
+
+Orders track payment separately from order status:
+
+| Payment Status | Description | When It's Set |
+|---------------|-------------|---------------|
+| **UNPAID** | No payment made yet (default) | Order creation |
+| **PENDING** | Payment in progress (Stripe) | Payment intent created |
+| **PAID** | Payment completed successfully | Payment confirmed |
+| **FAILED** | Payment attempt failed | Payment error |
+
+### The New "Order First, Pay Later" System
+
+**Key Principle:** Customers can order and enjoy their meal before any payment is required!
+
+#### Flow Overview:
+1. **Order Placement** → `paymentStatus: UNPAID`
+   - Customer places order from cart
+   - NO payment gateway at this step
+   - Order immediately sent to kitchen
+
+2. **Meal Service** → `paymentStatus: UNPAID` (unchanged)
+   - Food is prepared and served
+   - Customer enjoys their meal
+   - Payment not blocking the experience
+
+3. **Bill Request** → `billRequested: true`
+   - Customer clicks "Request Bill"
+   - Waiter notification sent
+   - Payment options displayed
+
+4. **Payment** → `paymentStatus: PAID`
+   - Customer chooses payment method
+   - Payment processed
+   - Order completed
+
+### Payment Methods
+
+#### Method 1: Online Payment (Stripe)
+- **When:** After bill is requested
+- **How:**
+  1. Customer clicks "Pay Online Now"
+  2. Redirected to Stripe checkout
+  3. Enters card details
+  4. Payment processed
+  5. Auto-updates to `paymentStatus: PAID`
+- **Benefits:**
+  - Contactless payment
+  - Customer can leave immediately
+  - Auto-receipt via email
+
+#### Method 2: Restaurant Payment  
+- **When:** After bill is requested
+- **How:**
+  1. Customer selects "Pay at Restaurant"
+  2. Waiter brings payment terminal/cash
+  3. Waiter manually marks as PAID
+- **Options:**
+  - Cash payment
+  - Card with physical terminal
+  - Mobile payment (future)
+- **Benefits:**
+  - Traditional experience
+  - Split bills easier
+  - Tips handled in person
+
+### Business Rules
+
+1. **Order Creation**
+   - ✅ Orders created WITHOUT payment
+   - ✅ Default `paymentStatus: UNPAID`
+   - ✅ No Stripe integration until bill requested
+
+2. **Bill Request**
+   - ✅ Only available when order is READY or SERVED
+   - ✅ Can only be requested once
+   - ✅ Cannot be cancelled once requested
+
+3. **Payment Options**
+   - ✅ Both methods always available
+   - ✅ Customer decides after seeing bill
+   - ✅ No forced payment method
+
+4. **Table Management**
+   - ✅ Table stays OCCUPIED until payment completed
+   - ✅ `billRequested: true` updates table status
+   - ✅ Table becomes AVAILABLE only after PAID
+
+---
+
+## �🔍 Error Handling & Edge Cases
 
 ### Rejected Orders
 - Waiter can reject PENDING orders with optional reason
@@ -324,5 +478,22 @@ Potential improvements to the order flow:
 ---
 
 **Last Updated:** January 8, 2026  
-**Version:** 1.0  
+**Version:** 2.0  
 **Status:** ✅ Production Ready
+
+### Changelog
+
+**Version 2.0 (January 8, 2026)**
+- 🆕 **New Payment Flow**: "Order First, Pay Later" system implemented
+- 💳 **Dual Payment Methods**: Online (Stripe) + Restaurant payment options
+- 📱 **Enhanced Customer Experience**: No upfront payment required
+- ✅ **Payment Status Tracking**: Separate payment and order status management
+- 🔔 **Bill Request System**: Waiter notification when customer requests bill
+- 🎨 **UI Updates**: Payment method selection cards in OrderDetailPage
+
+**Version 1.0 (Initial Release)**
+- Complete order lifecycle management
+- Real-time status updates
+- Kitchen display system
+- Waiter dashboard
+

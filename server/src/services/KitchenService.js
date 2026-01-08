@@ -191,7 +191,7 @@ class KitchenService {
         const updatedItem = await prisma.orderItem.update({
             where: { id: itemId },
             data: {
-                itemStatus,
+                itemStatus
             },
             include: {
                 menuItem: true,

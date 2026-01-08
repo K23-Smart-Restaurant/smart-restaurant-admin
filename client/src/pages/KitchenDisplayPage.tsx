@@ -16,6 +16,7 @@ const KitchenDisplayPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isOneItemCooking, setIsOneItemCooking] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(true);
     const { showToast } = useToast();
@@ -108,6 +109,16 @@ const KitchenDisplayPage: React.FC = () => {
             setOrders((prevOrders) =>
                 prevOrders.map((o) => (o.id === orderId ? updatedOrder : o))
             );
+
+            if (!isOneItemCooking && itemStatus === 'COOKING') {
+                setIsOneItemCooking(true);
+
+                // Update orderStatus to 'PREPARING' if at least one item is cooking
+                const updatedOrder = await kitchenService.updateOrderStatus(orderId, 'PREPARING');
+                setOrders((prevOrders) =>
+                    prevOrders.map((o) => (o.id === orderId ? updatedOrder : o))
+                );
+            }
         } catch (error) {
             console.error('Failed to update item status:', error);
             showToast('error', 'Error', 'Failed to update item status');
