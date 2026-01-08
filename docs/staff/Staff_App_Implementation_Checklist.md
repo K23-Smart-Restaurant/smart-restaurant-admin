@@ -67,19 +67,19 @@
 
 ### 3.1 UI Components
 
-- [ ] **T430:** Create `KitchenOrderCard` component (High contrast, large fonts)
+- [✓] **T430:** Create `KitchenOrderCard` component (High contrast, large fonts)
   - Header: Table #, Timer (Green/Yellow/Red)
   - Body: List of items with modifiers
   - Footer: 'Mark Ready' button
-- [ ] **T431:** Create `TimerBadge` component (Calculates time since `createdAt`)
-- [ ] **T432:** Create `SoundManager` utility using `howler.js` (Ding on new order)
+- [✓] **T431:** Create `TimerBadge` component (Calculates time since `createdAt`)
+- [✓] **T432:** Create `SoundManager` utility using `howler.js` (Ding on new order)
 
 ### 3.2 Pages & Logic
 
-- [ ] **T433:** Create `KitchenDisplayPage.tsx`
-- [ ] **T434:** Implement `useKitchenSocket` hook (Listen: `order:confirmed`)
-- [ ] **T435:** Implement Grid Layout (Masonry or CSS Grid) for cards
-- [ ] **T436:** Add "Recall History" modal (View last 10 completed orders)
+- [✓] **T433:** Create `KitchenDisplayPage.tsx`
+- [✓] **T434:** Implement `useKitchenSocket` hook (Listen: `order:confirmed`)
+- [✓] **T435:** Implement Grid Layout (Masonry or CSS Grid) for cards
+- [✓] **T436:** Add "Recall History" modal (View last 10 completed orders)
 
 ---
 

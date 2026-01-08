@@ -145,7 +145,7 @@ const KitchenDisplayPage: React.FC = () => {
     return (
         <div className="h-full overflow-hidden flex flex-col">
             {/* Header Bar */}
-            <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
+            <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm rounded-t-lg">
                 <div>
                     <h1 className="text-3xl font-bold text-charcoal">Kitchen Display System</h1>
                     <p className="text-gray-600 mt-1">
@@ -213,7 +213,7 @@ const KitchenDisplayPage: React.FC = () => {
                         </div>
                     </div>
                 ) : sortedOrders.length > 0 ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 auto-rows-min">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-min">
                         {sortedOrders.map((order) => (
                             <KitchenOrderCard
                                 key={order.id}
