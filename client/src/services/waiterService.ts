@@ -38,6 +38,12 @@ export const waiterService = {
         return response.data.data;
     },
 
+    // Get orders with bill requested
+    getBillRequestedOrders: async (): Promise<Order[]> => {
+        const response = await apiClient.get<{ success: boolean; data: Order[] }>('/waiter/orders/bill-requested');
+        return response.data.data;
+    },
+
     // Accept order and send to kitchen
     acceptOrder: async (orderId: string): Promise<Order> => {
         const response = await apiClient.post<{ success: boolean; data: Order }>(
@@ -79,5 +85,18 @@ export const waiterService = {
             data
         );
         return response.data;
+    },
+
+    // Process cash/card payment at restaurant
+    processCashPayment: async (
+        orderId: string,
+        paymentMethod: 'CASH' | 'CARD',
+        amountPaid: number
+    ): Promise<Order> => {
+        const response = await apiClient.post<{ success: boolean; data: Order }>(
+            `/waiter/orders/${orderId}/process-payment`,
+            { paymentMethod, amountPaid }
+        );
+        return response.data.data;
     },
 };

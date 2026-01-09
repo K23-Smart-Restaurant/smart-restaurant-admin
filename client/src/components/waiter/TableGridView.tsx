@@ -128,7 +128,7 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
                                     {table.currentOrder.guestName || 'Guest'}
                                 </p>
                                 <p className={`text-sm font-bold ${styles.text} mt-1`}>
-                                    ${table.currentOrder.totalAmount.toFixed(2)}
+                                    ${Number(table.currentOrder.totalAmount).toFixed(2)}
                                 </p>
                             </div>
                         )}

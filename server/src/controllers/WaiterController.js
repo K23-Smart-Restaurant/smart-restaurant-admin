@@ -166,16 +166,57 @@ class WaiterController {
     }
 
     /**
+     * POST /api/waiter/orders/:id/process-payment - Process cash/card payment
+     */
+    async processCashPayment(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { paymentMethod, amountPaid } = req.body;
+            const waiterId = req.user.id; // From authentication middleware
+
+            // Validate required fields
+            if (!paymentMethod || !amountPaid) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Payment method and amount are required',
+                });
+            }
+
+            // Validate payment method
+            if (!['CASH', 'CARD'].includes(paymentMethod)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid payment method. Must be CASH or CARD',
+                });
+            }
+
+            const order = await waiterService.processCashPayment(
+                id,
+                waiterId,
+                paymentMethod,
+                parseFloat(amountPaid)
+            );
+
+            res.json({
+                success: true,
+                message: 'Payment processed successfully',
+                data: order,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * T476: POST /api/waiter/bill/pay - Record payment for an order
      */
     async recordPayment(req, res, next) {
         try {
-            const { orderId, paymentMethod, amount } = req.body;
+            const { orderId, paymentMethod } = req.body;
 
             const result = await billService.recordPayment(
                 orderId,
                 paymentMethod,
-                amount
             );
 
             res.json({

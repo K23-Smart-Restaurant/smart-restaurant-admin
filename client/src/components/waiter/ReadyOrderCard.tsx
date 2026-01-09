@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { CheckCircle, User, ChevronDown, Utensils } from 'lucide-react';
+import { CheckCircle, User, ChevronDown, Utensils, DollarSign } from 'lucide-react';
 import TimerBadge from '../common/TimerBadge';
 import type { Order } from '../../services/orderService';
 
 interface ReadyOrderCardProps {
     order: Order;
     onMarkServed: (orderId: string) => void;
+    onProcessPayment?: (order: Order) => void; // Optional payment handler
 }
 
 /**
  * ReadyOrderCard - Display ready orders for waiter to serve (Light Theme)
  */
-const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed }) => {
+const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed, onProcessPayment }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -23,6 +24,14 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed }) 
             setIsProcessing(false);
         }
     };
+
+    const handleProcessPayment = () => {
+        if (onProcessPayment) {
+            onProcessPayment(order);
+        }
+    };
+
+    const showPaymentButton = order.billRequested && order.paymentStatus !== 'PAID' && onProcessPayment;
 
     return (
         <div className="bg-white border-2 border-green-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -43,7 +52,12 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed }) 
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-green-200 text-green-800 rounded-lg text-xs font-semibold border border-green-300 animate-pulse">
+                        {showPaymentButton && (
+                            <span className="px-3 py-1 bg-blue-200 text-blue-800 rounded-lg text-xs font-semibold border border-blue-300 animate-pulse">
+                                BILL REQUESTED
+                            </span>
+                        )}
+                        <span className="px-3 py-1 bg-green-200 text-green-800 rounded-lg text-xs font-semibold border border-green-300">
                             READY TO SERVE
                         </span>
                         <button
@@ -97,16 +111,36 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed }) 
                 </div>
             )}
 
-            {/* Action Button */}
+            {/* Action Buttons */}
             <div className="p-4 bg-white">
-                <button
-                    onClick={handleMarkServed}
-                    disabled={isProcessing}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <CheckCircle className="w-5 h-5" />
-                    {isProcessing ? 'Processing...' : 'Mark as Served'}
-                </button>
+                {showPaymentButton ? (
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            onClick={handleMarkServed}
+                            disabled={isProcessing}
+                            className="py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <CheckCircle className="w-5 h-5" />
+                            {isProcessing ? 'Processing...' : 'Mark Served'}
+                        </button>
+                        <button
+                            onClick={handleProcessPayment}
+                            className="py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                        >
+                            <DollarSign className="w-5 h-5" />
+                            Process Payment
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={handleMarkServed}
+                        disabled={isProcessing}
+                        className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <CheckCircle className="w-5 h-5" />
+                        {isProcessing ? 'Processing...' : 'Mark as Served'}
+                    </button>
+                )}
             </div>
         </div>
     );

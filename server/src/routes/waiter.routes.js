@@ -49,6 +49,11 @@ router.post('/orders/:id/served', (req, res, next) =>
     waiterController.markOrderServed(req, res, next)
 );
 
+// POST /api/waiter/orders/:id/process-payment - Process cash/card payment
+router.post('/orders/:id/process-payment', (req, res, next) =>
+    waiterController.processCashPayment(req, res, next)
+);
+
 // Table Management Routes
 
 // GET /api/waiter/tables - Get table status overview

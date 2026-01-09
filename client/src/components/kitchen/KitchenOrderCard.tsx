@@ -334,7 +334,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
                                         Mark Order Ready
                                     </span>
                                 ) : (
-                                    '⏳ Complete All Items First'
+                                    'Complete All Items First'
                                 )}
                             </button>
                         )}

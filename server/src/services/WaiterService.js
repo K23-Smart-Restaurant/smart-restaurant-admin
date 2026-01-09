@@ -101,9 +101,8 @@ class WaiterService {
         const orders = await prisma.order.findMany({
             where: {
                 billRequested: true,
-                status: {
-                    notIn: ['COMPLETED', 'CANCELLED'],
-                },
+                status: 'COMPLETED',
+                paymentStatus: 'PENDING',
             },
             include: {
                 table: {
@@ -257,6 +256,117 @@ class WaiterService {
                 updatedAt: new Date(),
             },
         });
+    }
+
+    /**
+     * Process cash/card payment at restaurant
+     * @param {string} orderId - Order ID
+     * @param {string} waiterId - Waiter user ID
+     * @param {string} paymentMethod - Payment method ('CASH' or 'CARD')
+     * @param {number} amountPaid - Amount paid by customer
+     * @returns {Promise<Object>} Updated order
+     */
+    async processCashPayment(orderId, waiterId, paymentMethod = 'CASH', amountPaid) {
+        // Validate order exists
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                table: true,
+            },
+        });
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        // Validate bill has been requested
+        if (!order.billRequested) {
+            throw new Error('Bill must be requested before payment can be processed');
+        }
+
+        // Validate order is not already paid
+        if (order.paymentStatus === 'PAID') {
+            throw new Error('Order has already been paid');
+        }
+
+        // Validate amount
+        if (amountPaid < order.totalAmount) {
+            throw new Error(`Insufficient payment. Expected: $${order.totalAmount}, Received: $${amountPaid}`);
+        }
+
+        // Update order in a transaction
+        const result = await prisma.$transaction(async (tx) => {
+            // Update order status to COMPLETED and mark as PAID
+            const updatedOrder = await tx.order.update({
+                where: { id: orderId },
+                data: {
+                    paymentStatus: 'PAID',
+                    status: 'COMPLETED',
+                    paidAt: new Date(),
+                    waiterId,
+                    updatedAt: new Date(),
+                },
+                include: {
+                    table: {
+                        select: {
+                            id: true,
+                            tableNumber: true,
+                            location: true,
+                        },
+                    },
+                    orderItems: {
+                        include: {
+                            menuItem: {
+                                select: {
+                                    name: true,
+                                    price: true,
+                                },
+                            },
+                        },
+                    },
+                    waiter: {
+                        select: {
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            });
+
+            // Create payment record
+            await tx.payment.create({
+                data: {
+                    orderId,
+                    amount: amountPaid,
+                    currency: 'USD',
+                    status: 'SUCCESS',
+                    paymentMethod, // 'CASH' or 'CARD'
+                    stripePaymentIntentId: `manual_${orderId}_${Date.now()}`, // Unique ID for manual payments
+                    completedAt: new Date(),
+                    metadata: {
+                        processedBy: waiterId,
+                        paymentType: 'RESTAURANT',
+                        amountPaid,
+                        change: amountPaid - order.totalAmount,
+                    },
+                },
+            });
+
+            // Update table status to AVAILABLE
+            await tx.table.update({
+                where: { id: order.tableId },
+                data: {
+                    status: 'AVAILABLE',
+                },
+            });
+
+            return updatedOrder;
+        });
+
+        // Emit socket event for payment completed
+        socketService.emitPaymentCompleted(result);
+
+        return result;
     }
 
     /**

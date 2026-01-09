@@ -4,6 +4,7 @@ import PendingOrderCard from '../components/waiter/PendingOrderCard';
 import ReadyOrderCard from '../components/waiter/ReadyOrderCard';
 import TableGridView, { type TableStatus } from '../components/waiter/TableGridView';
 import BillForm from '../components/waiter/BillForm';
+import CashPaymentForm from '../components/waiter/CashPaymentForm';
 import useWaiterSocket from '../hooks/useWaiterSocket';
 import { waiterService } from '../services/waiterService';
 import { tableService } from '../services/tableService';
@@ -23,6 +24,7 @@ const WaiterDashboardPage: React.FC = () => {
     const [tables, setTables] = useState<TableStatus[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [isBillFormOpen, setIsBillFormOpen] = useState(false);
+    const [isPaymentFormOpen, setIsPaymentFormOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [notifications, setNotifications] = useState({
         pending: 0,
@@ -57,19 +59,32 @@ const WaiterDashboardPage: React.FC = () => {
     const fetchTables = useCallback(async () => {
         try {
             const allTables = await tableService.getAll();
-            // Transform tables to include status for TableGridView
-            const tablesWithStatus: TableStatus[] = allTables.map(table => ({
-                id: table.id,
-                tableNumber: table.tableNumber,
-                capacity: table.capacity,
-                status: table.status, // Use the existing status from table
-                // TODO: In production, fetch actual order data for occupied tables
-                currentOrder: undefined,
-            }));
+            // Fetch bill requested orders to attach to tables
+            const billRequestedOrders = await waiterService.getBillRequestedOrders();
+
+            // Transform tables to include status and current order for TableGridView
+            const tablesWithStatus: TableStatus[] = allTables.map(table => {
+                // Find if this table has an active order with bill requested
+                const activeOrder = billRequestedOrders.find((order: Order) => order.tableId === table.id);
+
+                return {
+                    id: table.id,
+                    tableNumber: table.tableNumber,
+                    capacity: table.capacity,
+                    status: table.status,
+                    currentOrder: activeOrder ? {
+                        id: activeOrder.id,
+                        orderNumber: activeOrder.orderNumber,
+                        orderStatus: activeOrder.status,
+                        guestName: activeOrder.guestName || 'Guest',
+                        totalAmount: activeOrder.totalAmount,
+                    } : undefined,
+                };
+            });
             setTables(tablesWithStatus);
 
             // Count bill requests
-            const billRequestCount = tablesWithStatus.filter(t => t.status === 'BILL_REQUESTED').length;
+            const billRequestCount = billRequestedOrders.length;
             setNotifications(prev => ({ ...prev, billRequests: billRequestCount }));
         } catch (error) {
             console.error('Failed to fetch tables:', error);
@@ -155,38 +170,53 @@ const WaiterDashboardPage: React.FC = () => {
     };
 
     // Handle table click - opens BillForm for occupied/bill-requested tables
-    const handleTableClick = (table: TableStatus) => {
+    const handleTableClick = async (table: TableStatus) => {
         if (table.status === 'OCCUPIED' || table.status === 'BILL_REQUESTED') {
-            // In production, fetch the actual order for this table
-            if (table.currentOrder) {
-                // Construct a full Order object from currentOrder
-                const order: Order = {
-                    id: table.currentOrder.id,
-                    orderNumber: table.currentOrder.orderNumber,
-                    tableId: table.id,
-                    userId: null,
-                    guestName: table.currentOrder.guestName,
-                    guestContact: null,
-                    waiterId: null,
-                    status: table.currentOrder.orderStatus as any, // Type will be correct when backend integration is complete
-                    totalAmount: table.currentOrder.totalAmount,
-                    paymentStatus: 'UNPAID',
-                    paymentIntentId: null,
-                    notes: null,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    paidAt: null,
-                    table: {
-                        id: table.id,
-                        tableNumber: table.tableNumber,
-                    },
-                    orderItems: [], // TODO: Fetch actual items
-                };
-                setSelectedOrder(order);
-                setIsBillFormOpen(true);
-            } else {
-                // TODO: Fetch order details from API using table.id
-                showToast('error', 'Info', 'Order details will be loaded when backend is integrated');
+            // Fetch the actual order for this table
+            console.log(table); 
+            try {
+                // If we already have currentOrder from table data, use it
+                if (table.currentOrder) {
+                    // Construct a full Order object from currentOrder
+                    const order: Order = {
+                        id: table.currentOrder.id,
+                        orderNumber: table.currentOrder.orderNumber,
+                        tableId: table.id,
+                        userId: null,
+                        guestName: table.currentOrder.guestName,
+                        guestContact: null,
+                        waiterId: null,
+                        status: table.currentOrder.orderStatus as any,
+                        totalAmount: table.currentOrder.totalAmount,
+                        paymentStatus: 'UNPAID',
+                        paymentIntentId: null,
+                        notes: null,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        paidAt: null,
+                        table: {
+                            id: table.id,
+                            tableNumber: table.tableNumber,
+                        },
+                        orderItems: [], // Will be fetched if needed
+                    };
+                    setSelectedOrder(order);
+                    setIsBillFormOpen(true);
+                } else {
+                    // Fetch all orders for this table and get the most recent unpaid one
+                    const billRequestedOrders = await waiterService.getBillRequestedOrders();
+                    const tableOrder = billRequestedOrders.find((order: Order) => order.tableId === table.id);
+
+                    if (tableOrder) {
+                        setSelectedOrder(tableOrder);
+                        setIsBillFormOpen(true);
+                    } else {
+                        showToast('success', 'No Active Order', `Table ${table.tableNumber} has no active order`);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch order:', error);
+                showToast('error', 'Error', 'Failed to load order details');
             }
         } else if (table.status === 'AVAILABLE') {
             showToast('success', 'Table Info', `Table ${table.tableNumber} is available`);
@@ -217,6 +247,24 @@ const WaiterDashboardPage: React.FC = () => {
         } catch (error) {
             console.error('Failed to process payment:', error);
             showToast('error', 'Error', 'Failed to process payment');
+        }
+    };
+
+    // Handle process cash payment
+    const handleProcessCashPayment = async (paymentMethod: 'CASH' | 'CARD', amountPaid: number) => {
+        if (!selectedOrder) return;
+
+        try {
+            await waiterService.processCashPayment(selectedOrder.id, paymentMethod, amountPaid);
+            showToast('success', 'Payment Completed', `${paymentMethod} payment processed successfully`);
+            setNotifications(prev => ({ ...prev, billRequests: Math.max(0, prev.billRequests - 1) }));
+            setIsPaymentFormOpen(false);
+            setSelectedOrder(null);
+            fetchTables(); // Refresh tables to show AVAILABLE status
+            fetchReadyOrders(); // Refresh in case order was in ready state
+        } catch (error: any) {
+            console.error('Failed to process cash payment:', error);
+            throw error; // Re-throw to let the form handle the error
         }
     };
 
@@ -260,38 +308,38 @@ const WaiterDashboardPage: React.FC = () => {
                     </div>
 
                     <div className='flex justify-between'>
-                    {/* Tabs */}
-                    <div className="flex gap-2">
-                        {tabs.map((tab) => {
-                            const Icon = tab.icon;
-                            return (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples text-charcoal'
-                                        : 'bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    <Icon className="w-5 h-5" />
-                                    {tab.label}
-                                    {tab.count > 0 && (
-                                        <span className="ml-1 px-2 py-0.5 bg-red-500 text-white rounded-full text-xs font-bold">
-                                            {tab.count}
-                                        </span>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-                    {/* Refresh button */}
-                    <button
-                        onClick={() => refreshTab(activeTab)}
-                        className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200"
-                    >
-                        <RefreshCw className="w-5 h-5" />
-                        Refresh
-                    </button>
+                        {/* Tabs */}
+                        <div className="flex gap-2">
+                            {tabs.map((tab) => {
+                                const Icon = tab.icon;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === tab.id
+                                            ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples text-charcoal'
+                                            : 'bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                        {tab.label}
+                                        {tab.count > 0 && (
+                                            <span className="ml-1 px-2 py-0.5 bg-red-500 text-white rounded-full text-xs font-bold">
+                                                {tab.count}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {/* Refresh button */}
+                        <button
+                            onClick={() => refreshTab(activeTab)}
+                            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200"
+                        >
+                            <RefreshCw className="w-5 h-5" />
+                            Refresh
+                        </button>
                     </div>
                 </div>
             </div>
@@ -341,6 +389,10 @@ const WaiterDashboardPage: React.FC = () => {
                                                 key={order.id}
                                                 order={order}
                                                 onMarkServed={handleMarkServed}
+                                                onProcessPayment={(order) => {
+                                                    setSelectedOrder(order);
+                                                    setIsPaymentFormOpen(true);
+                                                }}
                                             />
                                         ))}
                                     </div>
@@ -374,6 +426,18 @@ const WaiterDashboardPage: React.FC = () => {
                 onGenerateBill={handleGenerateBill}
                 onMarkPaid={handleMarkPaid}
             />
+
+            {/* Cash Payment Form Modal */}
+            {isPaymentFormOpen && selectedOrder && (
+                <CashPaymentForm
+                    order={selectedOrder}
+                    onSubmit={handleProcessCashPayment}
+                    onCancel={() => {
+                        setIsPaymentFormOpen(false);
+                        setSelectedOrder(null);
+                    }}
+                />
+            )}
         </div>
     );
 };

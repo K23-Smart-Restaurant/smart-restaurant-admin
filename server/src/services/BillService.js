@@ -128,7 +128,7 @@ class BillService {
      * @param {number} amount - Payment amount
      * @returns {Promise<Object>} Payment record
      */
-    async recordPayment(orderId, paymentMethod, amount) {
+    async recordPayment(orderId, paymentMethod) {
         // Validate order exists
         const order = await prisma.order.findUnique({
             where: { id: orderId },
@@ -148,7 +148,7 @@ class BillService {
         const payment = await prisma.payment.create({
             data: {
                 orderId,
-                amount,
+                amount: order.totalAmount,
                 method: paymentMethod,
                 status: 'SUCCESS',
                 completedAt: new Date(),

@@ -26,7 +26,7 @@ const BillForm: React.FC<BillFormProps> = ({
 
     if (!isOpen || !order) return null;
 
-    const subtotal = order.totalAmount;
+    const subtotal = Number(order.totalAmount);
     const taxRate = 0.10; // 10% tax
     const tax = subtotal * taxRate;
     const discountAmount = subtotal * (discount / 100);
@@ -168,8 +168,8 @@ const BillForm: React.FC<BillFormProps> = ({
                                 <button
                                     onClick={() => setPaymentMethod('CASH')}
                                     className={`p-4 rounded-lg border-2 transition-all duration-200 ${paymentMethod === 'CASH'
-                                            ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
-                                            : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                                        ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
+                                        : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                         }`}
                                 >
                                     <DollarSign className="w-6 h-6 mx-auto mb-2" />
@@ -178,8 +178,8 @@ const BillForm: React.FC<BillFormProps> = ({
                                 <button
                                     onClick={() => setPaymentMethod('CARD')}
                                     className={`p-4 rounded-lg border-2 transition-all duration-200 ${paymentMethod === 'CARD'
-                                            ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
-                                            : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                                        ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
+                                        : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                         }`}
                                 >
                                     <CreditCard className="w-6 h-6 mx-auto mb-2" />

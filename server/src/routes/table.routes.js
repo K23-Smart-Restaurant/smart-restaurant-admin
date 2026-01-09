@@ -16,7 +16,7 @@ router.get("/validate-qr", (req, res, next) =>
 );
 
 // Protected routes (require authentication)
-router.use(authenticate, authorize("ADMIN"));
+router.use(authenticate, authorize("ADMIN", "WAITER"));
 
 router.get("/", (req, res, next) => tableController.getAll(req, res, next));
 router.post("/", validate(createTableSchema), (req, res, next) =>

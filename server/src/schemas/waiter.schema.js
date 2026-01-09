@@ -25,5 +25,4 @@ export const recordPaymentSchema = z.object({
     paymentMethod: z.enum(['CASH', 'CARD', 'E_WALLET'], {
         errorMap: () => ({ message: 'Payment method must be CASH, CARD, or E_WALLET' }),
     }),
-    amount: z.number().min(0),
 });
