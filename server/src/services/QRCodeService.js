@@ -6,11 +6,8 @@ import prisma from "../lib/prisma.js";
 import storageService from "./StorageService.js";
 
 // QR Token configuration
-const QR_TOKEN_SECRET =
-  process.env.QR_TOKEN_SECRET ||
-  process.env.JWT_SECRET ||
-  "qr-secret-key-change-in-production";
-const QR_TOKEN_EXPIRES_IN = process.env.QR_TOKEN_EXPIRES_IN || "365d"; // Default 1 year
+const QR_TOKEN_SECRET = process.env.QR_TOKEN_SECRET || 'dev_secret_key_123456789';
+const QR_TOKEN_EXPIRES_IN = process.env.QR_TOKEN_EXPIRES_IN || "30d";
 const RESTAURANT_DOMAIN =
   process.env.RESTAURANT_DOMAIN || "http://localhost:3000";
 const DEFAULT_RESTAURANT_ID =
@@ -36,6 +33,7 @@ class QRCodeService {
       createdAt: new Date().toISOString(),
     };
 
+    console.log(QR_TOKEN_SECRET);
     const token = jwt.sign(payload, QR_TOKEN_SECRET, {
       algorithm: "HS256",
       expiresIn,

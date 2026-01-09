@@ -161,21 +161,7 @@ class BillService {
                     },
                 },
             });
-        } else if (paymentMethod === 'CARD') {
-            // Update payment record for card payment
-            payment = await prisma.payment.update({
-                where: { orderId },
-                data: {
-                    status: 'SUCCESS',
-                    completedAt: new Date(),
-                    metadata: {
-                        processedBy: 'waiter',
-                        processedAt: new Date(),
-                    },
-                },
-            });
         }
-
 
         // Update order status to COMPLETED and payment status to PAID
         await prisma.order.update({
