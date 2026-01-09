@@ -97,7 +97,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
                                     <span className="text-gray-700">{item.menuItem?.name || 'Item'}</span>
                                 </div>
                                 <span className="text-gray-600 font-medium">
-                                    ${item.subtotal.toFixed(2)}
+                                    ${Number(item.subtotal).toFixed(2)}
                                 </span>
                             </div>
                         ))}
@@ -118,7 +118,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
                 <button
                     onClick={handleReject}
                     disabled={isProcessing}
-                    className="flex-1 py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-red-300 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <X className="w-5 h-5" />
                     {isProcessing ? 'Processing...' : 'Reject'}
@@ -126,7 +126,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
                 <button
                     onClick={handleAccept}
                     disabled={isProcessing}
-                    className="flex-1 py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Check className="w-5 h-5" />
                     {isProcessing ? 'Processing...' : 'Accept & Send to Kitchen'}

@@ -144,20 +144,38 @@ class BillService {
             throw new Error(`Invalid payment method: ${paymentMethod}`);
         }
 
-        // Create payment record
-        const payment = await prisma.payment.create({
-            data: {
-                orderId,
-                amount: order.totalAmount,
-                method: paymentMethod,
-                status: 'SUCCESS',
-                completedAt: new Date(),
-                metadata: {
-                    processedBy: 'waiter',
-                    processedAt: new Date(),
+        let payment;
+
+        if (paymentMethod === 'CASH') {
+            // Create payment record for cash payment
+            payment = await prisma.payment.create({
+                data: {
+                    orderId,
+                    amount: order.totalAmount,
+                    method: paymentMethod,
+                    status: 'SUCCESS',
+                    completedAt: new Date(),
+                    metadata: {
+                        processedBy: 'waiter',
+                        processedAt: new Date(),
+                    },
                 },
-            },
-        });
+            });
+        } else if (paymentMethod === 'CARD') {
+            // Update payment record for card payment
+            payment = await prisma.payment.update({
+                where: { orderId },
+                data: {
+                    status: 'SUCCESS',
+                    completedAt: new Date(),
+                    metadata: {
+                        processedBy: 'waiter',
+                        processedAt: new Date(),
+                    },
+                },
+            });
+        }
+
 
         // Update order status to COMPLETED and payment status to PAID
         await prisma.order.update({

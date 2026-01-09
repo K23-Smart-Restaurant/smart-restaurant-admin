@@ -118,14 +118,14 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed, on
                         <button
                             onClick={handleMarkServed}
                             disabled={isProcessing}
-                            className="py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <CheckCircle className="w-5 h-5" />
                             {isProcessing ? 'Processing...' : 'Mark Served'}
                         </button>
                         <button
                             onClick={handleProcessPayment}
-                            className="py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                            className="py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-blue-300 hover:border-blue-400"
                         >
                             <DollarSign className="w-5 h-5" />
                             Process Payment
@@ -135,7 +135,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({ order, onMarkServed, on
                     <button
                         onClick={handleMarkServed}
                         disabled={isProcessing}
-                        className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <CheckCircle className="w-5 h-5" />
                         {isProcessing ? 'Processing...' : 'Mark as Served'}

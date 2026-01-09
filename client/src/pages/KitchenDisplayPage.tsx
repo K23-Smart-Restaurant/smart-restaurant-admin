@@ -56,7 +56,13 @@ const KitchenDisplayPage: React.FC = () => {
     // Handle order updated
     const handleOrderUpdated = useCallback((order: Order) => {
         setOrders((prevOrders) => {
-            return prevOrders.map(o => o.id === order.id ? order : o);
+            // Check if order exists in current state
+            const exists = prevOrders.some(o => o.id === order.id);
+            if (exists) {
+                return prevOrders.map(o => o.id === order.id ? order : o);
+            }
+            // If order doesn't exist, don't add it (it might have been removed)
+            return prevOrders;
         });
     }, []);
 
@@ -64,7 +70,11 @@ const KitchenDisplayPage: React.FC = () => {
     const handleOrderReady = useCallback((order: Order) => {
         // Keep in active orders for a moment, then move to completed
         setOrders((prevOrders) => {
-            return prevOrders.map(o => o.id === order.id ? order : o);
+            const exists = prevOrders.some(o => o.id === order.id);
+            if (exists) {
+                return prevOrders.map(o => o.id === order.id ? order : o);
+            }
+            return prevOrders;
         });
 
         // After 5 seconds, move to completed
@@ -104,23 +114,46 @@ const KitchenDisplayPage: React.FC = () => {
         itemId: string,
         itemStatus: OrderItemStatus
     ) => {
+        // Store previous state for rollback on error
+        let previousOrders: Order[] = [];
+
         try {
-            const updatedOrder = await kitchenService.updateItemStatus(orderId, itemId, itemStatus);
+            // Optimistically update the UI first
+            setOrders((prevOrders) => {
+                previousOrders = prevOrders; // Store for rollback
+                return prevOrders.map((o) => {
+                    if (o.id === orderId) {
+                        return {
+                            ...o,
+                            orderItems: o.orderItems?.map((item) =>
+                                item.id === itemId ? { ...item, itemStatus } : item
+                            ),
+                        };
+                    }
+                    return o;
+                });
+            });
+
+            // Then update on the backend
+            let updatedOrder = await kitchenService.updateItemStatus(orderId, itemId, itemStatus);
+
+            // If this is the first item being marked as cooking, also update order status
+            if (!isOneItemCooking && itemStatus === 'COOKING') {
+                setIsOneItemCooking(true);
+                // Update orderStatus to 'PREPARING' if at least one item is cooking
+                updatedOrder = await kitchenService.updateOrderStatus(orderId, 'PREPARING');
+            }
+
+            // Update state with the actual backend response
             setOrders((prevOrders) =>
                 prevOrders.map((o) => (o.id === orderId ? updatedOrder : o))
             );
-
-            if (!isOneItemCooking && itemStatus === 'COOKING') {
-                setIsOneItemCooking(true);
-
-                // Update orderStatus to 'PREPARING' if at least one item is cooking
-                const updatedOrder = await kitchenService.updateOrderStatus(orderId, 'PREPARING');
-                setOrders((prevOrders) =>
-                    prevOrders.map((o) => (o.id === orderId ? updatedOrder : o))
-                );
-            }
         } catch (error) {
             console.error('Failed to update item status:', error);
+
+            // Rollback to previous state on error
+            setOrders(previousOrders);
+
             showToast('error', 'Error', 'Failed to update item status');
         }
     };
@@ -186,8 +219,8 @@ const KitchenDisplayPage: React.FC = () => {
                     <button
                         onClick={toggleSound}
                         className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 ${soundEnabled
-                                ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
-                                : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
+                            ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
+                            : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
                             }`}
                     >
                         {soundEnabled ? (
