@@ -1,0 +1,159 @@
+import React, { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { useSocket } from '../../contexts/SocketContext';
+import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon } from 'lucide-react';
+
+/**
+ * T422: StaffLayout Component
+ * Minimal layout for Kitchen Display System and Waiter Dashboard
+ * Features: Clock, WiFi status, Logout button, Maximum screen space
+ */
+const StaffLayout: React.FC = () => {
+    const { user, logout } = useAuth();
+    const { isConnected } = useSocket();
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+    // Update clock every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatTime = (date: Date): string => {
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+        });
+    };
+
+    const formatDate = (date: Date): string => {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+            {/* Minimal Header - Using DashboardLayout styling */}
+            <header className="sticky top-0 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-elevation-1 z-20">
+                <div className="flex items-center justify-between px-4 lg:px-8 py-4">
+                    {/* Left: App Title & User Role */}
+                    <div className="flex items-center space-x-4">
+                        <div>
+                            <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-primary to-gradient-secondary bg-clip-text text-transparent">
+                                Smart Restaurant
+                            </h1>
+                            <p className="text-sm text-gray-600 mt-0.5">
+                                {user?.role === 'KITCHEN_STAFF' ? 'Kitchen Display' : 'Waiter Dashboard'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Center: Clock */}
+                    <div className="flex items-center space-x-2 bg-gradient-to-r from-naples/10 to-arylide/10 px-4 py-2.5 rounded-xl border border-naples/20 shadow-sm">
+                        <ClockIcon className="w-5 h-5 text-naples" />
+                        <div className="text-center">
+                            <div className="text-xl font-bold text-charcoal tabular-nums">
+                                {formatTime(currentTime)}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                                {formatDate(currentTime)}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: WiFi Status & Profile Dropdown */}
+                    <div className="flex items-center space-x-3">
+                        {/* WiFi/Socket Status */}
+                        <div
+                            className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 ${isConnected
+                                    ? 'bg-green-50 text-green-600 border border-green-200'
+                                    : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
+                                }`}
+                            title={isConnected ? 'Connected' : 'Disconnected'}
+                        >
+                            {isConnected ? (
+                                <WifiIcon className="w-5 h-5" />
+                            ) : (
+                                <WifiOffIcon className="w-5 h-5" />
+                            )}
+                            <span className="text-xs font-semibold hidden md:inline">
+                                {isConnected ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
+
+                        {/* User profile dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                className="flex items-center space-x-3 px-3 py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-105 group"
+                            >
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
+                                    <span className="text-charcoal font-bold text-base">
+                                        {user?.name?.charAt(0).toUpperCase() || 'S'}
+                                    </span>
+                                </div>
+                                <div className="hidden md:block text-left">
+                                    <p className="text-sm font-semibold text-charcoal">
+                                        {user?.name || 'Staff'}
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                        {user?.role?.replace('_', ' ') || 'Staff'}
+                                    </p>
+                                </div>
+                                <ChevronDownIcon className={`w-4 h-4 text-gray-600 hidden md:block transition-transform duration-300 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* Dropdown menu */}
+                            {isProfileDropdownOpen && (
+                                <>
+                                    <div
+                                        className="fixed inset-0 z-10"
+                                        onClick={() => setIsProfileDropdownOpen(false)}
+                                    />
+                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-elevation-3 border border-gray-100 py-2 z-20 animate-scale-in overflow-hidden">
+                                        <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gradient-primary/5 to-gradient-secondary/5">
+                                            <p className="text-sm font-semibold text-charcoal">
+                                                {user?.name || 'Staff'}
+                                            </p>
+                                            <p className="text-xs text-gray-600 mt-0.5">{user?.email || ''}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setIsProfileDropdownOpen(false);
+                                                logout();
+                                            }}
+                                            className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 flex items-center space-x-2 group"
+                                        >
+                                            <LogOutIcon className="w-4 h-4" />
+                                            <span>Logout</span>
+                                            <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">→</span>
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content - Premium background matching DashboardLayout */}
+            <main className="flex-1 overflow-auto bg-gradient-to-br from-gray-50/50 via-white to-gray-100/50">
+                <div className="max-w-content mx-auto p-4 lg:p-8 animate-fade-in-up">
+                    <Outlet />
+                </div>
+            </main>
+        </div>
+    );
+};
+
+export default StaffLayout;

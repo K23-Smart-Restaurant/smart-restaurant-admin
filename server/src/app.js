@@ -111,6 +111,8 @@ import reportRoutes from "./routes/report.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import menuItemRoutes from "./routes/menuItem.routes.js";
 import publicMenuRoutes from "./routes/publicMenu.routes.js";
+import kitchenRoutes from "./routes/kitchen.routes.js";
+import waiterRoutes from "./routes/waiter.routes.js";
 
 // Register routes
 // H1: Public Menu API - No authentication required (for guests browsing via QR)
@@ -123,6 +125,10 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/menu-items", menuItemRoutes);
+
+// T401, T471: Staff App Routes
+app.use("/api/kitchen", kitchenRoutes);
+app.use("/api/waiter", waiterRoutes);
 
 // Additional routes will be added here
 // Example: app.use('/api/auth', authRoutes);

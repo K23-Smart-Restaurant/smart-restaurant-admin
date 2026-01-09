@@ -11,6 +11,7 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardLayout = lazy(
   () => import("./components/layout/DashboardLayout")
 );
+const StaffLayout = lazy(() => import("./components/layout/StaffLayout"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const StaffManagementPage = lazy(() => import("./pages/StaffManagementPage"));
 const CategoryManagementPage = lazy(
@@ -21,6 +22,11 @@ const MenuItemDetailsPage = lazy(() => import("./pages/MenuItemDetailsPage"));
 const TableManagementPage = lazy(() => import("./pages/TableManagementPage"));
 const OrderManagementPage = lazy(() => import("./pages/OrderManagementPage"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage"));
+const KitchenDisplayPage = lazy(() => import("./pages/KitchenDisplayPage"));
+const WaiterDashboardPage = lazy(() => import("./pages/WaiterDashboardPage"));
+
+// T420: Import RoleBasedRedirect
+import { RoleBasedRedirect } from "./components/common/RoleBasedRedirect";
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -48,83 +54,13 @@ function App() {
           <ToastProvider>
             <BrowserRouter>
               <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<LoginPage />} />
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/login" element={<LoginPage />} />
 
-                {/* Protected routes with admin layout */}
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={[
-                        "ADMIN",
-                        "SUPER_ADMIN",
-                        "WAITER",
-                        "KITCHEN_STAFF",
-                      ]}
-                    >
-                      <DashboardLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  {/* Dashboard */}
-                  <Route index element={<Navigate to="/dashboard" replace />} />
-                  <Route path="dashboard" element={<DashboardPage />} />
-
-                  {/* Staff management - Admin only */}
+                  {/* T421: Root path with role-based redirect */}
                   <Route
-                    path="staff"
-                    element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <StaffManagementPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Category management - Admin only */}
-                  <Route
-                    path="categories"
-                    element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <CategoryManagementPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Menu Item management - Admin only */}
-                  <Route
-                    path="menu"
-                    element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <MenuManagementPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Menu Item Details - Admin only */}
-                  <Route
-                    path="menu/:id"
-                    element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <MenuItemDetailsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Table management - Admin only */}
-                  <Route
-                    path="tables"
-                    element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <TableManagementPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Order management - All staff */}
-                  <Route
-                    path="orders"
+                    path="/"
                     element={
                       <ProtectedRoute
                         allowedRoles={[
@@ -134,30 +70,136 @@ function App() {
                           "KITCHEN_STAFF",
                         ]}
                       >
-                        <OrderManagementPage />
+                        <RoleBasedRedirect />
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Reports - Admin only */}
+                  {/* T421: Kitchen Staff Routes with StaffLayout */}
                   <Route
-                    path="reports"
+                    path="/kitchen"
                     element={
-                      <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-                        <ReportsPage />
+                      <ProtectedRoute allowedRoles={["KITCHEN_STAFF", "ADMIN"]}>
+                        <StaffLayout />
                       </ProtectedRoute>
                     }
-                  />
+                  >
+                    <Route index element={<KitchenDisplayPage />} />
+                  </Route>
 
-                  {/* 404 */}
+                  {/* T421: Waiter Routes with StaffLayout */}
                   <Route
-                    path="*"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
-                </Route>
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
+                    path="/waiter"
+                    element={
+                      <ProtectedRoute allowedRoles={["WAITER", "ADMIN"]}>
+                        <StaffLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<WaiterDashboardPage />} />
+                  </Route>
+
+                  {/* T421: Admin routes with DashboardLayout */}
+                  <Route
+                    path="/*"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={[
+                          "ADMIN",
+                          "SUPER_ADMIN",
+                        ]}
+                      >
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    {/* Dashboard */}
+                    <Route path="dashboard" element={<DashboardPage />} />
+
+                    {/* Staff management - Admin only */}
+                    <Route
+                      path="staff"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <StaffManagementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Category management - Admin only */}
+                    <Route
+                      path="categories"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <CategoryManagementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Menu Item management - Admin only */}
+                    <Route
+                      path="menu"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <MenuManagementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Menu Item Details - Admin only */}
+                    <Route
+                      path="menu/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <MenuItemDetailsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Table management - Admin only */}
+                    <Route
+                      path="tables"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <TableManagementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Order management - All staff */}
+                    <Route
+                      path="orders"
+                      element={
+                        <ProtectedRoute
+                          allowedRoles={[
+                            "ADMIN",
+                            "SUPER_ADMIN",
+                          ]}
+                        >
+                          <OrderManagementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Reports - Admin only */}
+                    <Route
+                      path="reports"
+                      element={
+                        <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+                          <ReportsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* 404 - Redirect to dashboard */}
+                    <Route
+                      path="*"
+                      element={<Navigate to="/dashboard" replace />}
+                    />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
           </ToastProvider>
         </SocketProvider>
       </AuthProvider>

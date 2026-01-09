@@ -12,7 +12,8 @@
 
 **Backend Tasks:** 20 tasks (Kitchen: T400-T406, Waiter: T470-T475, Infrastructure: T420-T425)  
 **Frontend Tasks:** 26 tasks (Infrastructure: T420-T425, KDS: T430-T436, Waiter: T480-T485, Integration: T490-T491)  
-**Status:** [ ] Not Started
+**Section 1 Status:** [✓] **COMPLETED** - All 17 backend tasks implemented  
+**Overall Status:** [~] In Progress (Section 1: Complete, Section 2-5: Pending)
 
 ---
 
@@ -20,30 +21,30 @@
 
 ### 1.1 Kitchen Controller & Service (Developer A)
 
-- [ ] **T400:** Add KITCHEN_STAFF role to User model (Prisma)
-- [ ] **T401:** Create `KitchenController` in `server/src/controllers/KitchenController.js`
-- [ ] **T402:** Create `KitchenService.getActiveOrders()` returning orders with status: CONFIRMED, PREPARING, READY
-- [ ] **T403:** Create endpoint `GET /api/kitchen/orders` (Auth: KITCHEN_STAFF)
-- [ ] **T404:** Create `KitchenService.updateOrderStatus(id, status)` - Validate transition logic
-- [ ] **T405:** Create endpoint `PATCH /api/kitchen/orders/:id/status` (PREPARING -> READY)
-- [ ] **T406:** Create endpoint `PATCH /api/kitchen/orders/:id/items/:itemId/status` (Item-level updates)
+- [✓] **T400:** Add KITCHEN_STAFF role to User model (Prisma)
+- [✓] **T401:** Create `KitchenController` in `server/src/controllers/KitchenController.js`
+- [✓] **T402:** Create `KitchenService.getActiveOrders()` returning orders with status: CONFIRMED, PREPARING, READY
+- [✓] **T403:** Create endpoint `GET /api/kitchen/orders` (Auth: KITCHEN_STAFF)
+- [✓] **T404:** Create `KitchenService.updateOrderStatus(id, status)` - Validate transition logic
+- [✓] **T405:** Create endpoint `PATCH /api/kitchen/orders/:id/status` (PREPARING -> READY)
+- [✓] **T406:** Create endpoint `PATCH /api/kitchen/orders/:id/items/:itemId/status` (Item-level updates)
 
 ### 1.2 Waiter Controller & Service (Developer A)
 
-- [ ] **T470:** Add WAITER role to User model (Verified: Already exists)
-- [ ] **T471:** Create `WaiterController` in `server/src/controllers/WaiterController.js`
-- [ ] **T472:** Create `WaiterService.getPendingOrders()` returning orders with status: PENDING
-- [ ] **T473:** Create endpoints `POST /api/waiter/orders/:id/accept` and `reject`
-- [ ] **T474:** Create `BillService` logic: Sum items, apply tax, apply modifier costs
-- [ ] **T475:** Create `POST /api/waiter/bill/create` (Generate PDF/JSON bill)
-- [ ] **T476:** Create `POST /api/waiter/bill/pay` (Record payment type: CASH/CARD)
+- [✓] **T470:** Add WAITER role to User model (Verified: Already exists)
+- [✓] **T471:** Create `WaiterController` in `server/src/controllers/WaiterController.js`
+- [✓] **T472:** Create `WaiterService.getPendingOrders()` returning orders with status: PENDING
+- [✓] **T473:** Create endpoints `POST /api/waiter/orders/:id/accept` and `reject`
+- [✓] **T474:** Create `BillService` logic: Sum items, apply tax, apply modifier costs
+- [✓] **T475:** Create `POST /api/waiter/bill/create` (Generate PDF/JSON bill)
+- [✓] **T476:** Create `POST /api/waiter/bill/pay` (Record payment type: CASH/CARD)
 
 ### 1.3 Real-Time Infrastructure (Developer A)
 
-- [ ] **T410:** Update `OrderService` to emit `order:created` to 'waiter' room
-- [ ] **T411:** Update `OrderService` to emit `order:confirmed` to 'kitchen' room
-- [ ] **T412:** Update `OrderingService` to emit `order:ready` to 'waiter' room
-- [ ] **T413:** Implement `SocketService.joinRoom(socket, role)` logic
+- [✓] **T410:** Update `OrderService` to emit `order:created` to 'waiter' room
+- [✓] **T411:** Update `OrderService` to emit `order:confirmed` to 'kitchen' room
+- [✓] **T412:** Update `OrderingService` to emit `order:ready` to 'waiter' room
+- [✓] **T413:** Implement `SocketService.joinRoom(socket, role)` logic
 
 ---
 
@@ -51,14 +52,14 @@
 
 ### 2.1 Routing & Layouts (All)
 
-- [ ] **T420:** Create `RoleBasedRedirect` component in `components/common/RoleBasedRedirect.tsx`
-- [ ] **T421:** Update `App.tsx`:
+- [✓] **T420:** Create `RoleBasedRedirect` component in `components/common/RoleBasedRedirect.tsx`
+- [✓] **T421:** Update `App.tsx`:
   - `/` -> Login
   - `/dashboard` -> Admin Layout (Protect: ADMIN)
   - `/kitchen` -> Kitchen Layout (Protect: KITCHEN_STAFF)
   - `/waiter` -> Waiter Layout (Protect: WAITER)
-- [ ] **T422:** Create `StaffLayout.tsx`: Minimal header (Clock, WiFi status, Logout), Max screen space
-- [ ] **T423:** Update `AuthContext` to handle redirection after login based on role
+- [✓] **T422:** Create `StaffLayout.tsx`: Minimal header (Clock, WiFi status, Logout), Max screen space
+- [✓] **T423:** Update `AuthContext` to handle redirection after login based on role
 
 ---
 
@@ -66,19 +67,19 @@
 
 ### 3.1 UI Components
 
-- [ ] **T430:** Create `KitchenOrderCard` component (High contrast, large fonts)
+- [✓] **T430:** Create `KitchenOrderCard` component (High contrast, large fonts)
   - Header: Table #, Timer (Green/Yellow/Red)
   - Body: List of items with modifiers
   - Footer: 'Mark Ready' button
-- [ ] **T431:** Create `TimerBadge` component (Calculates time since `createdAt`)
-- [ ] **T432:** Create `SoundManager` utility using `howler.js` (Ding on new order)
+- [✓] **T431:** Create `TimerBadge` component (Calculates time since `createdAt`)
+- [✓] **T432:** Create `SoundManager` utility using `howler.js` (Ding on new order)
 
 ### 3.2 Pages & Logic
 
-- [ ] **T433:** Create `KitchenDisplayPage.tsx`
-- [ ] **T434:** Implement `useKitchenSocket` hook (Listen: `order:confirmed`)
-- [ ] **T435:** Implement Grid Layout (Masonry or CSS Grid) for cards
-- [ ] **T436:** Add "Recall History" modal (View last 10 completed orders)
+- [✓] **T433:** Create `KitchenDisplayPage.tsx`
+- [✓] **T434:** Implement `useKitchenSocket` hook (Listen: `order:confirmed`)
+- [✓] **T435:** Implement Grid Layout (Masonry or CSS Grid) for cards
+- [✓] **T436:** Add "Recall History" modal (View last 10 completed orders)
 
 ---
 

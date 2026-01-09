@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef, useCallback, type ReactNode } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:5001';
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3000';
 
 // Socket context type
 interface SocketContextType {

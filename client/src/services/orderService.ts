@@ -34,6 +34,8 @@ export interface Order {
     totalAmount: number;
     paymentStatus: PaymentStatus;
     paymentIntentId: string | null;
+    billRequested?: boolean; // Whether customer has requested the bill
+    billRequestedAt?: string | null; // When the bill was requested
     notes: string | null;
     createdAt: string;
     updatedAt: string;
