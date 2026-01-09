@@ -71,7 +71,7 @@ const WaiterDashboardPage: React.FC = () => {
                     id: table.id,
                     tableNumber: table.tableNumber,
                     capacity: table.capacity,
-                    status: table.status,
+                    status: activeOrder ? 'BILL_REQUESTED' : table.status,
                     currentOrder: activeOrder ? {
                         id: activeOrder.id,
                         orderNumber: activeOrder.orderNumber,
@@ -173,7 +173,6 @@ const WaiterDashboardPage: React.FC = () => {
     const handleTableClick = async (table: TableStatus) => {
         if (table.status === 'OCCUPIED' || table.status === 'BILL_REQUESTED') {
             // Fetch the actual order for this table
-            console.log(table); 
             try {
                 // If we already have currentOrder from table data, use it
                 if (table.currentOrder) {

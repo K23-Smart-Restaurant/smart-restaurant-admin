@@ -1,392 +1,338 @@
-// Smart Restaurant System - Database Schema
-// Project: Multi-App Restaurant Management System
-// Database: PostgreSQL 14+
-// ORM: Prisma
-// Validated Against: Constitution v1.0.0 - Principle II (Relational Integrity)
-
 generator client {
-    provider = "prisma-client-js"
-    // Output to default location in root's node_modules
-    // Other apps can reference via symlink or relative path
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
+  provider = "postgresql"
 }
 
-// ========================================
-// ENUMS
-// ========================================
+model User {
+  id                   String         @id @default(uuid())
+  email                String         @unique
+  passwordHash         String?
+  role                 UserRole
+  name                 String?
+  phoneNumber          String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  authProvider         String         @default("email")
+  googleId             String?        @unique
+  isActive             Boolean        @default(true)
+  isVerified           Boolean        @default(false)
+  lastLoginAt          DateTime?
+  passwordResetExpires DateTime?
+  passwordResetToken   String?        @db.VarChar(500)
+  verificationToken    String?        @db.VarChar(500)
+  ordersAsCustomer     Order[]        @relation("CustomerOrders")
+  ordersAsWaiter       Order[]        @relation("WaiterOrders")
+  refreshTokens        RefreshToken[]
+  restaurantsOwned     Restaurant[]
+  reviews              Review[]
+
+  @@index([email])
+  @@index([googleId])
+  @@map("User")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("RefreshToken")
+}
+
+model Restaurant {
+  id             String          @id @default(uuid())
+  name           String
+  address        String?
+  phoneNumber    String?
+  adminId        String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  logoUrl        String?
+  categories     Category[]
+  menuItems      MenuItem[]
+  modifierGroups ModifierGroup[]
+  admin          User            @relation(fields: [adminId], references: [id])
+  tables         Table[]
+
+  @@index([adminId])
+  @@map("Restaurant")
+}
+
+model Table {
+  id               String      @id @default(uuid())
+  tableNumber      Int         @unique
+  capacity         Int
+  status           TableStatus @default(AVAILABLE)
+  qrCode           String?
+  restaurantId     String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  description      String?
+  location         String?
+  qrToken          String?     @unique @db.VarChar(500)
+  qrTokenCreatedAt DateTime?
+  isActive         Boolean     @default(true)
+  orders           Order[]
+  restaurant       Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([tableNumber])
+  @@index([status])
+  @@index([location])
+  @@index([restaurantId])
+  @@map("Table")
+}
+
+model Category {
+  id           String      @id @default(uuid())
+  name         String
+  description  String?
+  displayOrder Int         @default(0)
+  restaurantId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  isActive     Boolean     @default(true)
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems    MenuItem[]
+
+  @@index([restaurantId])
+  @@map("Category")
+}
+
+model MenuItemPhoto {
+  id         String   @id @default(uuid())
+  menuItemId String
+  url        String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@index([menuItemId])
+  @@index([menuItemId, isPrimary])
+  @@map("MenuItemPhoto")
+}
+
+model ModifierGroup {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  selectionType String      @default("multiple")
+  isRequired    Boolean     @default(false)
+  minSelections Int?        @default(0)
+  maxSelections Int?
+  displayOrder  Int         @default(0)
+  status        String      @default("active")
+  menuItemId    String
+  restaurantId  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  modifiers     Modifier[]
+  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  restaurant    Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([menuItemId])
+  @@index([restaurantId])
+  @@index([status])
+  @@map("ModifierGroup")
+}
+
+model MenuItem {
+  id                   String          @id @default(uuid())
+  name                 String
+  description          String?
+  category             MenuCategory
+  price                Decimal         @db.Decimal(10, 2)
+  imageUrl             String?
+  isAvailable          Boolean         @default(true)
+  isSoldOut            Boolean         @default(false)
+  isChefRecommendation Boolean         @default(false)
+  preparationTime      Int?
+  categoryId           String?
+  restaurantId         String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  categoryModel        Category?       @relation(fields: [categoryId], references: [id])
+  restaurant           Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  photos               MenuItemPhoto[]
+  modifiers            ModifierGroup[]
+  orderItems           OrderItem[]
+  reviews              Review[]
+
+  @@index([category, isAvailable])
+  @@index([isAvailable])
+  @@index([categoryId])
+  @@index([restaurantId])
+  @@map("MenuItem")
+}
+
+model Modifier {
+  id              String        @id @default(uuid())
+  name            String
+  price           Decimal       @default(0) @db.Decimal(10, 2)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  displayOrder    Int           @default(0)
+  modifierGroupId String
+  status          String        @default("active")
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@index([modifierGroupId])
+  @@index([status])
+  @@map("Modifier")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  orderNumber     Int           @unique @default(autoincrement())
+  tableId         String
+  userId          String?
+  guestName       String?
+  guestContact    String?
+  waiterId        String?
+  status          OrderStatus   @default(PENDING)
+  totalAmount     Decimal       @default(0) @db.Decimal(10, 2)
+  paymentStatus   PaymentStatus @default(UNPAID)
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  paidAt          DateTime?
+  billRequested   Boolean       @default(false)
+  billRequestedAt DateTime?
+  orderToken      String?
+  table           Table         @relation(fields: [tableId], references: [id])
+  customer        User?         @relation("CustomerOrders", fields: [userId], references: [id])
+  waiter          User?         @relation("WaiterOrders", fields: [waiterId], references: [id])
+  orderItems      OrderItem[]
+  payment         Payment?
+
+  @@index([orderNumber])
+  @@index([tableId, status])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+  @@index([waiterId])
+  @@map("Order")
+}
+
+model OrderItem {
+  id                  String          @id @default(uuid())
+  orderId             String
+  menuItemId          String
+  quantity            Int
+  unitPrice           Decimal         @db.Decimal(10, 2)
+  subtotal            Decimal         @db.Decimal(10, 2)
+  itemStatus          OrderItemStatus @default(QUEUED)
+  specialInstructions String?
+  createdAt           DateTime        @default(now())
+  menuItem            MenuItem        @relation(fields: [menuItemId], references: [id])
+  order               Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([menuItemId])
+  @@map("OrderItem")
+}
+
+model Payment {
+  id                    String                   @id @default(uuid())
+  orderId               String                   @unique
+  amount                Decimal                  @db.Decimal(10, 2)
+  method                PaymentMethod
+  status                PaymentTransactionStatus @default(PENDING)
+  stripePaymentIntentId String?                  @unique
+  transactionId         String?
+  metadata              Json?
+  createdAt             DateTime                 @default(now())
+  completedAt           DateTime?
+  order                 Order                    @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+  @@map("Payment")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String
+  userId     String
+  menuItemId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, menuItemId])
+  @@index([menuItemId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("Review")
+}
 
 enum UserRole {
-    SUPER_ADMIN // Can manage all restaurants and admins
-    ADMIN // Restaurant owner/manager
-    WAITER // Service staff
-    KITCHEN_STAFF // Kitchen display system user
-    CUSTOMER // Registered customer
-    GUEST // Unregistered customer (single session)
+  SUPER_ADMIN
+  ADMIN
+  WAITER
+  KITCHEN_STAFF
+  CUSTOMER
+  GUEST
 }
 
 enum TableStatus {
-    AVAILABLE
-    OCCUPIED
-    RESERVED
+  AVAILABLE
+  OCCUPIED
+  RESERVED
 }
 
 enum MenuCategory {
-    APPETIZER
-    MAIN_COURSE
-    DESSERT
-    BEVERAGE
+  APPETIZER
+  MAIN_COURSE
+  DESSERT
+  BEVERAGE
 }
 
 enum OrderStatus {
-    PENDING // Order created, awaiting confirmation
-    CONFIRMED // Order confirmed by waiter/system
-    PREPARING // Kitchen is preparing
-    READY // Ready for pickup/serving
-    SERVED // Delivered to customer
-    COMPLETED // Order completed (served and bill requested/ready to pay)
-    CANCELLED // Order cancelled
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  SERVED
+  COMPLETED
+  BILL_REQUESTED
+  CANCELLED
 }
 
 enum PaymentStatus {
-    UNPAID // No payment initiated
-    PENDING // Payment processing
-    PAID // Payment successful
-    FAILED // Payment failed
+  UNPAID
+  PENDING
+  PAID
+  FAILED
 }
 
 enum PaymentMethod {
-    CASH
-    CARD
-    E_WALLET
+  CASH
+  CARD
+  E_WALLET
 }
 
 enum PaymentTransactionStatus {
-    PENDING
-    SUCCESS
-    FAILED
-    REFUNDED
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
 }
 
 enum OrderItemStatus {
-    QUEUED // Waiting to be prepared
-    COOKING // Currently being prepared
-    READY // Completed
-}
-
-// ========================================
-// MODELS
-// ========================================
-
-// User - All system users (guests, waiters, kitchen staff, admins)
-model User {
-    id           String   @id @default(uuid())
-    email        String   @unique
-    passwordHash String? // Nullable for OAuth users
-    role         UserRole
-    name         String?
-    phoneNumber  String?
-
-    // Authentication fields
-    isVerified   Boolean @default(false) // Email verification status
-    isActive     Boolean @default(true) // Account active status
-    googleId     String? @unique // Google OAuth ID
-    authProvider String  @default("email") // "email", "google", etc.
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relationships
-    restaurantsOwned Restaurant[] // For ADMIN role
-    ordersAsCustomer Order[]        @relation("CustomerOrders")
-    ordersAsWaiter   Order[]        @relation("WaiterOrders")
-    refreshTokens    RefreshToken[] // User's refresh tokens for "Remember me"
-    reviews          Review[] // User's menu item reviews
-
-    @@index([email])
-    @@index([googleId])
-    @@map("User")
-}
-
-// RefreshToken - Secure refresh tokens for "Remember me" functionality
-model RefreshToken {
-    id        String   @id @default(uuid())
-    token     String   @unique @db.VarChar(500)
-    userId    String
-    expiresAt DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relationships
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
-    @@index([token])
-    @@index([expiresAt])
-    @@map("RefreshToken")
-}
-
-// Restaurant - For future multi-tenant support
-model Restaurant {
-    id          String   @id @default(uuid())
-    name        String
-    address     String?
-    phoneNumber String?
-    logoUrl     String? // L4: Restaurant logo for QR PDFs and branding
-    adminId     String // Foreign Key to User (ADMIN role)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    // Relationships
-    admin          User            @relation(fields: [adminId], references: [id], onDelete: Restrict)
-    tables         Table[]
-    menuItems      MenuItem[]
-    categories     Category[]
-    modifierGroups ModifierGroup[]
-
-    @@index([adminId])
-    @@map("Restaurant")
-}
-
-// Table - Physical restaurant tables
-model Table {
-    id               String      @id @default(uuid())
-    tableNumber      Int         @unique
-    capacity         Int // Validated in application: 1-20
-    location         String? // e.g., "Main Floor", "Patio", "Private Room"
-    description      String?     @db.Text
-    status           TableStatus @default(AVAILABLE)
-    isActive         Boolean     @default(true) // M5: Soft delete - Active/Inactive status
-    qrCode           String?     @db.Text // Base64 QR image (stored as TEXT, no unique constraint due to size)
-    qrToken          String?     @unique @db.VarChar(500) // JWT token for table access
-    qrTokenCreatedAt DateTime? // When QR token was generated
-    restaurantId     String? // Optional: for multi-tenant
-    createdAt        DateTime    @default(now())
-    updatedAt        DateTime    @updatedAt
-
-    // Relationships
-    restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-    orders     Order[]
-
-    @@index([tableNumber])
-    @@index([status])
-    @@index([location])
-    @@index([restaurantId])
-    @@map("Table")
-}
-
-// Category - Menu item categories (alternative organization)
-model Category {
-    id           String   @id @default(uuid())
-    name         String
-    description  String?
-    displayOrder Int      @default(0)
-    isActive     Boolean  @default(true)
-    restaurantId String?
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-
-    // Relationships
-    restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-    menuItems  MenuItem[]
-
-    @@index([restaurantId])
-    @@map("Category")
-}
-
-// H2: MenuItemPhoto - Multiple photos support for menu items
-model MenuItemPhoto {
-    id         String   @id @default(uuid())
-    menuItemId String
-    url        String // File path or URL to the photo
-    isPrimary  Boolean  @default(false) // H3: Primary photo selection
-    createdAt  DateTime @default(now())
-
-    // Relationships
-    menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-
-    @@index([menuItemId])
-    @@index([menuItemId, isPrimary])
-    @@map("MenuItemPhoto")
-}
-
-// H5: ModifierGroup - Grouping for modifiers with selection constraints
-model ModifierGroup {
-    id            String   @id @default(uuid())
-    name          String
-    description   String?
-    selectionType String   @default("multiple") // "single" or "multiple"
-    isRequired    Boolean  @default(false)
-    minSelections Int?     @default(0) // Minimum number of selections (for multi-select)
-    maxSelections Int? // Maximum number of selections (null = unlimited for multi-select)
-    displayOrder  Int      @default(0)
-    status        String   @default("active") // "active" or "inactive"
-    menuItemId    String
-    restaurantId  String?
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
-
-    // Relationships
-    menuItem   MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-    restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-    modifiers  Modifier[]
-
-    @@index([menuItemId])
-    @@index([restaurantId])
-    @@index([status])
-    @@map("ModifierGroup")
-}
-
-// MenuItem - Items available on the menu
-model MenuItem {
-    id                   String       @id @default(uuid())
-    name                 String
-    description          String?
-    category             MenuCategory
-    price                Decimal      @db.Decimal(10, 2)
-    imageUrl             String? // H2: Kept for backward compatibility, use photos relation for new items
-    isAvailable          Boolean      @default(true)
-    isSoldOut            Boolean      @default(false)
-    isChefRecommendation Boolean      @default(false)
-    preparationTime      Int? // in minutes
-    categoryId           String? // Optional: reference to Category model
-    restaurantId         String?
-    createdAt            DateTime     @default(now())
-    updatedAt            DateTime     @updatedAt
-
-    // Relationships
-    categoryModel Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-    restaurant    Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-    orderItems    OrderItem[]
-    modifiers     ModifierGroup[]
-    photos        MenuItemPhoto[] // H2: Multiple photos support
-    reviews       Review[] // Menu item reviews
-
-    @@index([category, isAvailable])
-    @@index([isAvailable])
-    @@index([categoryId])
-    @@index([restaurantId])
-    @@map("MenuItem")
-}
-
-// Modifier - Individual modifier options within a modifier group
-model Modifier {
-    id              String   @id @default(uuid())
-    name            String
-    price           Decimal  @default(0) @db.Decimal(10, 2)
-    status          String   @default("active") // L5: "active" or "inactive"
-    displayOrder    Int      @default(0)
-    modifierGroupId String
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
-
-    // Relationships
-    modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
-
-    @@index([modifierGroupId])
-    @@index([status])
-    @@map("Modifier")
-}
-
-// Order - Customer orders
-model Order {
-    id              String        @id @default(uuid())
-    orderNumber     Int           @unique @default(autoincrement())
-    tableId         String
-    userId          String? // Nullable for guest orders
-    guestName       String? // For guest orders
-    guestContact    String? // For guest orders
-    waiterId        String?
-    status          OrderStatus   @default(PENDING)
-    totalAmount     Decimal       @default(0) @db.Decimal(10, 2)
-    paymentStatus   PaymentStatus @default(UNPAID)
-    orderToken      String? // JWT token for guest order access (7 days)
-    billRequested   Boolean       @default(false) // Customer requested bill
-    billRequestedAt DateTime? // When bill was requested
-    notes           String?
-    createdAt       DateTime      @default(now())
-    updatedAt       DateTime      @updatedAt
-    paidAt          DateTime? // When payment was completed (business timestamp)
-
-    // Relationships
-    table      Table       @relation(fields: [tableId], references: [id], onDelete: Restrict)
-    customer   User?       @relation("CustomerOrders", fields: [userId], references: [id], onDelete: SetNull)
-    waiter     User?       @relation("WaiterOrders", fields: [waiterId], references: [id], onDelete: SetNull)
-    orderItems OrderItem[]
-    payment    Payment?
-
-    @@index([orderNumber])
-    @@index([tableId, status])
-    @@index([status])
-    @@index([createdAt])
-    @@index([userId])
-    @@index([waiterId])
-    @@map("Order")
-}
-
-// OrderItem - Individual items within an order
-model OrderItem {
-    id                  String          @id @default(uuid())
-    orderId             String
-    menuItemId          String
-    quantity            Int
-    unitPrice           Decimal         @db.Decimal(10, 2)
-    subtotal            Decimal         @db.Decimal(10, 2)
-    itemStatus          OrderItemStatus @default(QUEUED)
-    specialInstructions String?
-    createdAt           DateTime        @default(now())
-
-    // Relationships
-    order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
-
-    @@index([orderId])
-    @@index([menuItemId])
-    @@map("OrderItem")
-}
-
-// Payment - Payment transactions
-model Payment {
-    id                    String                   @id @default(uuid())
-    orderId               String                   @unique
-    amount                Decimal                  @db.Decimal(10, 2)
-    method                PaymentMethod
-    status                PaymentTransactionStatus @default(PENDING)
-    stripePaymentIntentId String?                  @unique
-    transactionId         String?
-    metadata              Json?
-    createdAt             DateTime                 @default(now())
-    completedAt           DateTime?
-
-    // Relationships
-    order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
-
-    @@index([orderId])
-    @@index([stripePaymentIntentId])
-    @@index([status])
-    @@map("Payment")
-}
-
-// Review - Customer reviews for menu items (T187-T188)
-model Review {
-    id         String   @id @default(uuid())
-    rating     Int // 1-5 stars
-    comment    String   @db.Text
-    userId     String
-    menuItemId String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-
-    // Relationships
-    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-
-    // T188: Unique constraint to prevent duplicate reviews
-    @@unique([userId, menuItemId])
-    @@index([menuItemId])
-    @@index([userId])
-    @@index([createdAt])
-    @@map("Review")
+  QUEUED
+  COOKING
+  READY
 }

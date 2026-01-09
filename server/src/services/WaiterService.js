@@ -101,7 +101,7 @@ class WaiterService {
         const orders = await prisma.order.findMany({
             where: {
                 billRequested: true,
-                status: 'COMPLETED',
+                status: 'BILL_REQUESTED',
                 paymentStatus: 'PENDING',
             },
             include: {
