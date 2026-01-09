@@ -13,6 +13,10 @@
     "migrate-dev": "npx prisma migrate dev",
     "db-reset": "npx prisma migrate reset",
     "db-seed": "node prisma/lib/seed.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\"",
     "test": "jest"
   },
   "keywords": [
@@ -48,7 +52,13 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "globals": "^15.14.0",
     "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
     "prisma": "^7.1.0"
   }
 }
