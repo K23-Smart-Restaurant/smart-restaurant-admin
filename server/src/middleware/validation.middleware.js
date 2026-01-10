@@ -33,4 +33,4 @@ const validate = (schema, source = 'body') => {
   };
 };
 
-export  { validate };
+export { validate };

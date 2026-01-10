@@ -38,26 +38,17 @@ const CategoryManagementPage: React.FC = () => {
       if (editingCategory) {
         // Update existing category
         await updateCategory(editingCategory.id, categoryData);
-        showSuccess(
-          'Category Updated',
-          `"${categoryData.name}" has been successfully updated.`
-        );
+        showSuccess('Category Updated', `"${categoryData.name}" has been successfully updated.`);
       } else {
         // Add new category
         await addCategory(categoryData);
-        showSuccess(
-          'Category Created',
-          `"${categoryData.name}" has been successfully added.`
-        );
+        showSuccess('Category Created', `"${categoryData.name}" has been successfully added.`);
       }
       closeCategoryModal();
     } catch (error) {
       console.error('Failed to save category:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError(
-        'Failed to Save Category',
-        errorMessage
-      );
+      showError('Failed to Save Category', errorMessage);
     }
   };
 
@@ -80,20 +71,13 @@ const CategoryManagementPage: React.FC = () => {
 
     try {
       await deleteCategory(categoryToDelete.id);
-      showSuccess(
-        'Category Deleted',
-        `"${categoryToDelete.name}" has been permanently removed.`
-      );
+      showSuccess('Category Deleted', `"${categoryToDelete.name}" has been permanently removed.`);
       setCategoryToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete category:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to delete category. Please try again.';
-      showError(
-        'Delete Failed',
-        errorMessage
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to delete category. Please try again.';
+      showError('Delete Failed', errorMessage);
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -121,7 +105,8 @@ const CategoryManagementPage: React.FC = () => {
       let comparison = 0;
       if (sortBy === 'displayOrder') comparison = a.displayOrder - b.displayOrder;
       else if (sortBy === 'name') comparison = a.name.localeCompare(b.name);
-      else if (sortBy === 'createdAt') comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      else if (sortBy === 'createdAt')
+        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return sortOrder === 'asc' ? comparison : -comparison;
     });
     return categoriesCopy;
@@ -137,7 +122,9 @@ const CategoryManagementPage: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600">Error loading categories: {error?.message || 'Unknown error'}</p>
+          <p className="text-red-600">
+            Error loading categories: {error?.message || 'Unknown error'}
+          </p>
           <Button onClick={() => window.location.reload()} className="mt-4">
             Retry
           </Button>
@@ -226,4 +213,3 @@ const CategoryManagementPage: React.FC = () => {
 };
 
 export default CategoryManagementPage;
-

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
-import { UtensilsIcon, Eye, EyeOff } from "lucide-react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
+import { UtensilsIcon, Eye, EyeOff } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -17,17 +17,17 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsLoading(true);
 
     try {
       await login(email, password, rememberMe);
-      navigate("/dashboard");
+      navigate('/dashboard');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Invalid email or password");
+        setError(err.response?.data?.message || 'Invalid email or password');
       } else {
-        setError("An unexpected error occurred");
+        setError('An unexpected error occurred');
       }
     } finally {
       setIsLoading(false);
@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-gradient-primary/30 to-gradient-secondary/30 rounded-full blur-3xl animate-float"></div>
         <div
           className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-gradient-warm/30 to-gradient-accent/30 rounded-full blur-3xl animate-float"
-          style={{ animationDelay: "1s" }}
+          style={{ animationDelay: '1s' }}
         ></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-naples/20 to-arylide/20 rounded-full blur-3xl animate-pulse-glow"></div>
       </div>
@@ -55,9 +55,7 @@ const LoginPage: React.FC = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text text-transparent">
               Smart Restaurant
             </h1>
-            <p className="text-gray-600 mt-2 font-medium">
-              Admin Dashboard Login
-            </p>
+            <p className="text-gray-600 mt-2 font-medium">Admin Dashboard Login</p>
           </div>
 
           {error && (
@@ -69,10 +67,7 @@ const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-charcoal mb-1"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-1">
                   Email <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -87,16 +82,13 @@ const LoginPage: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-charcoal mb-1"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-charcoal mb-1">
                   Password <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <input
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -107,14 +99,10 @@ const LoginPage: React.FC = () => {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-charcoal transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-naples focus:ring-offset-1"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     tabIndex={-1}
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
@@ -143,10 +131,7 @@ const LoginPage: React.FC = () => {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin h-5 w-5 mr-2"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -165,15 +150,12 @@ const LoginPage: React.FC = () => {
                   Logging in...
                 </span>
               ) : (
-                "Login"
+                'Login'
               )}
             </button>
           </form>
 
-          <div
-            className="mt-6 text-center animate-fade-in"
-            style={{ animationDelay: "400ms" }}
-          >
+          <div className="mt-6 text-center animate-fade-in" style={{ animationDelay: '400ms' }}>
             <p className="text-xs text-gray-500">
               Secure admin access • Powered by Smart Restaurant
             </p>

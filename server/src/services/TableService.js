@@ -1,6 +1,6 @@
-import prisma from "../lib/prisma.js";
-import qrCodeService from "./QRCodeService.js";
-import storageService from "./StorageService.js";
+import prisma from '../lib/prisma.js';
+import qrCodeService from './QRCodeService.js';
+import storageService from './StorageService.js';
 
 class TableService {
   async createTable(data) {
@@ -11,16 +11,15 @@ class TableService {
         capacity: data.capacity,
         location: data.location,
         description: data.description,
-        status: data.status || "AVAILABLE",
+        status: data.status || 'AVAILABLE',
       },
     });
 
     // Generate QR code and token using QRCodeService
-    const { qrCode, qrToken, qrTokenCreatedAt } =
-      await qrCodeService.generateTableQR(
-        table.id,
-        table.restaurantId || undefined
-      );
+    const { qrCode, qrToken, qrTokenCreatedAt } = await qrCodeService.generateTableQR(
+      table.id,
+      table.restaurantId || undefined
+    );
 
     // Update table with QR data
     return await prisma.table.update({
@@ -41,7 +40,7 @@ class TableService {
     });
 
     if (!existingTable) {
-      throw new Error("Table not found");
+      throw new Error('Table not found');
     }
 
     // Log old token invalidation
@@ -50,12 +49,11 @@ class TableService {
     }
 
     // Generate new QR code and token (pass old URL for cleanup)
-    const { qrCode, qrToken, qrTokenCreatedAt } =
-      await qrCodeService.generateTableQR(
-        tableId,
-        existingTable.restaurantId || undefined,
-        existingTable.qrCode // Pass old QR code URL for deletion
-      );
+    const { qrCode, qrToken, qrTokenCreatedAt } = await qrCodeService.generateTableQR(
+      tableId,
+      existingTable.restaurantId || undefined,
+      existingTable.qrCode // Pass old QR code URL for deletion
+    );
 
     // Update table with new QR data (old token is automatically invalidated)
     return await prisma.table.update({
@@ -68,17 +66,17 @@ class TableService {
     });
   }
 
-  async downloadQRCode(tableId, format = "png") {
+  async downloadQRCode(tableId, format = 'png') {
     const table = await prisma.table.findUnique({ where: { id: tableId } });
     if (!table) {
-      throw new Error("Table not found");
+      throw new Error('Table not found');
     }
 
     if (!table.qrToken) {
-      throw new Error("QR code not generated for this table");
+      throw new Error('QR code not generated for this table');
     }
 
-    if (format === "pdf") {
+    if (format === 'pdf') {
       return await qrCodeService.generateTablePDF(table);
     }
 
@@ -90,13 +88,10 @@ class TableService {
   async getTableWithQRStatus(tableId) {
     const table = await prisma.table.findUnique({ where: { id: tableId } });
     if (!table) {
-      throw new Error("Table not found");
+      throw new Error('Table not found');
     }
 
-    const tokenStatus = qrCodeService.getTokenStatus(
-      table.qrToken,
-      table.qrTokenCreatedAt
-    );
+    const tokenStatus = qrCodeService.getTokenStatus(table.qrToken, table.qrTokenCreatedAt);
 
     return {
       ...table,
@@ -106,16 +101,13 @@ class TableService {
 
   async getTables() {
     const tables = await prisma.table.findMany({
-      orderBy: { tableNumber: "asc" },
+      orderBy: { tableNumber: 'asc' },
     });
 
     // Add QR status to each table
     return tables.map((table) => ({
       ...table,
-      qrStatus: qrCodeService.getTokenStatus(
-        table.qrToken,
-        table.qrTokenCreatedAt
-      ),
+      qrStatus: qrCodeService.getTokenStatus(table.qrToken, table.qrTokenCreatedAt),
     }));
   }
 
@@ -145,10 +137,10 @@ class TableService {
       where: {
         tableId,
         status: {
-          in: ["PENDING", "CONFIRMED", "PREPARING", "READY", "SERVED"],
+          in: ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'SERVED'],
         },
         paymentStatus: {
-          not: "PAID",
+          not: 'PAID',
         },
       },
       include: {
@@ -188,7 +180,7 @@ class TableService {
     });
 
     if (!table) {
-      throw new Error("Table not found");
+      throw new Error('Table not found');
     }
 
     // M6: If deactivating (isActive = false), check for active orders
@@ -219,9 +211,7 @@ class TableService {
     // Log the deactivation
     if (!isActive) {
       console.log(
-        `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${
-          force ? " (forced)" : ""
-        }`
+        `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${force ? ' (forced)' : ''}`
       );
     }
 
@@ -248,34 +238,34 @@ class TableService {
   }
 
   // Batch operations
-  async downloadBatchQRCodes(tableIds, format = "zip", options = {}) {
+  async downloadBatchQRCodes(tableIds, format = 'zip', options = {}) {
     let tables;
 
     if (tableIds && tableIds.length > 0) {
       tables = await prisma.table.findMany({
         where: { id: { in: tableIds } },
-        orderBy: { tableNumber: "asc" },
+        orderBy: { tableNumber: 'asc' },
       });
     } else {
       // If no IDs provided, get all tables
       tables = await prisma.table.findMany({
-        orderBy: { tableNumber: "asc" },
+        orderBy: { tableNumber: 'asc' },
       });
     }
 
     if (tables.length === 0) {
-      throw new Error("No tables found");
+      throw new Error('No tables found');
     }
 
     // Filter out tables without QR codes
     const tablesWithQR = tables.filter((t) => t.qrToken);
     if (tablesWithQR.length === 0) {
-      throw new Error("No tables have QR codes generated");
+      throw new Error('No tables have QR codes generated');
     }
 
-    if (format === "zip") {
+    if (format === 'zip') {
       return await qrCodeService.generateBatchZip(tablesWithQR);
-    } else if (format === "pdf") {
+    } else if (format === 'pdf') {
       return await qrCodeService.generateBatchPDF(tablesWithQR, options);
     }
 

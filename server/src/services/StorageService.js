@@ -1,10 +1,10 @@
-import supabase from "../lib/supabase.js";
-import crypto from "crypto";
-import path from "path";
+import supabase from '../lib/supabase.js';
+import crypto from 'crypto';
+import path from 'path';
 
-const BUCKET_NAME = "smart-restaurant-admin";
-const MENU_ITEMS_FOLDER = "menu-items";
-const QR_CODES_FOLDER = "qr-codes";
+const BUCKET_NAME = 'smart-restaurant-admin';
+const MENU_ITEMS_FOLDER = 'menu-items';
+const QR_CODES_FOLDER = 'qr-codes';
 
 /**
  * StorageService - Handles file uploads to Supabase Storage
@@ -25,15 +25,10 @@ class StorageService {
    * @param {string} folder - Folder path within the bucket
    * @returns {Promise<{url: string, path: string}>} Public URL and storage path
    */
-  async uploadFile(
-    fileBuffer,
-    originalName,
-    mimeType,
-    folder = MENU_ITEMS_FOLDER
-  ) {
+  async uploadFile(fileBuffer, originalName, mimeType, folder = MENU_ITEMS_FOLDER) {
     if (!supabase) {
       throw new Error(
-        "Supabase storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables."
+        'Supabase storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.'
       );
     }
 
@@ -51,14 +46,12 @@ class StorageService {
       });
 
     if (error) {
-      console.error("Supabase upload error:", error);
+      console.error('Supabase upload error:', error);
       throw new Error(`Failed to upload file: ${error.message}`);
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(storagePath);
+    const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(storagePath);
 
     return {
       url: urlData.publicUrl,
@@ -72,12 +65,7 @@ class StorageService {
    * @returns {Promise<{url: string, path: string}>}
    */
   async uploadMenuItemPhoto(file) {
-    return this.uploadFile(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      MENU_ITEMS_FOLDER
-    );
+    return this.uploadFile(file.buffer, file.originalname, file.mimetype, MENU_ITEMS_FOLDER);
   }
 
   /**
@@ -104,12 +92,10 @@ class StorageService {
    * @param {string} storagePath - Path within the bucket
    */
   async deleteFile(storagePath) {
-    const { error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .remove([storagePath]);
+    const { error } = await supabase.storage.from(BUCKET_NAME).remove([storagePath]);
 
     if (error) {
-      console.error("Supabase delete error:", error);
+      console.error('Supabase delete error:', error);
       throw new Error(`Failed to delete file: ${error.message}`);
     }
   }
@@ -121,11 +107,9 @@ class StorageService {
   async deleteFileByUrl(publicUrl) {
     // Extract storage path from public URL
     // URL format: https://<project>.supabase.co/storage/v1/object/public/<bucket>/<path>
-    const urlParts = publicUrl.split(
-      `/storage/v1/object/public/${BUCKET_NAME}/`
-    );
+    const urlParts = publicUrl.split(`/storage/v1/object/public/${BUCKET_NAME}/`);
     if (urlParts.length < 2) {
-      console.warn("Could not extract storage path from URL:", publicUrl);
+      console.warn('Could not extract storage path from URL:', publicUrl);
       return;
     }
 
@@ -157,7 +141,7 @@ class StorageService {
    */
   async uploadQRCode(qrBuffer, tableId) {
     const filename = `table-${tableId}-${Date.now()}.png`;
-    return this.uploadFile(qrBuffer, filename, "image/png", QR_CODES_FOLDER);
+    return this.uploadFile(qrBuffer, filename, 'image/png', QR_CODES_FOLDER);
   }
 
   /**
@@ -168,7 +152,7 @@ class StorageService {
     if (!qrCodeUrl) return;
 
     // Skip if it's a base64 data URL (old format)
-    if (qrCodeUrl.startsWith("data:")) {
+    if (qrCodeUrl.startsWith('data:')) {
       return;
     }
 
@@ -176,7 +160,7 @@ class StorageService {
     try {
       await this.deleteFileByUrl(qrCodeUrl);
     } catch (error) {
-      console.warn("Could not delete old QR code:", error.message);
+      console.warn('Could not delete old QR code:', error.message);
       // Don't throw - it's okay if deletion fails
     }
   }

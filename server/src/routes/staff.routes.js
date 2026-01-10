@@ -15,32 +15,24 @@ const staffController = new StaffController();
 router.use(authenticate, authorize('ADMIN'));
 
 // Create waiter account
-router.post(
-  '/waiter',
-  validate(createWaiterSchema),
-  (req, res, next) => staffController.createWaiter(req, res, next)
+router.post('/waiter', validate(createWaiterSchema), (req, res, next) =>
+  staffController.createWaiter(req, res, next)
 );
 
 // Create kitchen staff account
-router.post(
-  '/kitchen',
-  validate(createKitchenStaffSchema),
-  (req, res, next) => staffController.createKitchenStaff(req, res, next)
+router.post('/kitchen', validate(createKitchenStaffSchema), (req, res, next) =>
+  staffController.createKitchenStaff(req, res, next)
 );
 
 // Get all staff members
 router.get('/', (req, res, next) => staffController.getAll(req, res, next));
 
 // Update staff member
-router.patch(
-  '/:id',
-  validate(updateUserSchema),
-  (req, res, next) => staffController.update(req, res, next)
+router.patch('/:id', validate(updateUserSchema), (req, res, next) =>
+  staffController.update(req, res, next)
 );
 
 // Delete (deactivate) staff member
-router.delete('/:id', (req, res, next) =>
-  staffController.delete(req, res, next)
-);
+router.delete('/:id', (req, res, next) => staffController.delete(req, res, next));
 
 export default router;

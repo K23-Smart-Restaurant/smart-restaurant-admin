@@ -1,28 +1,14 @@
-import React from "react";
-import {
-  X,
-  User,
-  Phone,
-  Clock,
-  DollarSign,
-  FileText,
-  ChevronRight,
-} from "lucide-react";
-import type {
-  Order,
-  OrderStatus,
-} from "../../hooks/useOrders";
-import type { OrderItemStatus } from "../../services/orderService";
+import React from 'react';
+import { X, User, Phone, Clock, DollarSign, FileText, ChevronRight } from 'lucide-react';
+import type { Order, OrderStatus } from '../../hooks/useOrders';
+import type { OrderItemStatus } from '../../services/orderService';
 
 interface OrderDetailModalProps {
   order: Order | null;
   isOpen: boolean;
   onClose: () => void;
   onUpdateOrderStatus: (id: string, newStatus: OrderStatus) => void;
-  onUpdateItemStatus: (
-    orderItemId: string,
-    itemStatus: OrderItemStatus
-  ) => void;
+  onUpdateItemStatus: (orderItemId: string, itemStatus: OrderItemStatus) => void;
 }
 
 export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -35,9 +21,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   if (!isOpen || !order) return null;
 
   // Calculate elapsed time
-  const elapsedMinutes = Math.floor(
-    (Date.now() - new Date(order.createdAt).getTime()) / 60000
-  );
+  const elapsedMinutes = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -46,36 +30,36 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   // Format date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
   // Status timeline steps
   const statusSteps: OrderStatus[] = [
-    "PENDING",
-    "CONFIRMED",
-    "PREPARING",
-    "READY",
-    "SERVED",
-    "PAID",
+    'PENDING',
+    'CONFIRMED',
+    'PREPARING',
+    'READY',
+    'SERVED',
+    'PAID',
   ];
   const currentStatusIndex = statusSteps.indexOf(order.status);
 
   // Get item status color
   const getItemStatusColor = (status: OrderItemStatus) => {
     switch (status) {
-      case "QUEUED":
-        return "bg-gray-200 text-gray-700";
-      case "COOKING":
-        return "bg-orange-200 text-orange-800";
-      case "READY":
-        return "bg-green-200 text-green-800";
+      case 'QUEUED':
+        return 'bg-gray-200 text-gray-700';
+      case 'COOKING':
+        return 'bg-orange-200 text-orange-800';
+      case 'READY':
+        return 'bg-green-200 text-green-800';
       default:
-        return "bg-gray-200 text-gray-700";
+        return 'bg-gray-200 text-gray-700';
     }
   };
 
@@ -99,19 +83,17 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div className="p-6">
             {/* Header */}
             <div className="mb-6">
-              <h2 className="text-3xl font-bold text-charcoal">
-                Order #{order.orderNumber}
-              </h2>
-              <p className="text-xl text-gray-600 mt-1">{order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}</p>
+              <h2 className="text-3xl font-bold text-charcoal">Order #{order.orderNumber}</h2>
+              <p className="text-xl text-gray-600 mt-1">
+                {order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}
+              </p>
             </div>
 
             {/* Customer & Order Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Customer Info */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-charcoal mb-3">
-                  Customer Information
-                </h3>
+                <h3 className="font-semibold text-charcoal mb-3">Customer Information</h3>
                 {order.guestName ? (
                   <>
                     <div className="flex items-center text-gray-700 mb-2">
@@ -132,17 +114,13 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                 )}
                 {order.waiterId && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    Waiter ID: {order.waiterId}
-                  </div>
+                  <div className="mt-2 text-sm text-gray-600">Waiter ID: {order.waiterId}</div>
                 )}
               </div>
 
               {/* Order Timing */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-charcoal mb-3">
-                  Order Timing
-                </h3>
+                <h3 className="font-semibold text-charcoal mb-3">Order Timing</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-2" />
@@ -168,19 +146,14 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
             {/* Order Items */}
             <div className="mb-6">
-              <h3 className="font-semibold text-charcoal mb-4 text-lg">
-                Order Items
-              </h3>
+              <h3 className="font-semibold text-charcoal mb-4 text-lg">Order Items</h3>
               <div className="space-y-4">
                 {order.orderItems?.map((item) => (
-                  <div
-                    key={item.id}
-                    className="border-l-4 border-naples pl-4 py-2"
-                  >
+                  <div key={item.id} className="border-l-4 border-naples pl-4 py-2">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <p className="font-medium text-charcoal text-lg">
-                          {item.quantity}x {item.menuItem?.name || 'Unknown Item'} -{" "}
+                          {item.quantity}x {item.menuItem?.name || 'Unknown Item'} -{' '}
                           {formatCurrency(item.unitPrice)}
                         </p>
                         <p className="text-sm text-gray-600 mt-1">
@@ -190,10 +163,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       <select
                         value={item.itemStatus}
                         onChange={(e) =>
-                          onUpdateItemStatus(
-                            item.id,
-                            e.target.value as OrderItemStatus
-                          )
+                          onUpdateItemStatus(item.id, e.target.value as OrderItemStatus)
                         }
                         className={`px-3 py-1 rounded text-sm font-semibold ${getItemStatusColor(
                           item.itemStatus
@@ -218,9 +188,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {/* Order Total */}
             <div className="bg-naples p-4 rounded-lg mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-charcoal">
-                  Order Total:
-                </span>
+                <span className="text-xl font-bold text-charcoal">Order Total:</span>
                 <span className="text-2xl font-bold text-charcoal">
                   {formatCurrency(order.totalAmount)}
                 </span>
@@ -230,27 +198,21 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {/* Order Notes */}
             {order.notes && (
               <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                <h3 className="font-semibold text-yellow-800 mb-2">
-                  Order Notes:
-                </h3>
+                <h3 className="font-semibold text-yellow-800 mb-2">Order Notes:</h3>
                 <p className="text-yellow-700">{order.notes}</p>
               </div>
             )}
 
             {/* Status Timeline */}
             <div className="mb-6">
-              <h3 className="font-semibold text-charcoal mb-4">
-                Order Progress
-              </h3>
+              <h3 className="font-semibold text-charcoal mb-4">Order Progress</h3>
               <div className="relative">
                 {/* Progress Line */}
                 <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200">
                   <div
                     className="h-full bg-green-500 transition-all duration-300"
                     style={{
-                      width: `${
-                        (currentStatusIndex / (statusSteps.length - 1)) * 100
-                      }%`,
+                      width: `${(currentStatusIndex / (statusSteps.length - 1)) * 100}%`,
                     }}
                   />
                 </div>
@@ -265,17 +227,15 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center border-4 ${
                             isCompleted
-                              ? "bg-green-500 border-green-500"
-                              : "bg-white border-gray-300"
-                          } ${isCurrent ? "ring-4 ring-green-200" : ""}`}
+                              ? 'bg-green-500 border-green-500'
+                              : 'bg-white border-gray-300'
+                          } ${isCurrent ? 'ring-4 ring-green-200' : ''}`}
                         >
-                          {isCompleted && (
-                            <ChevronRight className="w-5 h-5 text-white" />
-                          )}
+                          {isCompleted && <ChevronRight className="w-5 h-5 text-white" />}
                         </div>
                         <span
                           className={`mt-2 text-xs font-medium ${
-                            isCompleted ? "text-charcoal" : "text-gray-400"
+                            isCompleted ? 'text-charcoal' : 'text-gray-400'
                           }`}
                         >
                           {status}
@@ -298,9 +258,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               <select
                 id="status-update"
                 value={order.status}
-                onChange={(e) =>
-                  onUpdateOrderStatus(order.id, e.target.value as OrderStatus)
-                }
+                onChange={(e) => onUpdateOrderStatus(order.id, e.target.value as OrderStatus)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-naples focus:border-naples"
               >
                 <option value="PENDING">Pending</option>

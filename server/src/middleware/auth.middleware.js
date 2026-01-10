@@ -70,11 +70,4 @@ const kitchenOnly = authorize(UserRole.KITCHEN_STAFF);
  */
 const adminOrWaiter = authorize(UserRole.ADMIN, UserRole.WAITER);
 
-export {
-  authenticate,
-  authorize,
-  adminOnly,
-  waiterOnly,
-  kitchenOnly,
-  adminOrWaiter,
-};
+export { authenticate, authorize, adminOnly, waiterOnly, kitchenOnly, adminOrWaiter };

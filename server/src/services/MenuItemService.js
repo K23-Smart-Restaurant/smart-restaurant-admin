@@ -1,12 +1,12 @@
-import prisma from "../lib/prisma.js";
-import StorageService from "./StorageService.js";
+import prisma from '../lib/prisma.js';
+import StorageService from './StorageService.js';
 
 class MenuItemService {
   async getMenuItems(filters) {
     const where = {};
 
     if (filters.name) {
-      where.name = { contains: filters.name, mode: "insensitive" };
+      where.name = { contains: filters.name, mode: 'insensitive' };
     }
     if (filters.category) {
       where.category = filters.category;
@@ -22,19 +22,19 @@ class MenuItemService {
     const offset = filters.offset || 0;
 
     // M2: Handle popularity sorting separately using aggregation
-    if (filters.sortBy === "popularity") {
+    if (filters.sortBy === 'popularity') {
       return this.getMenuItemsByPopularity(where, filters);
     }
 
-    let orderBy = { createdAt: "desc" };
-    if (filters.sortBy === "name") {
-      orderBy = { name: filters.sortOrder || "asc" };
-    } else if (filters.sortBy === "price") {
-      orderBy = { price: filters.sortOrder || "asc" };
-    } else if (filters.sortBy === "category") {
-      orderBy = { category: filters.sortOrder || "asc" };
-    } else if (filters.sortBy === "createdAt") {
-      orderBy = { createdAt: filters.sortOrder || "desc" };
+    let orderBy = { createdAt: 'desc' };
+    if (filters.sortBy === 'name') {
+      orderBy = { name: filters.sortOrder || 'asc' };
+    } else if (filters.sortBy === 'price') {
+      orderBy = { price: filters.sortOrder || 'asc' };
+    } else if (filters.sortBy === 'category') {
+      orderBy = { category: filters.sortOrder || 'asc' };
+    } else if (filters.sortBy === 'createdAt') {
+      orderBy = { createdAt: filters.sortOrder || 'desc' };
     }
 
     const [items, total] = await Promise.all([
@@ -48,7 +48,7 @@ class MenuItemService {
           },
           categoryModel: true,
           photos: {
-            orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+            orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
           },
         },
         orderBy,
@@ -68,7 +68,7 @@ class MenuItemService {
   async getMenuItemsByPopularity(where, filters) {
     const limit = filters.limit || 20;
     const offset = filters.offset || 0;
-    const sortOrder = filters.sortOrder || "desc";
+    const sortOrder = filters.sortOrder || 'desc';
 
     // Get all matching items with their order counts
     const itemsWithCounts = await prisma.menuItem.findMany({
@@ -81,7 +81,7 @@ class MenuItemService {
         },
         categoryModel: true,
         photos: {
-          orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+          orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
         },
         _count: {
           select: {
@@ -95,7 +95,7 @@ class MenuItemService {
     const sorted = itemsWithCounts.sort((a, b) => {
       const countA = a._count.orderItems;
       const countB = b._count.orderItems;
-      return sortOrder === "desc" ? countB - countA : countA - countB;
+      return sortOrder === 'desc' ? countB - countA : countA - countB;
     });
 
     // Apply pagination
@@ -120,17 +120,16 @@ class MenuItemService {
           },
         },
         categoryModel: true,
-        photos: { orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] },
+        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });
   }
 
   async createMenuItem(data, imageUrl, uploadedPhotos = []) {
     // Parse numeric fields that might come as strings from FormData
-    const price =
-      typeof data.price === "string" ? parseFloat(data.price) : data.price;
+    const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
     const preparationTime = data.preparationTime
-      ? typeof data.preparationTime === "string"
+      ? typeof data.preparationTime === 'string'
         ? parseInt(data.preparationTime)
         : data.preparationTime
       : null;
@@ -144,11 +143,10 @@ class MenuItemService {
         categoryId: data.categoryId || null,
         imageUrl,
         preparationTime,
-        isAvailable: data.isAvailable === "true" || data.isAvailable === true,
-        isSoldOut: data.isSoldOut === "true" || data.isSoldOut === true,
+        isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
+        isSoldOut: data.isSoldOut === 'true' || data.isSoldOut === true,
         isChefRecommendation:
-          data.isChefRecommendation === "true" ||
-          data.isChefRecommendation === true,
+          data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
       },
       include: {
         modifiers: {
@@ -183,7 +181,7 @@ class MenuItemService {
     const groupMap = new Map();
 
     for (const modifier of modifiers) {
-      const groupName = modifier.groupName || "Default";
+      const groupName = modifier.groupName || 'Default';
       if (!groupMap.has(groupName)) {
         groupMap.set(groupName, []);
       }
@@ -197,7 +195,7 @@ class MenuItemService {
         data: {
           menuItemId,
           name: groupName,
-          selectionType: groupModifiers[0]?.selectionType || "multiple",
+          selectionType: groupModifiers[0]?.selectionType || 'multiple',
           isRequired: groupModifiers[0]?.isRequired || false,
           minSelections: groupModifiers[0]?.minSelections || 0,
           maxSelections: groupModifiers[0]?.maxSelections || null,
@@ -230,34 +228,28 @@ class MenuItemService {
     const updateData = {};
 
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined)
-      updateData.description = data.description || null;
+    if (data.description !== undefined) updateData.description = data.description || null;
     if (data.category !== undefined) updateData.category = data.category;
     if (data.price !== undefined) {
-      updateData.price =
-        typeof data.price === "string" ? parseFloat(data.price) : data.price;
+      updateData.price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
     }
-    if (data.categoryId !== undefined)
-      updateData.categoryId = data.categoryId || null;
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || null;
     if (data.preparationTime !== undefined) {
       updateData.preparationTime = data.preparationTime
-        ? typeof data.preparationTime === "string"
+        ? typeof data.preparationTime === 'string'
           ? parseInt(data.preparationTime)
           : data.preparationTime
         : null;
     }
     if (data.isAvailable !== undefined) {
-      updateData.isAvailable =
-        data.isAvailable === "true" || data.isAvailable === true;
+      updateData.isAvailable = data.isAvailable === 'true' || data.isAvailable === true;
     }
     if (data.isSoldOut !== undefined) {
-      updateData.isSoldOut =
-        data.isSoldOut === "true" || data.isSoldOut === true;
+      updateData.isSoldOut = data.isSoldOut === 'true' || data.isSoldOut === true;
     }
     if (data.isChefRecommendation !== undefined) {
       updateData.isChefRecommendation =
-        data.isChefRecommendation === "true" ||
-        data.isChefRecommendation === true;
+        data.isChefRecommendation === 'true' || data.isChefRecommendation === true;
     }
 
     if (imageUrl) {
@@ -274,16 +266,14 @@ class MenuItemService {
           },
         },
         categoryModel: true,
-        photos: { orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] },
+        photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });
 
     // Create new photo records if photos were uploaded
     if (uploadedPhotos.length > 0) {
       // Check if any of the new photos is marked as primary
-      const hasNewPrimaryPhoto = uploadedPhotos.some(
-        (photo) => photo.isPrimary
-      );
+      const hasNewPrimaryPhoto = uploadedPhotos.some((photo) => photo.isPrimary);
 
       // If a new photo is set as primary, reset all existing photos' isPrimary to false
       if (hasNewPrimaryPhoto) {
@@ -322,7 +312,7 @@ class MenuItemService {
     });
 
     if (!photo) {
-      throw new Error("Photo not found or does not belong to this menu item");
+      throw new Error('Photo not found or does not belong to this menu item');
     }
 
     // Reset all photos' isPrimary to false for this menu item
@@ -367,7 +357,7 @@ class MenuItemService {
     });
 
     if (!menuItem) {
-      throw new Error("Menu item not found");
+      throw new Error('Menu item not found');
     }
 
     // Delete photos from Supabase Storage
@@ -387,9 +377,7 @@ class MenuItemService {
 
     // Delete all photos from Supabase bucket
     if (photoUrls.length > 0) {
-      await Promise.allSettled(
-        photoUrls.map((url) => StorageService.deleteFileByUrl(url))
-      );
+      await Promise.allSettled(photoUrls.map((url) => StorageService.deleteFileByUrl(url)));
     }
 
     // Delete associated photo records from database

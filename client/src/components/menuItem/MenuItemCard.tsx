@@ -32,7 +32,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     menuItem.photos?.find((p) => p.isPrimary)?.url ||
     menuItem.photos?.[0]?.url ||
     menuItem.imageUrl ||
-    "";
+    '';
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -64,7 +64,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             alt={menuItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://placehold.co/400x300?text=No+Image";
+              (e.target as HTMLImageElement).src = 'https://placehold.co/400x300?text=No+Image';
             }}
           />
         ) : (
@@ -83,8 +83,6 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             Chef's Pick
           </div>
         )}
-
-
 
         {/* Action Buttons */}
         <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
@@ -118,7 +116,9 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         <div>
           <div className="flex items-start justify-between mb-1">
             <h3 className="text-lg font-bold text-charcoal line-clamp-1">{menuItem.name}</h3>
-            <span className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor(menuItem.category)}`}>
+            <span
+              className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor(menuItem.category)}`}
+            >
               {getCategoryLabel(menuItem.category)}
             </span>
           </div>
@@ -141,7 +141,8 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         {menuItem.modifiers && menuItem.modifiers.length > 0 && (
           <div className="pt-2">
             <span className="text-xs text-gray-600">
-              {menuItem.modifiers.length} modifier{menuItem.modifiers.length !== 1 ? 's' : ''} available
+              {menuItem.modifiers.length} modifier{menuItem.modifiers.length !== 1 ? 's' : ''}{' '}
+              available
             </span>
           </div>
         )}

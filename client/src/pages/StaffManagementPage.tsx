@@ -15,15 +15,8 @@ import { useToastContext } from '../contexts/ToastContext';
 const StaffManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
 
-  const {
-    staff,
-    isLoading,
-    isError,
-    createWaiter,
-    createKitchenStaff,
-    updateStaff,
-    deleteStaff
-  } = useStaff();
+  const { staff, isLoading, isError, createWaiter, createKitchenStaff, updateStaff, deleteStaff } =
+    useStaff();
 
   const [isWaiterModalOpen, setIsWaiterModalOpen] = useState(false);
   const [isKitchenStaffModalOpen, setIsKitchenStaffModalOpen] = useState(false);
@@ -37,10 +30,7 @@ const StaffManagementPage: React.FC = () => {
     try {
       if (editingStaff) {
         await updateStaff(editingStaff.id, staffData);
-        showSuccess(
-          'Waiter Updated',
-          `${staffData.username} has been successfully updated.`
-        );
+        showSuccess('Waiter Updated', `${staffData.username} has been successfully updated.`);
       } else {
         await createWaiter(staffData);
         showSuccess(
@@ -52,10 +42,7 @@ const StaffManagementPage: React.FC = () => {
     } catch (error) {
       console.error('Error saving waiter:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError(
-        'Failed to Save Waiter',
-        errorMessage
-      );
+      showError('Failed to Save Waiter', errorMessage);
     }
   };
 
@@ -78,10 +65,7 @@ const StaffManagementPage: React.FC = () => {
     } catch (error) {
       console.error('Error saving kitchen staff:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError(
-        'Failed to Save Kitchen Staff',
-        errorMessage
-      );
+      showError('Failed to Save Kitchen Staff', errorMessage);
     }
   };
 
@@ -96,7 +80,7 @@ const StaffManagementPage: React.FC = () => {
   };
 
   const handleToggleActive = async (id: string) => {
-    const staffMember = staff.find(s => s.id === id);
+    const staffMember = staff.find((s) => s.id === id);
     if (staffMember) {
       setStaffToToggle(staffMember);
     }
@@ -118,10 +102,7 @@ const StaffManagementPage: React.FC = () => {
     } catch (error) {
       console.error('Error toggling staff status:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError(
-        'Failed to Update Status',
-        errorMessage
-      );
+      showError('Failed to Update Status', errorMessage);
     } finally {
       setIsTogglingActive(false);
     }
@@ -172,10 +153,11 @@ const StaffManagementPage: React.FC = () => {
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
-                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
-                  ? 'bg-naples text-charcoal shadow'
-                  : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
-                  }`}
+                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
+                  selected
+                    ? 'bg-naples text-charcoal shadow'
+                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
+                }`}
               >
                 Waiters
               </button>
@@ -184,10 +166,11 @@ const StaffManagementPage: React.FC = () => {
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
-                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
-                  ? 'bg-naples text-charcoal shadow'
-                  : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
-                  }`}
+                className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
+                  selected
+                    ? 'bg-naples text-charcoal shadow'
+                    : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
+                }`}
               >
                 Kitchen Staff
               </button>

@@ -1,17 +1,15 @@
-import { toDataURL, toBuffer } from "qrcode";
-import jwt from "jsonwebtoken";
-import PDFDocument from "pdfkit";
-import archiver from "archiver";
-import prisma from "../lib/prisma.js";
-import storageService from "./StorageService.js";
+import { toDataURL, toBuffer } from 'qrcode';
+import jwt from 'jsonwebtoken';
+import PDFDocument from 'pdfkit';
+import archiver from 'archiver';
+import prisma from '../lib/prisma.js';
+import storageService from './StorageService.js';
 
 // QR Token configuration
 const QR_TOKEN_SECRET = process.env.QR_TOKEN_SECRET || 'dev_secret_key_123456789';
-const QR_TOKEN_EXPIRES_IN = process.env.QR_TOKEN_EXPIRES_IN || "30d";
-const RESTAURANT_DOMAIN =
-  process.env.RESTAURANT_DOMAIN || "http://localhost:3000";
-const DEFAULT_RESTAURANT_ID =
-  process.env.DEFAULT_RESTAURANT_ID || "default-restaurant";
+const QR_TOKEN_EXPIRES_IN = process.env.QR_TOKEN_EXPIRES_IN || '30d';
+const RESTAURANT_DOMAIN = process.env.RESTAURANT_DOMAIN || 'http://localhost:3000';
+const DEFAULT_RESTAURANT_ID = process.env.DEFAULT_RESTAURANT_ID || 'default-restaurant';
 
 class QRCodeService {
   /**
@@ -29,13 +27,13 @@ class QRCodeService {
     const payload = {
       tableId,
       restaurantId,
-      type: "table_qr_access",
+      type: 'table_qr_access',
       createdAt: new Date().toISOString(),
     };
 
     console.log(QR_TOKEN_SECRET);
     const token = jwt.sign(payload, QR_TOKEN_SECRET, {
-      algorithm: "HS256",
+      algorithm: 'HS256',
       expiresIn,
     });
 
@@ -54,7 +52,7 @@ class QRCodeService {
   verifyToken(token) {
     try {
       const decoded = jwt.verify(token, QR_TOKEN_SECRET, {
-        algorithms: ["HS256"],
+        algorithms: ['HS256'],
       });
       return {
         valid: true,
@@ -62,13 +60,11 @@ class QRCodeService {
         error: null,
       };
     } catch (error) {
-      let errorMessage = "Invalid token";
-      if (error.name === "TokenExpiredError") {
-        errorMessage =
-          "This QR code has expired. Please ask staff for assistance.";
-      } else if (error.name === "JsonWebTokenError") {
-        errorMessage =
-          "This QR code is no longer valid. Please ask staff for assistance.";
+      let errorMessage = 'Invalid token';
+      if (error.name === 'TokenExpiredError') {
+        errorMessage = 'This QR code has expired. Please ask staff for assistance.';
+      } else if (error.name === 'JsonWebTokenError') {
+        errorMessage = 'This QR code is no longer valid. Please ask staff for assistance.';
       }
       return {
         valid: false,
@@ -108,7 +104,7 @@ class QRCodeService {
       return {
         valid: false,
         data: null,
-        error: "Table not found. Please ask staff for assistance.",
+        error: 'Table not found. Please ask staff for assistance.',
       };
     }
 
@@ -121,8 +117,7 @@ class QRCodeService {
       return {
         valid: false,
         data: null,
-        error:
-          "This QR code is no longer valid. Please ask staff for assistance.",
+        error: 'This QR code is no longer valid. Please ask staff for assistance.',
       };
     }
 
@@ -162,10 +157,10 @@ class QRCodeService {
     const defaultOptions = {
       width: 400,
       margin: 2,
-      errorCorrectionLevel: "H",
+      errorCorrectionLevel: 'H',
       color: {
-        dark: "#000000",
-        light: "#ffffff",
+        dark: '#000000',
+        light: '#ffffff',
       },
     };
 
@@ -180,10 +175,10 @@ class QRCodeService {
    */
   async generateQRBuffer(url, options = {}) {
     const defaultOptions = {
-      type: "png",
+      type: 'png',
       width: 800, // Higher resolution for downloads
       margin: 2,
-      errorCorrectionLevel: "H",
+      errorCorrectionLevel: 'H',
     };
 
     return toBuffer(url, { ...defaultOptions, ...options });
@@ -197,15 +192,8 @@ class QRCodeService {
    * @param {string} oldQrCodeUrl - Previous QR code URL to delete (optional)
    * @returns {Promise<Object>} QR code data with Supabase URL
    */
-  async generateTableQR(
-    tableId,
-    restaurantId = DEFAULT_RESTAURANT_ID,
-    oldQrCodeUrl = null
-  ) {
-    const { token, createdAt } = this.generateSignedToken(
-      tableId,
-      restaurantId
-    );
+  async generateTableQR(tableId, restaurantId = DEFAULT_RESTAURANT_ID, oldQrCodeUrl = null) {
+    const { token, createdAt } = this.generateSignedToken(tableId, restaurantId);
     const url = this.generateQRUrl(tableId, token);
 
     // Check if Supabase storage is configured
@@ -219,10 +207,7 @@ class QRCodeService {
       const qrBuffer = await this.generateQRBuffer(url, { width: 400 });
 
       // Upload to Supabase Storage
-      const { url: qrCodeUrl } = await storageService.uploadQRCode(
-        qrBuffer,
-        tableId
-      );
+      const { url: qrCodeUrl } = await storageService.uploadQRCode(qrBuffer, tableId);
 
       return {
         qrCode: qrCodeUrl,
@@ -233,9 +218,7 @@ class QRCodeService {
     }
 
     // Fallback to base64 data URL if Supabase is not configured
-    console.warn(
-      "Supabase not configured, falling back to base64 QR code storage"
-    );
+    console.warn('Supabase not configured, falling back to base64 QR code storage');
     const qrCodeDataUrl = await this.generateQRDataUrl(url);
 
     return {
@@ -255,8 +238,8 @@ class QRCodeService {
   getTokenStatus(token, createdAt) {
     if (!token) {
       return {
-        status: "none",
-        label: "No QR Code",
+        status: 'none',
+        label: 'No QR Code',
         isActive: false,
       };
     }
@@ -265,8 +248,8 @@ class QRCodeService {
 
     if (!verification.valid) {
       return {
-        status: "invalid",
-        label: "Invalid / Expired",
+        status: 'invalid',
+        label: 'Invalid / Expired',
         isActive: false,
         error: verification.error,
       };
@@ -278,8 +261,8 @@ class QRCodeService {
     const daysUntilExpiry = Math.ceil((exp - now) / (60 * 60 * 24));
 
     return {
-      status: "active",
-      label: "Active",
+      status: 'active',
+      label: 'Active',
       isActive: true,
       createdAt,
       expiresAt: new Date(exp * 1000),
@@ -296,54 +279,50 @@ class QRCodeService {
   async generateTablePDF(table, options = {}) {
     const {
       includeWifi = false,
-      wifiName = "",
-      wifiPassword = "",
+      wifiName = '',
+      wifiPassword = '',
       logoPath = null,
-      restaurantName = "Smart Restaurant",
+      restaurantName = 'Smart Restaurant',
     } = options;
 
     return new Promise(async (resolve, reject) => {
       try {
         const doc = new PDFDocument({
-          size: "A5",
+          size: 'A5',
           margin: 40,
         });
 
         const chunks = [];
-        doc.on("data", (chunk) => chunks.push(chunk));
-        doc.on("end", () => resolve(Buffer.concat(chunks)));
+        doc.on('data', (chunk) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
 
         // Generate QR code buffer
         const url = this.generateQRUrl(table.id, table.qrToken);
         const qrBuffer = await this.generateQRBuffer(url, { width: 600 });
 
         // Restaurant name header
-        doc
-          .fontSize(24)
-          .font("Helvetica-Bold")
-          .text(restaurantName, { align: "center" });
+        doc.fontSize(24).font('Helvetica-Bold').text(restaurantName, { align: 'center' });
 
         doc.moveDown(0.5);
 
         // Table number
         doc
           .fontSize(32)
-          .font("Helvetica-Bold")
-          .text(`Table ${table.tableNumber}`, { align: "center" });
+          .font('Helvetica-Bold')
+          .text(`Table ${table.tableNumber}`, { align: 'center' });
 
         if (table.location) {
           doc
             .fontSize(14)
-            .font("Helvetica")
-            .fillColor("#666666")
-            .text(table.location, { align: "center" });
+            .font('Helvetica')
+            .fillColor('#666666')
+            .text(table.location, { align: 'center' });
         }
 
         doc.moveDown(1);
 
         // QR Code image - centered
-        const pageWidth =
-          doc.page.width - doc.page.margins.left - doc.page.margins.right;
+        const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
         const qrSize = Math.min(250, pageWidth - 40);
         const qrX = (doc.page.width - qrSize) / 2;
 
@@ -357,41 +336,38 @@ class QRCodeService {
         // Scan instruction
         doc
           .fontSize(18)
-          .font("Helvetica-Bold")
-          .fillColor("#000000")
-          .text("Scan to Order", { align: "center" });
+          .font('Helvetica-Bold')
+          .fillColor('#000000')
+          .text('Scan to Order', { align: 'center' });
 
         doc.moveDown(0.5);
 
         doc
           .fontSize(12)
-          .font("Helvetica")
-          .fillColor("#666666")
-          .text(
-            "Scan this QR code with your phone camera to view our menu and place orders.",
-            {
-              align: "center",
-              width: pageWidth - 40,
-            }
-          );
+          .font('Helvetica')
+          .fillColor('#666666')
+          .text('Scan this QR code with your phone camera to view our menu and place orders.', {
+            align: 'center',
+            width: pageWidth - 40,
+          });
 
         // WiFi info if provided
         if (includeWifi && wifiName) {
           doc.moveDown(1);
           doc
             .fontSize(12)
-            .font("Helvetica-Bold")
-            .fillColor("#000000")
-            .text("WiFi Information", { align: "center" });
+            .font('Helvetica-Bold')
+            .fillColor('#000000')
+            .text('WiFi Information', { align: 'center' });
 
           doc
             .fontSize(11)
-            .font("Helvetica")
-            .fillColor("#666666")
-            .text(`Network: ${wifiName}`, { align: "center" });
+            .font('Helvetica')
+            .fillColor('#666666')
+            .text(`Network: ${wifiName}`, { align: 'center' });
 
           if (wifiPassword) {
-            doc.text(`Password: ${wifiPassword}`, { align: "center" });
+            doc.text(`Password: ${wifiPassword}`, { align: 'center' });
           }
         }
 
@@ -410,25 +386,25 @@ class QRCodeService {
    */
   async generateBatchPDF(tables, options = {}) {
     const {
-      layout = "single", // 'single' = 1 per page, 'multiple' = 4 per page
-      restaurantName = "Smart Restaurant",
+      layout = 'single', // 'single' = 1 per page, 'multiple' = 4 per page
+      restaurantName = 'Smart Restaurant',
       includeWifi = false,
-      wifiName = "",
-      wifiPassword = "",
+      wifiName = '',
+      wifiPassword = '',
     } = options;
 
     return new Promise(async (resolve, reject) => {
       try {
         const doc = new PDFDocument({
-          size: layout === "single" ? "A5" : "A4",
-          margin: layout === "single" ? 40 : 30,
+          size: layout === 'single' ? 'A5' : 'A4',
+          margin: layout === 'single' ? 40 : 30,
         });
 
         const chunks = [];
-        doc.on("data", (chunk) => chunks.push(chunk));
-        doc.on("end", () => resolve(Buffer.concat(chunks)));
+        doc.on('data', (chunk) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
 
-        if (layout === "single") {
+        if (layout === 'single') {
           // One table per page
           for (let i = 0; i < tables.length; i++) {
             if (i > 0) doc.addPage();
@@ -437,7 +413,7 @@ class QRCodeService {
               includeWifi,
               wifiName,
               wifiPassword,
-              layout: "full",
+              layout: 'full',
             });
           }
         } else {
@@ -460,15 +436,9 @@ class QRCodeService {
             const x = 30 + col * cellWidth;
             const y = 30 + row * cellHeight;
 
-            await this.addTableToCell(
-              doc,
-              tables[i],
-              x,
-              y,
-              cellWidth - 10,
-              cellHeight - 10,
-              { restaurantName }
-            );
+            await this.addTableToCell(doc, tables[i], x, y, cellWidth - 10, cellHeight - 10, {
+              restaurantName,
+            });
           }
         }
 
@@ -484,8 +454,7 @@ class QRCodeService {
    */
   async addTableToPage(doc, table, options) {
     const { restaurantName, includeWifi, wifiName, wifiPassword } = options;
-    const pageWidth =
-      doc.page.width - doc.page.margins.left - doc.page.margins.right;
+    const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
     // Generate QR code buffer
     const url = this.generateQRUrl(table.id, table.qrToken);
@@ -494,25 +463,25 @@ class QRCodeService {
     // Restaurant name
     doc
       .fontSize(24)
-      .font("Helvetica-Bold")
-      .fillColor("#000000")
+      .font('Helvetica-Bold')
+      .fillColor('#000000')
       .text(restaurantName, doc.page.margins.left, 40, {
-        align: "center",
+        align: 'center',
         width: pageWidth,
       });
 
     // Table number
-    doc.fontSize(32).font("Helvetica-Bold").text(`Table ${table.tableNumber}`, {
-      align: "center",
+    doc.fontSize(32).font('Helvetica-Bold').text(`Table ${table.tableNumber}`, {
+      align: 'center',
       width: pageWidth,
     });
 
     if (table.location) {
       doc
         .fontSize(14)
-        .font("Helvetica")
-        .fillColor("#666666")
-        .text(table.location, { align: "center", width: pageWidth });
+        .font('Helvetica')
+        .fillColor('#666666')
+        .text(table.location, { align: 'center', width: pageWidth });
     }
 
     doc.moveDown(1);
@@ -526,16 +495,16 @@ class QRCodeService {
     // Scan instruction
     doc
       .fontSize(18)
-      .font("Helvetica-Bold")
-      .fillColor("#000000")
-      .text("Scan to Order", { align: "center", width: pageWidth });
+      .font('Helvetica-Bold')
+      .fillColor('#000000')
+      .text('Scan to Order', { align: 'center', width: pageWidth });
 
     doc
       .fontSize(12)
-      .font("Helvetica")
-      .fillColor("#666666")
-      .text("Scan this QR code to view menu and order", {
-        align: "center",
+      .font('Helvetica')
+      .fillColor('#666666')
+      .text('Scan this QR code to view menu and order', {
+        align: 'center',
         width: pageWidth,
       });
 
@@ -544,12 +513,12 @@ class QRCodeService {
       doc.moveDown(1);
       doc
         .fontSize(11)
-        .font("Helvetica")
-        .fillColor("#666666")
-        .text(
-          `WiFi: ${wifiName}${wifiPassword ? ` | Pass: ${wifiPassword}` : ""}`,
-          { align: "center", width: pageWidth }
-        );
+        .font('Helvetica')
+        .fillColor('#666666')
+        .text(`WiFi: ${wifiName}${wifiPassword ? ` | Pass: ${wifiPassword}` : ''}`, {
+          align: 'center',
+          width: pageWidth,
+        });
     }
   }
 
@@ -566,16 +535,16 @@ class QRCodeService {
     const centerX = x + width / 2;
 
     // Draw border
-    doc.rect(x, y, width, height).stroke("#cccccc");
+    doc.rect(x, y, width, height).stroke('#cccccc');
 
     // Table number
     doc
       .fontSize(16)
-      .font("Helvetica-Bold")
-      .fillColor("#000000")
+      .font('Helvetica-Bold')
+      .fillColor('#000000')
       .text(`Table ${table.tableNumber}`, x + 5, y + 10, {
         width: width - 10,
-        align: "center",
+        align: 'center',
       });
 
     // QR Code
@@ -586,17 +555,17 @@ class QRCodeService {
     // Scan text
     doc
       .fontSize(10)
-      .font("Helvetica")
-      .fillColor("#666666")
-      .text("Scan to Order", x + 5, y + 40 + qrSize + 5, {
+      .font('Helvetica')
+      .fillColor('#666666')
+      .text('Scan to Order', x + 5, y + 40 + qrSize + 5, {
         width: width - 10,
-        align: "center",
+        align: 'center',
       });
 
     if (table.location) {
       doc.fontSize(8).text(table.location, x + 5, y + 55 + qrSize + 5, {
         width: width - 10,
-        align: "center",
+        align: 'center',
       });
     }
   }
@@ -609,12 +578,12 @@ class QRCodeService {
   async generateBatchZip(tables) {
     return new Promise(async (resolve, reject) => {
       try {
-        const archive = archiver("zip", { zlib: { level: 9 } });
+        const archive = archiver('zip', { zlib: { level: 9 } });
         const chunks = [];
 
-        archive.on("data", (chunk) => chunks.push(chunk));
-        archive.on("end", () => resolve(Buffer.concat(chunks)));
-        archive.on("error", (err) => reject(err));
+        archive.on('data', (chunk) => chunks.push(chunk));
+        archive.on('end', () => resolve(Buffer.concat(chunks)));
+        archive.on('error', (err) => reject(err));
 
         // Add each table's QR code as PNG
         for (const table of tables) {
@@ -652,8 +621,11 @@ class QRCodeService {
           select: { qrCode: true },
         });
 
-        const { qrCode, qrToken, qrTokenCreatedAt } =
-          await this.generateTableQR(tableId, restaurantId, existingQrCode?.qrCode);
+        const { qrCode, qrToken, qrTokenCreatedAt } = await this.generateTableQR(
+          tableId,
+          restaurantId,
+          existingQrCode?.qrCode
+        );
 
         await prisma.table.update({
           where: { id: tableId },

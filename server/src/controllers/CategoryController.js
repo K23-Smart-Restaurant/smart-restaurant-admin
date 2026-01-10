@@ -1,4 +1,4 @@
-import CategoryService from "../services/CategoryService.js";
+import CategoryService from '../services/CategoryService.js';
 
 const categoryService = new CategoryService();
 
@@ -23,10 +23,7 @@ class CategoryController {
 
   async update(req, res, next) {
     try {
-      const category = await categoryService.updateCategory(
-        req.params.id,
-        req.body
-      );
+      const category = await categoryService.updateCategory(req.params.id, req.body);
       res.json(category);
     } catch (error) {
       next(error);

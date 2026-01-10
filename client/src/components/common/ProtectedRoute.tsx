@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allowedRoles: _allowedRoles
+  allowedRoles: _allowedRoles,
 }) => {
   // const { isAuthenticated, isLoading, user } = useAuth();
 

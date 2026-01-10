@@ -102,12 +102,19 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   // Placeholder for no images
   if (!hasImages) {
     return (
-      <div className={`relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden ${className}`}>
+      <div
+        className={`relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden ${className}`}
+      >
         <div className="aspect-[4/3] flex items-center justify-center">
           <div className="text-center text-gray-400">
             <div className="w-16 h-16 mx-auto mb-3 bg-gray-300/50 rounded-full flex items-center justify-center">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <p className="text-sm font-medium">No images available</p>
@@ -138,11 +145,13 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
             <img
               src={sortedImages[currentIndex]?.url}
               alt={`${alt} ${currentIndex + 1}`}
-              className={`w-full h-full object-cover transition-all duration-500 ${isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-                }`}
+              className={`w-full h-full object-cover transition-all duration-500 ${
+                isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+              }`}
               onLoad={() => setIsImageLoaded(true)}
               onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://placehold.co/800x600/e5e7eb/9ca3af?text=No+Image';
+                (e.target as HTMLImageElement).src =
+                  'https://placehold.co/800x600/e5e7eb/9ca3af?text=No+Image';
               }}
             />
 
@@ -189,8 +198,10 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
             {/* Image Counter Badge */}
             {hasMultipleImages && (
-              <div className="absolute bottom-4 left-4 px-3 py-1.5 bg-black/60 backdrop-blur-sm rounded-full
-                              text-white text-sm font-medium shadow-md">
+              <div
+                className="absolute bottom-4 left-4 px-3 py-1.5 bg-black/60 backdrop-blur-sm rounded-full
+                              text-white text-sm font-medium shadow-md"
+              >
                 {currentIndex + 1} / {sortedImages.length}
               </div>
             )}
@@ -206,17 +217,19 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                 onClick={() => goToSlide(index)}
                 className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden
                            transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-naples
-                           ${currentIndex === index
-                    ? 'ring-2 ring-naples shadow-glow-yellow scale-105'
-                    : 'ring-1 ring-gray-200 hover:ring-naples/50 hover:scale-105 opacity-70 hover:opacity-100'
-                  }`}
+                           ${
+                             currentIndex === index
+                               ? 'ring-2 ring-naples shadow-glow-yellow scale-105'
+                               : 'ring-1 ring-gray-200 hover:ring-naples/50 hover:scale-105 opacity-70 hover:opacity-100'
+                           }`}
               >
                 <img
                   src={image.url}
                   alt={`${alt} thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://placehold.co/200x200/e5e7eb/9ca3af?text=No+Image';
+                    (e.target as HTMLImageElement).src =
+                      'https://placehold.co/200x200/e5e7eb/9ca3af?text=No+Image';
                   }}
                 />
                 {/* Active indicator overlay */}
@@ -236,10 +249,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none
-                           ${currentIndex === index
-                    ? 'bg-naples w-6 shadow-glow-yellow'
-                    : 'bg-gray-300 hover:bg-naples/50'
-                  }`}
+                           ${
+                             currentIndex === index
+                               ? 'bg-naples w-6 shadow-glow-yellow'
+                               : 'bg-gray-300 hover:bg-naples/50'
+                           }`}
                 aria-label={`Go to image ${index + 1}`}
               />
             ))}
@@ -295,24 +309,24 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           )}
 
           {/* Lightbox Image */}
-          <div
-            className="max-w-[90vw] max-h-[85vh] relative"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="max-w-[90vw] max-h-[85vh] relative" onClick={(e) => e.stopPropagation()}>
             <img
               src={sortedImages[currentIndex]?.url}
               alt={`${alt} ${currentIndex + 1} (full size)`}
               className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl animate-scale-in"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://placehold.co/1200x900/e5e7eb/9ca3af?text=No+Image';
+                (e.target as HTMLImageElement).src =
+                  'https://placehold.co/1200x900/e5e7eb/9ca3af?text=No+Image';
               }}
             />
           </div>
 
           {/* Lightbox Counter */}
           {hasMultipleImages && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm
-                            rounded-full text-white font-medium">
+            <div
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm
+                            rounded-full text-white font-medium"
+            >
               {currentIndex + 1} / {sortedImages.length}
             </div>
           )}
@@ -328,10 +342,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
                     goToSlide(index);
                   }}
                   className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all duration-300
-                             ${currentIndex === index
-                      ? 'ring-2 ring-white scale-110'
-                      : 'ring-1 ring-white/30 opacity-60 hover:opacity-100 hover:scale-105'
-                    }`}
+                             ${
+                               currentIndex === index
+                                 ? 'ring-2 ring-white scale-110'
+                                 : 'ring-1 ring-white/30 opacity-60 hover:opacity-100 hover:scale-105'
+                             }`}
                 >
                   <img
                     src={image.url}

@@ -1,22 +1,15 @@
-import React, { useState, useMemo } from "react";
-import {
-  DollarSign,
-  ShoppingCart,
-  TrendingUp,
-  Award,
-  Download,
-  Printer,
-} from "lucide-react";
-import { useReports, type DateRange } from "../hooks/useReports";
-import { RevenueChart } from "../components/reports/RevenueChart";
-import { TopItemsChart } from "../components/reports/TopItemsChart";
-import { OrderAnalyticsChart } from "../components/reports/OrderAnalyticsChart";
-import { PageLoading, StatsSkeleton } from "../components/common/LoadingSpinner";
-import { useToastContext } from "../contexts/ToastContext";
+import React, { useState, useMemo } from 'react';
+import { DollarSign, ShoppingCart, TrendingUp, Award, Download, Printer } from 'lucide-react';
+import { useReports, type DateRange } from '../hooks/useReports';
+import { RevenueChart } from '../components/reports/RevenueChart';
+import { TopItemsChart } from '../components/reports/TopItemsChart';
+import { OrderAnalyticsChart } from '../components/reports/OrderAnalyticsChart';
+import { PageLoading, StatsSkeleton } from '../components/common/LoadingSpinner';
+import { useToastContext } from '../contexts/ToastContext';
 
 const ReportsPage: React.FC = () => {
   const { showSuccess } = useToastContext();
-  const [dateRange, setDateRange] = useState<DateRange>("7days");
+  const [dateRange, setDateRange] = useState<DateRange>('7days');
   const { useRevenue, useTopItems, useAnalytics } = useReports();
 
   // Calculate date range - memoized to prevent infinite re-renders
@@ -56,7 +49,7 @@ const ReportsPage: React.FC = () => {
       dailyData.push({
         date: date.toISOString().split('T')[0],
         revenue: revenueData.totalRevenue / days,
-        orders: Math.floor(revenueData.totalOrders / days)
+        orders: Math.floor(revenueData.totalOrders / days),
       });
     }
 
@@ -74,7 +67,7 @@ const ReportsPage: React.FC = () => {
   const peakHoursArray = Array.isArray(analyticsData?.peakHours) ? analyticsData.peakHours : [];
   const peakHours = peakHoursArray.map((item: any) => ({
     hour: item.hour,
-    orders: item.orderCount || item.orders || 0
+    orders: item.orderCount || item.orders || 0,
   }));
 
   // Show loading state AFTER all hooks have been called
@@ -83,7 +76,9 @@ const ReportsPage: React.FC = () => {
       <div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
-          <p className="text-gray-600 mt-1">Comprehensive insights into your restaurant performance</p>
+          <p className="text-gray-600 mt-1">
+            Comprehensive insights into your restaurant performance
+          </p>
         </div>
         <StatsSkeleton count={4} />
         <PageLoading message="Loading reports..." />
@@ -103,7 +98,7 @@ const ReportsPage: React.FC = () => {
   const handleExportPDF = () => {
     showSuccess(
       'Export Initiated',
-      'PDF report generation has started. You will be notified when it\'s ready for download.'
+      "PDF report generation has started. You will be notified when it's ready for download."
     );
   };
 
@@ -117,9 +112,7 @@ const ReportsPage: React.FC = () => {
       {/* Page Header */}
       <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">
-            Reports & Analytics
-          </h1>
+          <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
           <p className="text-gray-600 mt-1">
             Comprehensive insights into your restaurant performance
           </p>
@@ -152,11 +145,11 @@ const ReportsPage: React.FC = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
               <p className="text-xs text-gray-500 mt-1">
-                {dateRange === "7days"
-                  ? "Last 7 Days"
-                  : dateRange === "30days"
-                    ? "Last 30 Days"
-                    : "Last 3 Months"}
+                {dateRange === '7days'
+                  ? 'Last 7 Days'
+                  : dateRange === '30days'
+                    ? 'Last 30 Days'
+                    : 'Last 3 Months'}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2">
                 {formatCurrency(totalRevenue)}
@@ -174,11 +167,11 @@ const ReportsPage: React.FC = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Orders</p>
               <p className="text-xs text-gray-500 mt-1">
-                {dateRange === "7days"
-                  ? "Last 7 Days"
-                  : dateRange === "30days"
-                    ? "Last 30 Days"
-                    : "Last 3 Months"}
+                {dateRange === '7days'
+                  ? 'Last 7 Days'
+                  : dateRange === '30days'
+                    ? 'Last 30 Days'
+                    : 'Last 3 Months'}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2">
                 {totalOrders.toLocaleString()}
@@ -194,9 +187,7 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
-                Avg Order Value
-              </p>
+              <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
               <p className="text-xs text-gray-500 mt-1">Per transaction</p>
               <p className="text-3xl font-bold text-charcoal mt-2">
                 {formatCurrency(avgOrderValue)}
@@ -212,17 +203,13 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
-                Most Popular Item
-              </p>
+              <p className="text-sm font-medium text-gray-600">Most Popular Item</p>
               <p className="text-xs text-gray-500 mt-1">Best seller</p>
               <p className="text-xl font-bold text-charcoal mt-2 line-clamp-2">
-                {mostPopularItem?.menuItemName || "N/A"}
+                {mostPopularItem?.menuItemName || 'N/A'}
               </p>
               {mostPopularItem && (
-                <p className="text-xs text-gray-600 mt-1">
-                  {mostPopularItem.orderCount} orders
-                </p>
+                <p className="text-xs text-gray-600 mt-1">{mostPopularItem.orderCount} orders</p>
               )}
             </div>
             <div className="bg-yellow-100 p-3 rounded-full">

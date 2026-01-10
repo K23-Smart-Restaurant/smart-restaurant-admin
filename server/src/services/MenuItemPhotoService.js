@@ -1,5 +1,5 @@
-import prisma from "../lib/prisma.js";
-import StorageService from "./StorageService.js";
+import prisma from '../lib/prisma.js';
+import StorageService from './StorageService.js';
 
 /**
  * MenuItemPhoto Service
@@ -7,192 +7,192 @@ import StorageService from "./StorageService.js";
  * H3: Primary photo selection functionality
  */
 class MenuItemPhotoService {
-    /**
-     * H2: Add a photo to a menu item
-     */
-    async addPhoto(menuItemId, photoData) {
-        const { url, isPrimary = false } = photoData;
+  /**
+   * H2: Add a photo to a menu item
+   */
+  async addPhoto(menuItemId, photoData) {
+    const { url, isPrimary = false } = photoData;
 
-        // If setting as primary, unset other primary photos first
-        if (isPrimary) {
-            await prisma.menuItemPhoto.updateMany({
-                where: {
-                    menuItemId,
-                    isPrimary: true,
-                },
-                data: {
-                    isPrimary: false,
-                },
-            });
-        }
-
-        const photo = await prisma.menuItemPhoto.create({
-            data: {
-                menuItemId,
-                url,
-                isPrimary,
-            },
-        });
-
-        return photo;
+    // If setting as primary, unset other primary photos first
+    if (isPrimary) {
+      await prisma.menuItemPhoto.updateMany({
+        where: {
+          menuItemId,
+          isPrimary: true,
+        },
+        data: {
+          isPrimary: false,
+        },
+      });
     }
 
-    /**
-     * H2: Add multiple photos to a menu item
-     */
-    async addMultiplePhotos(menuItemId, files) {
-        // Check if menu item exists
-        const menuItem = await prisma.menuItem.findUnique({
-            where: { id: menuItemId },
-        });
+    const photo = await prisma.menuItemPhoto.create({
+      data: {
+        menuItemId,
+        url,
+        isPrimary,
+      },
+    });
 
-        if (!menuItem) {
-            throw new Error("Menu item not found");
-        }
+    return photo;
+  }
 
-        // Get existing photo count
-        const existingPhotos = await prisma.menuItemPhoto.count({
-            where: { menuItemId },
-        });
+  /**
+   * H2: Add multiple photos to a menu item
+   */
+  async addMultiplePhotos(menuItemId, files) {
+    // Check if menu item exists
+    const menuItem = await prisma.menuItem.findUnique({
+      where: { id: menuItemId },
+    });
 
-        // Limit total photos to 10
-        if (existingPhotos + files.length > 10) {
-            throw new Error(
-                `Cannot add ${files.length} photos. Maximum 10 photos per menu item. Current: ${existingPhotos}`
-            );
-        }
-
-        // Determine if the first photo should be primary
-        const shouldSetPrimary = existingPhotos === 0;
-
-        // Create photo records
-        const photoPromises = files.map((file, index) => {
-            return prisma.menuItemPhoto.create({
-                data: {
-                    menuItemId,
-                    url: `/uploads/menu-items/${file.filename}`,
-                    isPrimary: shouldSetPrimary && index === 0,
-                },
-            });
-        });
-
-        const photos = await Promise.all(photoPromises);
-        return photos;
+    if (!menuItem) {
+      throw new Error('Menu item not found');
     }
 
-    /**
-     * H3: Set a photo as primary
-     */
-    async setPrimaryPhoto(menuItemId, photoId) {
-        // Verify the photo belongs to the menu item
-        const photo = await prisma.menuItemPhoto.findFirst({
-            where: {
-                id: photoId,
-                menuItemId,
-            },
-        });
+    // Get existing photo count
+    const existingPhotos = await prisma.menuItemPhoto.count({
+      where: { menuItemId },
+    });
 
-        if (!photo) {
-            throw new Error("Photo not found for this menu item");
-        }
-
-        // Use transaction to ensure atomicity
-        await prisma.$transaction([
-            // Unset all other primary photos for this menu item
-            prisma.menuItemPhoto.updateMany({
-                where: {
-                    menuItemId,
-                    isPrimary: true,
-                },
-                data: {
-                    isPrimary: false,
-                },
-            }),
-            // Set the specified photo as primary
-            prisma.menuItemPhoto.update({
-                where: { id: photoId },
-                data: { isPrimary: true },
-            }),
-        ]);
-
-        return await prisma.menuItemPhoto.findUnique({
-            where: { id: photoId },
-        });
+    // Limit total photos to 10
+    if (existingPhotos + files.length > 10) {
+      throw new Error(
+        `Cannot add ${files.length} photos. Maximum 10 photos per menu item. Current: ${existingPhotos}`
+      );
     }
 
-    /**
-     * H2: Get all photos for a menu item
-     */
-    async getPhotos(menuItemId) {
-        const photos = await prisma.menuItemPhoto.findMany({
-            where: { menuItemId },
-            orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
-        });
+    // Determine if the first photo should be primary
+    const shouldSetPrimary = existingPhotos === 0;
 
-        return photos;
+    // Create photo records
+    const photoPromises = files.map((file, index) => {
+      return prisma.menuItemPhoto.create({
+        data: {
+          menuItemId,
+          url: `/uploads/menu-items/${file.filename}`,
+          isPrimary: shouldSetPrimary && index === 0,
+        },
+      });
+    });
+
+    const photos = await Promise.all(photoPromises);
+    return photos;
+  }
+
+  /**
+   * H3: Set a photo as primary
+   */
+  async setPrimaryPhoto(menuItemId, photoId) {
+    // Verify the photo belongs to the menu item
+    const photo = await prisma.menuItemPhoto.findFirst({
+      where: {
+        id: photoId,
+        menuItemId,
+      },
+    });
+
+    if (!photo) {
+      throw new Error('Photo not found for this menu item');
     }
 
-    /**
-     * H3: Delete a photo
-     * Also deletes the file from Supabase storage
-     */
-    async deletePhoto(menuItemId, photoId) {
-        // Verify the photo belongs to the menu item
-        const photo = await prisma.menuItemPhoto.findFirst({
-            where: {
-                id: photoId,
-                menuItemId,
-            },
-        });
+    // Use transaction to ensure atomicity
+    await prisma.$transaction([
+      // Unset all other primary photos for this menu item
+      prisma.menuItemPhoto.updateMany({
+        where: {
+          menuItemId,
+          isPrimary: true,
+        },
+        data: {
+          isPrimary: false,
+        },
+      }),
+      // Set the specified photo as primary
+      prisma.menuItemPhoto.update({
+        where: { id: photoId },
+        data: { isPrimary: true },
+      }),
+    ]);
 
-        if (!photo) {
-            throw new Error("Photo not found for this menu item");
-        }
+    return await prisma.menuItemPhoto.findUnique({
+      where: { id: photoId },
+    });
+  }
 
-        // Delete the file from Supabase storage
-        try {
-            await StorageService.deleteFileByUrl(photo.url);
-        } catch (error) {
-            console.error('Failed to delete photo from storage:', error);
-            // Continue with database deletion even if storage deletion fails
-        }
+  /**
+   * H2: Get all photos for a menu item
+   */
+  async getPhotos(menuItemId) {
+    const photos = await prisma.menuItemPhoto.findMany({
+      where: { menuItemId },
+      orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+    });
 
-        // Delete the photo record from database
-        await prisma.menuItemPhoto.delete({
-            where: { id: photoId },
-        });
+    return photos;
+  }
 
-        // If it was primary, set another photo as primary
-        if (photo.isPrimary) {
-            const remainingPhotos = await prisma.menuItemPhoto.findFirst({
-                where: { menuItemId },
-                orderBy: { createdAt: "asc" },
-            });
+  /**
+   * H3: Delete a photo
+   * Also deletes the file from Supabase storage
+   */
+  async deletePhoto(menuItemId, photoId) {
+    // Verify the photo belongs to the menu item
+    const photo = await prisma.menuItemPhoto.findFirst({
+      where: {
+        id: photoId,
+        menuItemId,
+      },
+    });
 
-            if (remainingPhotos) {
-                await prisma.menuItemPhoto.update({
-                    where: { id: remainingPhotos.id },
-                    data: { isPrimary: true },
-                });
-            }
-        }
-
-        return { message: "Photo deleted successfully" };
+    if (!photo) {
+      throw new Error('Photo not found for this menu item');
     }
 
-    /**
-     * Get primary photo for a menu item
-     */
-    async getPrimaryPhoto(menuItemId) {
-        const photo = await prisma.menuItemPhoto.findFirst({
-            where: {
-                menuItemId,
-                isPrimary: true,
-            },
-        });
-
-        return photo;
+    // Delete the file from Supabase storage
+    try {
+      await StorageService.deleteFileByUrl(photo.url);
+    } catch (error) {
+      console.error('Failed to delete photo from storage:', error);
+      // Continue with database deletion even if storage deletion fails
     }
+
+    // Delete the photo record from database
+    await prisma.menuItemPhoto.delete({
+      where: { id: photoId },
+    });
+
+    // If it was primary, set another photo as primary
+    if (photo.isPrimary) {
+      const remainingPhotos = await prisma.menuItemPhoto.findFirst({
+        where: { menuItemId },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      if (remainingPhotos) {
+        await prisma.menuItemPhoto.update({
+          where: { id: remainingPhotos.id },
+          data: { isPrimary: true },
+        });
+      }
+    }
+
+    return { message: 'Photo deleted successfully' };
+  }
+
+  /**
+   * Get primary photo for a menu item
+   */
+  async getPrimaryPhoto(menuItemId) {
+    const photo = await prisma.menuItemPhoto.findFirst({
+      where: {
+        menuItemId,
+        isPrimary: true,
+      },
+    });
+
+    return photo;
+  }
 }
 
 export default new MenuItemPhotoService();

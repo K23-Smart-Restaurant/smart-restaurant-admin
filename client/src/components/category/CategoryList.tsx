@@ -24,14 +24,10 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
           {/* Category content */}
           <div className="mb-4">
             {/* Category name */}
-            <h3 className="text-xl font-bold text-charcoal mb-2">
-              {category.name}
-            </h3>
+            <h3 className="text-xl font-bold text-charcoal mb-2">{category.name}</h3>
 
             {/* Description */}
-            <p className="text-gray-600 text-sm mb-3">
-              {category.description || 'No description'}
-            </p>
+            <p className="text-gray-600 text-sm mb-3">{category.description || 'No description'}</p>
 
             {/* Badges */}
             <div className="flex items-center space-x-2">
@@ -43,9 +39,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
               {/* Active/Inactive badge */}
               <span
                 className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                  category.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
+                  category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                 }`}
               >
                 {category.isActive ? 'Active' : 'Inactive'}
@@ -86,7 +80,9 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
       {/* Empty state */}
       {categories.length === 0 && (
         <div className="col-span-full bg-white rounded-lg shadow-md border border-antiflash p-12 text-center">
-          <p className="text-gray-600">No categories found. Create your first category to get started!</p>
+          <p className="text-gray-600">
+            No categories found. Create your first category to get started!
+          </p>
         </div>
       )}
     </div>

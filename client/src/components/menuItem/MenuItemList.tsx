@@ -1,8 +1,8 @@
-import React from "react";
-import { SearchIcon, FilterIcon, ArrowUpDownIcon } from "lucide-react";
-import type { MenuItem, MenuCategory } from "../../hooks/useMenuItems";
-import { MenuItemCard } from "./MenuItemCard";
-import { Pagination } from "../common/Pagination";
+import React from 'react';
+import { SearchIcon, FilterIcon, ArrowUpDownIcon } from 'lucide-react';
+import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
+import { MenuItemCard } from './MenuItemCard';
+import { Pagination } from '../common/Pagination';
 
 interface MenuItemListProps {
   menuItems: MenuItem[];
@@ -146,7 +146,8 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
             </span>
           )}
           <span className="px-2 py-1 bg-gray-200 text-charcoal text-xs rounded-full">
-            Sort: {sortOptions.find((s) => s.value === sortBy)?.label} ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
+            Sort: {sortOptions.find((s) => s.value === sortBy)?.label} (
+            {sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
           </span>
         </div>
       </div>
@@ -154,7 +155,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> of {" "}
+          Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> of{' '}
           <span className="font-semibold text-charcoal">{total}</span> menu items
         </p>
       </div>

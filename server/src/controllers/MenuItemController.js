@@ -1,5 +1,5 @@
-import MenuItemService from "../services/MenuItemService.js";
-import StorageService from "../services/StorageService.js";
+import MenuItemService from '../services/MenuItemService.js';
+import StorageService from '../services/StorageService.js';
 
 const menuItemService = new MenuItemService();
 
@@ -10,7 +10,7 @@ class MenuItemController {
         name: req.query.name,
         category: req.query.category,
         categoryId: req.query.categoryId,
-        isAvailable: req.query.isAvailable === "true" ? true : undefined,
+        isAvailable: req.query.isAvailable === 'true' ? true : undefined,
         sortBy: req.query.sortBy,
         sortOrder: req.query.sortOrder,
         limit: req.query.limit ? parseInt(req.query.limit) : undefined,
@@ -29,7 +29,7 @@ class MenuItemController {
       if (!menuItem) {
         return res.status(404).json({
           success: false,
-          message: "Menu item not found",
+          message: 'Menu item not found',
         });
       }
       res.json({ success: true, data: menuItem });
@@ -67,10 +67,7 @@ class MenuItemController {
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
-          const uploaded = await StorageService.uploadMenuItemPhotos(
-            filesToUpload,
-            primaryIndex
-          );
+          const uploaded = await StorageService.uploadMenuItemPhotos(filesToUpload, primaryIndex);
           uploaded.forEach((photo) => {
             uploadedPhotos.push({
               url: photo.url,
@@ -83,17 +80,13 @@ class MenuItemController {
         }
       }
 
-      const menuItem = await menuItemService.createMenuItem(
-        req.body,
-        imageUrl,
-        uploadedPhotos
-      );
+      const menuItem = await menuItemService.createMenuItem(req.body, imageUrl, uploadedPhotos);
 
       // Add modifiers if provided
       let finalMenuItem = menuItem;
       if (req.body.modifiers) {
         const modifiers =
-          typeof req.body.modifiers === "string"
+          typeof req.body.modifiers === 'string'
             ? JSON.parse(req.body.modifiers)
             : req.body.modifiers;
         if (Array.isArray(modifiers) && modifiers.length > 0) {
@@ -118,15 +111,11 @@ class MenuItemController {
       // Determine if an existing photo is being set as primary
       const primaryPhotoId = req.body.primaryPhotoId;
       const hasExistingPrimaryPhoto =
-        primaryPhotoId &&
-        typeof primaryPhotoId === "string" &&
-        primaryPhotoId.length > 0;
+        primaryPhotoId && typeof primaryPhotoId === 'string' && primaryPhotoId.length > 0;
 
       // Get primaryPhotoIndex from request body (for new photos)
       const primaryPhotoIndex =
-        req.body.primaryPhotoIndex !== undefined
-          ? parseInt(req.body.primaryPhotoIndex, 10)
-          : null;
+        req.body.primaryPhotoIndex !== undefined ? parseInt(req.body.primaryPhotoIndex, 10) : null;
 
       if (req.files) {
         // Collect all files to upload
@@ -146,27 +135,16 @@ class MenuItemController {
         if (req.files.photos) {
           filesToUpload.push(...req.files.photos);
           // Use primaryPhotoIndex if provided and no existing photo is primary
-          if (
-            !hasExistingPrimaryPhoto &&
-            primaryPhotoIndex !== null &&
-            primaryPhotoIndex >= 0
-          ) {
+          if (!hasExistingPrimaryPhoto && primaryPhotoIndex !== null && primaryPhotoIndex >= 0) {
             primaryIndex = primaryPhotoIndex;
-          } else if (
-            !hasExistingPrimaryPhoto &&
-            filesToUpload.length > 0 &&
-            !req.files.image
-          ) {
+          } else if (!hasExistingPrimaryPhoto && filesToUpload.length > 0 && !req.files.image) {
             primaryIndex = 0;
           }
         }
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
-          const uploaded = await StorageService.uploadMenuItemPhotos(
-            filesToUpload,
-            primaryIndex
-          );
+          const uploaded = await StorageService.uploadMenuItemPhotos(filesToUpload, primaryIndex);
           uploaded.forEach((photo) => {
             uploadedPhotos.push({
               url: photo.url,
@@ -190,12 +168,9 @@ class MenuItemController {
       // (primaryPhotoId was already extracted at the start of update method)
       if (hasExistingPrimaryPhoto) {
         try {
-          menuItem = await menuItemService.setPrimaryPhoto(
-            req.params.id,
-            primaryPhotoId
-          );
+          menuItem = await menuItemService.setPrimaryPhoto(req.params.id, primaryPhotoId);
         } catch (err) {
-          console.warn("Failed to set primary photo:", err.message);
+          console.warn('Failed to set primary photo:', err.message);
         }
       }
 
@@ -203,7 +178,7 @@ class MenuItemController {
       let finalMenuItem = menuItem;
       if (req.body.modifiers) {
         const modifiers =
-          typeof req.body.modifiers === "string"
+          typeof req.body.modifiers === 'string'
             ? JSON.parse(req.body.modifiers)
             : req.body.modifiers;
         if (Array.isArray(modifiers)) {
@@ -221,10 +196,7 @@ class MenuItemController {
 
   async updateStatus(req, res, next) {
     try {
-      const menuItem = await menuItemService.updateStatus(
-        req.params.id,
-        req.body
-      );
+      const menuItem = await menuItemService.updateStatus(req.params.id, req.body);
       res.json(menuItem);
     } catch (error) {
       next(error);
