@@ -3,16 +3,28 @@ import type { Order } from './orderService';
 
 export interface BillData {
   orderId: string;
-  subtotal: number;
-  tax: number;
-  discount: number;
-  total: number;
-  items: {
+  orderNumber: number;
+  tableNumber: number;
+  tableLocation: string;
+  guestName: string;
+  guestContact: string;
+  items: Array<{
     name: string;
     quantity: number;
     unitPrice: number;
     subtotal: number;
-  }[];
+    specialInstructions: string | null;
+  }>;
+  subtotal: number;
+  taxRate: number;
+  taxAmount: number;
+  serviceChargeRate: number;
+  serviceCharge: number;
+  total: number;
+  createdAt: string;
+  status: string;
+  generatedAt: string;
+  billNumber: string;
 }
 
 export interface CreateBillDto {
@@ -78,7 +90,7 @@ export const waiterService = {
   // Generate bill
   createBill: async (data: CreateBillDto): Promise<BillData> => {
     const response = await apiClient.post<{ success: boolean; data: BillData }>(
-      '/waiter/bill/create',
+      '/waiter/bill/generate',
       data
     );
     return response.data.data;
@@ -102,6 +114,14 @@ export const waiterService = {
     const response = await apiClient.post<{ success: boolean; data: Order }>(
       `/waiter/orders/${orderId}/process-payment`,
       { paymentMethod, amountPaid }
+    );
+    return response.data.data;
+  },
+
+  // Get bill by order ID for printing
+  getBillByOrderId: async (orderId: string): Promise<BillData> => {
+    const response = await apiClient.get<{ success: boolean; data: BillData }>(
+      `/waiter/bill/${orderId}`
     );
     return response.data.data;
   },

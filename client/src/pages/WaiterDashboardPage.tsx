@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ClipboardList, Layout, Bell, Utensils, RefreshCw } from 'lucide-react';
 import PendingOrderCard from '../components/waiter/PendingOrderCard';
 import ReadyOrderCard from '../components/waiter/ReadyOrderCard';
@@ -32,6 +33,7 @@ const WaiterDashboardPage: React.FC = () => {
     billRequests: 0,
   });
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   // Fetch pending orders
   const fetchPendingOrders = useCallback(async () => {
@@ -243,7 +245,16 @@ const WaiterDashboardPage: React.FC = () => {
   const handleGenerateBill = async (orderId: string, discount: number) => {
     try {
       await waiterService.createBill({ orderId, discount });
-      showToast('success', 'Bill Generated', 'Bill has been generated and can be printed');
+      showToast('success', 'Bill Generated', 'Navigating to print page...');
+
+      // Close the bill form modal
+      setIsBillFormOpen(false);
+
+      // Clear selected order
+      setSelectedOrder(null);
+
+      // Navigate to bill print page
+      navigate(`/waiter/bill/${orderId}`);
     } catch (error) {
       console.error('Failed to generate bill:', error);
       showToast('error', 'Error', 'Failed to generate bill');
