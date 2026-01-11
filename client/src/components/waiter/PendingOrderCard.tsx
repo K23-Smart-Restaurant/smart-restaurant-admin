@@ -72,7 +72,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
                     </div>
                     <div className="flex items-center gap-1.5 text-gray-700">
                         <DollarSign className="w-4 h-4" />
-                        <span className="font-semibold">${order.totalAmount.toFixed(2)}</span>
+                        <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
                     </div>
                     <div className="text-gray-500 text-xs ml-auto">
                         {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}

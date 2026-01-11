@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma.js';
 import socketService from './SocketService.js';
+import { publishEvent, REDIS_CHANNELS } from '../config/redis.config.js';
 
 /**
  * WaiterService - Handles waiter operations
@@ -179,6 +180,12 @@ class WaiterService {
 
         // T411: Emit socket event for order confirmed (notify kitchen)
         socketService.emitOrderConfirmed(updatedOrder);
+        // Publish to Redis for customer app
+        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+            order: updatedOrder,
+            orderId,
+            newStatus: 'CONFIRMED',
+        });
 
         return updatedOrder;
     }
@@ -227,6 +234,12 @@ class WaiterService {
 
         // Emit socket event for order cancelled
         socketService.emitOrderCancelled(updatedOrder);
+        // Publish to Redis for customer app
+        publishEvent(REDIS_CHANNELS.ORDER_CANCELLED, {
+            order: updatedOrder,
+            orderId,
+            newStatus: 'CANCELLED',
+        });
 
         return updatedOrder;
     }
@@ -249,13 +262,25 @@ class WaiterService {
             throw new Error('Only READY orders can be marked as SERVED');
         }
 
-        return await prisma.order.update({
+        const updatedOrder = await prisma.order.update({
             where: { id: orderId },
             data: {
                 status: 'SERVED',
                 updatedAt: new Date(),
             },
+            include: {
+                table: { select: { id: true, tableNumber: true } },
+            },
         });
+
+        // Publish to Redis for customer app
+        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+            order: updatedOrder,
+            orderId,
+            newStatus: 'SERVED',
+        });
+
+        return updatedOrder;
     }
 
     /**
@@ -365,6 +390,13 @@ class WaiterService {
 
         // Emit socket event for payment completed
         socketService.emitPaymentCompleted(result);
+        // Publish to Redis for customer app
+        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+            order: result,
+            orderId,
+            newStatus: 'COMPLETED',
+            paymentStatus: 'PAID',
+        });
 
         return result;
     }

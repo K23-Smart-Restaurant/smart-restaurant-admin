@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useRef, useCallback, type ReactNode } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3000';
+// Admin server runs on port 3001
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
 
 // Socket context type
 interface SocketContextType {
