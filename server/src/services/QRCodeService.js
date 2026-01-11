@@ -8,7 +8,7 @@ import storageService from './StorageService.js';
 // QR Token configuration
 const QR_TOKEN_SECRET = process.env.QR_TOKEN_SECRET || 'dev_secret_key_123456789';
 const QR_TOKEN_EXPIRES_IN = process.env.QR_TOKEN_EXPIRES_IN || '30d';
-const RESTAURANT_DOMAIN = process.env.RESTAURANT_DOMAIN || 'http://localhost:3000';
+const CUSTOMER_APP_DOMAIN = process.env.CUSTOMER_APP_DOMAIN || 'http://localhost:5174';
 const DEFAULT_RESTAURANT_ID = process.env.DEFAULT_RESTAURANT_ID || 'default-restaurant';
 
 class QRCodeService {
@@ -144,7 +144,7 @@ class QRCodeService {
    * @returns {string} QR code URL
    */
   generateQRUrl(tableId, token) {
-    return `${RESTAURANT_DOMAIN}/menu?table=${tableId}&token=${token}`;
+    return `${CUSTOMER_APP_DOMAIN}/qr-table?table=${tableId}&token=${token}`;
   }
 
   /**
