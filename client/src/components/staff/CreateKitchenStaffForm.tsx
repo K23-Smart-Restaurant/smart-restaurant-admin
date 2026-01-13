@@ -2,18 +2,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Staff } from '../../hooks/useStaff';import { Button } from '../common/Button';
+import type { Staff } from '../../hooks/useStaff';
+import { Button } from '../common/Button';
 // Validation schema (same as waiter form)
-const kitchenStaffFormSchema = z.object({
-  name: z.string().min(3, 'Name must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  phoneNumber: z.string().optional(),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const kitchenStaffFormSchema = z
+  .object({
+    name: z.string().min(3, 'Name must be at least 3 characters'),
+    email: z.string().email('Please enter a valid email address'),
+    phoneNumber: z.string().optional(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type KitchenStaffFormData = z.infer<typeof kitchenStaffFormSchema>;
 
@@ -23,9 +26,13 @@ interface CreateKitchenStaffFormProps {
   onClose: () => void;
 }
 
-export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ staff, onSubmit, onClose }) => {
+export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({
+  staff,
+  onSubmit,
+  onClose,
+}) => {
   const isEditMode = !!staff;
-  
+
   const {
     register,
     handleSubmit,
@@ -46,7 +53,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
     try {
       // Remove confirmPassword before submitting
       const { confirmPassword, ...staffData } = data;
-      
+
       // Call parent's onSubmit with staff data
       onSubmit({
         ...staffData,
@@ -54,7 +61,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
         role: 'KITCHEN_STAFF',
         isActive: staff?.isActive ?? true,
       });
-      
+
       // Reset form and close modal
       if (!isEditMode) {
         reset();
@@ -83,9 +90,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             }`}
             placeholder="Enter full name"
           />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-          )}
+          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
 
         {/* Email field */}
@@ -102,9 +107,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({ 
             }`}
             placeholder="email@restaurant.com"
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
         {/* Phone Number field */}

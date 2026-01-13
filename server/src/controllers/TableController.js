@@ -1,5 +1,5 @@
-import TableService from "../services/TableService.js";
-import qrCodeService from "../services/QRCodeService.js";
+import TableService from '../services/TableService.js';
+import qrCodeService from '../services/QRCodeService.js';
 
 const tableService = new TableService();
 
@@ -42,21 +42,15 @@ class TableController {
 
   async downloadQR(req, res, next) {
     try {
-      const format = req.query.format || "png";
+      const format = req.query.format || 'png';
       const qrBuffer = await tableService.downloadQRCode(req.params.id, format);
 
-      if (format === "pdf") {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename=table-${req.params.id}-qr.pdf`
-        );
+      if (format === 'pdf') {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=table-${req.params.id}-qr.pdf`);
       } else {
-        res.setHeader("Content-Type", "image/png");
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename=table-${req.params.id}-qr.png`
-        );
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Disposition', `attachment; filename=table-${req.params.id}-qr.png`);
       }
       res.send(qrBuffer);
     } catch (error) {
@@ -66,33 +60,23 @@ class TableController {
 
   async downloadBatchQR(req, res, next) {
     try {
-      const { tableIds, format = "zip", layout = "single" } = req.body;
+      const { tableIds, format = 'zip', layout = 'single' } = req.body;
       const options = {
         layout,
-        restaurantName: req.body.restaurantName || "Smart Restaurant",
+        restaurantName: req.body.restaurantName || 'Smart Restaurant',
         includeWifi: req.body.includeWifi || false,
-        wifiName: req.body.wifiName || "",
-        wifiPassword: req.body.wifiPassword || "",
+        wifiName: req.body.wifiName || '',
+        wifiPassword: req.body.wifiPassword || '',
       };
 
-      const buffer = await tableService.downloadBatchQRCodes(
-        tableIds,
-        format,
-        options
-      );
+      const buffer = await tableService.downloadBatchQRCodes(tableIds, format, options);
 
-      if (format === "zip") {
-        res.setHeader("Content-Type", "application/zip");
-        res.setHeader(
-          "Content-Disposition",
-          "attachment; filename=qr-codes.zip"
-        );
+      if (format === 'zip') {
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', 'attachment; filename=qr-codes.zip');
       } else {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          "attachment; filename=qr-codes.pdf"
-        );
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=qr-codes.pdf');
       }
 
       res.send(buffer);
@@ -121,7 +105,7 @@ class TableController {
       if (!token) {
         return res.status(400).json({
           valid: false,
-          error: "Token is required",
+          error: 'Token is required',
         });
       }
 
@@ -166,11 +150,7 @@ class TableController {
   async toggleActive(req, res, next) {
     try {
       const { isActive, force } = req.body;
-      const result = await tableService.toggleActive(
-        req.params.id,
-        isActive,
-        force
-      );
+      const result = await tableService.toggleActive(req.params.id, isActive, force);
       res.json(result);
     } catch (error) {
       next(error);

@@ -2,18 +2,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Staff } from '../../hooks/useStaff';import { Button } from '../common/Button';
+import type { Staff } from '../../hooks/useStaff';
+import { Button } from '../common/Button';
 // Validation schema
-const waiterFormSchema = z.object({
-  name: z.string().min(3, 'Name must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  phoneNumber: z.string().optional(),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const waiterFormSchema = z
+  .object({
+    name: z.string().min(3, 'Name must be at least 3 characters'),
+    email: z.string().email('Please enter a valid email address'),
+    phoneNumber: z.string().optional(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type WaiterFormData = z.infer<typeof waiterFormSchema>;
 
@@ -25,7 +28,7 @@ interface CreateWaiterFormProps {
 
 export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSubmit, onClose }) => {
   const isEditMode = !!staff;
-  
+
   const {
     register,
     handleSubmit,
@@ -46,7 +49,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
     try {
       // Remove confirmPassword before submitting
       const { confirmPassword, ...staffData } = data;
-      
+
       // Call parent's onSubmit with staff data
       onSubmit({
         ...staffData,
@@ -54,7 +57,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         role: 'WAITER',
         isActive: staff?.isActive ?? true,
       });
-      
+
       // Reset form and close modal
       if (!isEditMode) {
         reset();
@@ -83,9 +86,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             }`}
             placeholder="Enter full name"
           />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-          )}
+          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
 
         {/* Email field */}
@@ -102,9 +103,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             }`}
             placeholder="email@restaurant.com"
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
         {/* Phone Number field */}

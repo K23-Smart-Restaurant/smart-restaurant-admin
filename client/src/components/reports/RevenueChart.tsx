@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   LineChart,
   Line,
@@ -8,8 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
-import type { DateRange } from "../../hooks/useReports";
+} from 'recharts';
+import type { DateRange } from '../../hooks/useReports';
 
 interface RevenueChartProps {
   data: Array<{ date: string; revenue: number; orders: number }>;
@@ -28,7 +28,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   // Format date for display
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   // Format currency
@@ -45,16 +45,11 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
             {formatDate(payload[0].payload.date)}
           </p>
           <p className="text-sm text-gray-700">
-            Revenue:{" "}
-            <span className="font-bold text-green-600">
-              {formatCurrency(payload[0].value)}
-            </span>
+            Revenue:{' '}
+            <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
           </p>
           <p className="text-sm text-gray-700">
-            Orders:{" "}
-            <span className="font-bold text-blue-600">
-              {payload[0].payload.orders}
-            </span>
+            Orders: <span className="font-bold text-blue-600">{payload[0].payload.orders}</span>
           </p>
         </div>
       );
@@ -67,11 +62,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       {/* Header with total and date range selector */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-charcoal">
-            Revenue Over Time
-          </h2>
+          <h2 className="text-2xl font-bold text-charcoal">Revenue Over Time</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Total Revenue:{" "}
+            Total Revenue:{' '}
             <span className="text-2xl font-bold text-green-600">
               {formatCurrency(totalRevenue)}
             </span>
@@ -81,31 +74,31 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         {/* Date Range Selector */}
         <div className="flex gap-2">
           <button
-            onClick={() => onDateRangeChange("7days")}
+            onClick={() => onDateRangeChange('7days')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              dateRange === "7days"
-                ? "bg-naples text-charcoal shadow"
-                : "bg-white text-gray-600 border border-gray-300 hover:bg-antiflash"
+              dateRange === '7days'
+                ? 'bg-naples text-charcoal shadow'
+                : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
             7 Days
           </button>
           <button
-            onClick={() => onDateRangeChange("30days")}
+            onClick={() => onDateRangeChange('30days')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              dateRange === "30days"
-                ? "bg-naples text-charcoal shadow"
-                : "bg-white text-gray-600 border border-gray-300 hover:bg-antiflash"
+              dateRange === '30days'
+                ? 'bg-naples text-charcoal shadow'
+                : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
             30 Days
           </button>
           <button
-            onClick={() => onDateRangeChange("3months")}
+            onClick={() => onDateRangeChange('3months')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              dateRange === "3months"
-                ? "bg-naples text-charcoal shadow"
-                : "bg-white text-gray-600 border border-gray-300 hover:bg-antiflash"
+              dateRange === '3months'
+                ? 'bg-naples text-charcoal shadow'
+                : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
             3 Months
@@ -114,24 +107,17 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       </div>
 
       {/* Chart */}
-      <div className="w-full" style={{ height: "400px" }}>
+      <div className="w-full" style={{ height: '400px' }}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
+          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis
               dataKey="date"
               tickFormatter={formatDate}
               stroke="#666"
-              style={{ fontSize: "12px" }}
+              style={{ fontSize: '12px' }}
             />
-            <YAxis
-              tickFormatter={formatCurrency}
-              stroke="#666"
-              style={{ fontSize: "12px" }}
-            />
+            <YAxis tickFormatter={formatCurrency} stroke="#666" style={{ fontSize: '12px' }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Line
@@ -139,7 +125,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               dataKey="revenue"
               stroke="#10b981"
               strokeWidth={2}
-              dot={{ fill: "#10b981", r: 4 }}
+              dot={{ fill: '#10b981', r: 4 }}
               activeDot={{ r: 6 }}
               name="Revenue"
             />

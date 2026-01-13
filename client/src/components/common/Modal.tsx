@@ -42,7 +42,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-4"
             >
-              <DialogPanel className={`w-full ${sizeClasses[size]} transform overflow-hidden rounded-2xl bg-white shadow-elevation-3 transition-all`}>
+              <DialogPanel
+                className={`w-full ${sizeClasses[size]} transform overflow-hidden rounded-2xl bg-white shadow-elevation-3 transition-all`}
+              >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gradient-primary/5 to-gradient-secondary/5">
                   <DialogTitle className="text-xl font-bold text-charcoal bg-gradient-to-r from-gradient-primary to-gradient-secondary bg-clip-text text-transparent">
                     {title}
@@ -54,9 +56,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
                     <XIcon className="w-5 h-5 transition-transform duration-300" />
                   </button>
                 </div>
-                <div className="px-6 py-6 max-h-[80vh] overflow-y-auto">
-                  {children}
-                </div>
+                <div className="px-6 py-6 max-h-[80vh] overflow-y-auto">{children}</div>
               </DialogPanel>
             </TransitionChild>
           </div>

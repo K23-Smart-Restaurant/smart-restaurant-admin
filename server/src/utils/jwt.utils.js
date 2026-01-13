@@ -3,7 +3,8 @@ import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m'; // Short-lived access token
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-secret-key-change-in-production';
+const REFRESH_TOKEN_SECRET =
+  process.env.REFRESH_TOKEN_SECRET || 'your-refresh-secret-key-change-in-production';
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d'; // Long-lived refresh token
 
 /**
@@ -93,10 +94,4 @@ const getRefreshTokenExpiration = () => {
   }
 };
 
-export {
-  signToken,
-  signRefreshToken,
-  verifyToken,
-  verifyRefreshToken,
-  getRefreshTokenExpiration
-};
+export { signToken, signRefreshToken, verifyToken, verifyRefreshToken, getRefreshTokenExpiration };

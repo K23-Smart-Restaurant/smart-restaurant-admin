@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { staffService, type Staff, type StaffRole, type CreateWaiterDto, type CreateKitchenStaffDto, type UpdateStaffDto } from '../services/staffService';
+import {
+  staffService,
+  type Staff,
+  type StaffRole,
+  type CreateWaiterDto,
+  type CreateKitchenStaffDto,
+  type UpdateStaffDto,
+} from '../services/staffService';
 
 // Re-export types
 export type { Staff, StaffRole };

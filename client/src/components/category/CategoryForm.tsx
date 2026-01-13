@@ -83,14 +83,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.name ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+              errors.name ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="Enter category name"
             maxLength={50}
           />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-          )}
+          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
 
         {/* Description field */}
@@ -101,8 +100,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
           <textarea
             id="description"
             {...register('description')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${errors.description ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
+              errors.description ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="Enter category description (optional)"
             rows={3}
             maxLength={200}
@@ -121,17 +121,16 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             id="displayOrder"
             type="number"
             {...register('displayOrder', { valueAsNumber: true })}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.displayOrder ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+              errors.displayOrder ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="0"
             min={0}
           />
           {errors.displayOrder && (
             <p className="mt-1 text-sm text-red-600">{errors.displayOrder.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-600">
-            Lower numbers appear first in the menu
-          </p>
+          <p className="mt-1 text-xs text-gray-600">Lower numbers appear first in the menu</p>
         </div>
 
         {/* Active toggle switch */}
@@ -141,7 +140,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
               Active
             </label>
             <p className="text-xs text-gray-600">
-              {isEditMode ? 'Toggle to activate/deactivate this category' : 'Category will be active by default'}
+              {isEditMode
+                ? 'Toggle to activate/deactivate this category'
+                : 'Category will be active by default'}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">

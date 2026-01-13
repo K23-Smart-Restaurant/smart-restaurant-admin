@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   menuItemService,
   type MenuItem,
@@ -10,18 +10,18 @@ import {
   type CreateMenuItemPayload,
   type UpdateMenuItemPayload,
   type PhotoInput,
-} from "../services/menuItemService";
+} from '../services/menuItemService';
 
 // Re-export types
 export type { MenuItem, MenuCategory };
 
-type SortOption = "name" | "price" | "category" | "createdAt" | "popularity";
+type SortOption = 'name' | 'price' | 'category' | 'createdAt' | 'popularity';
 
 interface UseMenuItemsOptions {
   searchQuery?: string;
-  selectedCategory?: MenuCategory | "ALL";
+  selectedCategory?: MenuCategory | 'ALL';
   sortBy?: SortOption;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: 'asc' | 'desc';
   page?: number;
   pageSize?: number;
 }
@@ -48,10 +48,10 @@ export interface SaveMenuItemFormPayload {
 
 export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const {
-    searchQuery = "",
-    selectedCategory = "ALL",
-    sortBy = "name",
-    sortOrder = "asc",
+    searchQuery = '',
+    selectedCategory = 'ALL',
+    sortBy = 'name',
+    sortOrder = 'asc',
     page = 1,
     pageSize = 9,
   } = options;
@@ -59,26 +59,12 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const queryClient = useQueryClient();
 
   // Fetch all menu items
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery<MenuItemListResponse>({
-    queryKey: [
-      "menuItems",
-      searchQuery,
-      selectedCategory,
-      sortBy,
-      sortOrder,
-      page,
-      pageSize,
-    ],
+  const { data, isLoading, isError, error, refetch } = useQuery<MenuItemListResponse>({
+    queryKey: ['menuItems', searchQuery, selectedCategory, sortBy, sortOrder, page, pageSize],
     queryFn: () =>
       menuItemService.getAll({
         name: searchQuery || undefined,
-        category: selectedCategory === "ALL" ? undefined : selectedCategory,
+        category: selectedCategory === 'ALL' ? undefined : selectedCategory,
         sortBy,
         sortOrder,
         limit: pageSize,
@@ -91,7 +77,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const createMutation = useMutation({
     mutationFn: (payload: CreateMenuItemPayload) => menuItemService.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
     },
   });
 
@@ -99,7 +85,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const updateMutation = useMutation({
     mutationFn: (payload: UpdateMenuItemPayload) => menuItemService.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
     },
   });
 
@@ -107,7 +93,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const deleteMutation = useMutation({
     mutationFn: menuItemService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
     },
   });
 
@@ -116,7 +102,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     mutationFn: ({ id, isAvailable }: { id: string; isAvailable: boolean }) =>
       menuItemService.toggleAvailability(id, isAvailable),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
     },
   });
 
@@ -125,7 +111,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     mutationFn: ({ id, isSoldOut }: { id: string; isSoldOut: boolean }) =>
       menuItemService.toggleSoldOut(id, isSoldOut),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
     },
   });
 
@@ -161,7 +147,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     if (item) {
       return toggleAvailabilityMutation.mutateAsync({ id, isAvailable: !item.isAvailable });
     }
-    return Promise.reject(new Error("Menu item not found"));
+    return Promise.reject(new Error('Menu item not found'));
   };
 
   const toggleSoldOut = (id: string) => {
@@ -169,7 +155,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     if (item) {
       return toggleSoldOutMutation.mutateAsync({ id, isSoldOut: !item.isSoldOut });
     }
-    return Promise.reject(new Error("Menu item not found"));
+    return Promise.reject(new Error('Menu item not found'));
   };
 
   return {
@@ -193,12 +179,12 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     isTogglingSoldOut: toggleSoldOutMutation.isPending,
     // Legacy properties for compatibility
     searchQuery,
-    setSearchQuery: () => { }, // Deprecated - use options instead
+    setSearchQuery: () => {}, // Deprecated - use options instead
     selectedCategory,
-    setSelectedCategory: () => { }, // Deprecated - use options instead
+    setSelectedCategory: () => {}, // Deprecated - use options instead
     sortBy,
-    setSortBy: () => { }, // Deprecated - use options instead
+    setSortBy: () => {}, // Deprecated - use options instead
     sortOrder,
-    setSortOrder: () => { }, // Deprecated - use options instead
+    setSortOrder: () => {}, // Deprecated - use options instead
   };
 };

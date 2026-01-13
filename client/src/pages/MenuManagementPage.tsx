@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { PlusIcon } from "lucide-react";
-import { useMenuItems, type ModifierGroupFormState } from "../hooks/useMenuItems";
-import type { MenuItem, MenuCategory } from "../hooks/useMenuItems";
-import { MenuItemList } from "../components/menuItem/MenuItemList";
-import { MenuItemForm, type MenuItemFormSubmitPayload } from "../components/menuItem/MenuItemForm";
-import { ModifierGroupForm } from "../components/menuItem/ModifierGroupForm";
-import { Modal } from "../components/common/Modal";
-import { Button } from "../components/common/Button";
-import { ConfirmDeleteDialog } from "../components/common/ConfirmDeleteDialog";
-import { PageLoading } from "../components/common/LoadingSpinner";
-import { useToastContext } from "../contexts/ToastContext";
+import React, { useState } from 'react';
+import { PlusIcon } from 'lucide-react';
+import { useMenuItems, type ModifierGroupFormState } from '../hooks/useMenuItems';
+import type { MenuItem, MenuCategory } from '../hooks/useMenuItems';
+import { MenuItemList } from '../components/menuItem/MenuItemList';
+import { MenuItemForm, type MenuItemFormSubmitPayload } from '../components/menuItem/MenuItemForm';
+import { ModifierGroupForm } from '../components/menuItem/ModifierGroupForm';
+import { Modal } from '../components/common/Modal';
+import { Button } from '../components/common/Button';
+import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
+import { PageLoading } from '../components/common/LoadingSpinner';
+import { useToastContext } from '../contexts/ToastContext';
 
 const MenuManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
@@ -17,7 +17,9 @@ const MenuManagementPage: React.FC = () => {
   // Local filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'ALL'>('ALL');
-  const [sortBy, setSortBy] = useState<'name' | 'price' | 'category' | 'createdAt' | 'popularity'>('name');
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'category' | 'createdAt' | 'popularity'>(
+    'name'
+  );
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(9);
@@ -31,7 +33,7 @@ const MenuManagementPage: React.FC = () => {
     updateMenuItem,
     deleteMenuItem,
     toggleAvailability,
-    toggleSoldOut
+    toggleSoldOut,
   } = useMenuItems({
     searchQuery,
     selectedCategory,
@@ -61,10 +63,7 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        showSuccess(
-          'Menu Item Updated',
-          `"${data.name}" has been successfully updated.`
-        );
+        showSuccess('Menu Item Updated', `"${data.name}" has been successfully updated.`);
       } else {
         await createMenuItem({
           data,
@@ -72,21 +71,15 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        showSuccess(
-          'Menu Item Created',
-          `"${data.name}" has been successfully added to the menu.`
-        );
+        showSuccess('Menu Item Created', `"${data.name}" has been successfully added to the menu.`);
       }
 
       setCurrentModifiers([]);
       closeMenuItemModal();
     } catch (error) {
-      console.error("Error saving menu item:", error);
+      console.error('Error saving menu item:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError(
-        'Failed to Save Menu Item',
-        errorMessage
-      );
+      showError('Failed to Save Menu Item', errorMessage);
     }
   };
 
@@ -120,13 +113,9 @@ const MenuManagementPage: React.FC = () => {
       setMenuItemToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete menu item:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to delete menu item. Please try again.';
-      showError(
-        'Delete Failed',
-        errorMessage
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to delete menu item. Please try again.';
+      showError('Delete Failed', errorMessage);
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -245,13 +234,8 @@ const MenuManagementPage: React.FC = () => {
 
           {/* Modifiers Form */}
           <div className="pt-6 border-t border-antiflash">
-            <h3 className="text-lg font-semibold text-charcoal mb-4">
-              Modifiers & Options
-            </h3>
-            <ModifierGroupForm
-              modifiers={currentModifiers || []}
-              onChange={setCurrentModifiers}
-            />
+            <h3 className="text-lg font-semibold text-charcoal mb-4">Modifiers & Options</h3>
+            <ModifierGroupForm modifiers={currentModifiers || []} onChange={setCurrentModifiers} />
           </div>
         </div>
       </Modal>
@@ -275,4 +259,3 @@ const MenuManagementPage: React.FC = () => {
 };
 
 export default MenuManagementPage;
-

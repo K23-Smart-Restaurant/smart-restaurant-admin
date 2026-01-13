@@ -1,5 +1,5 @@
-import React, { useState, Fragment } from "react";
-import { Tab } from "@headlessui/react";
+import React, { useState, Fragment } from 'react';
+import { Tab } from '@headlessui/react';
 import {
   LineChart,
   Line,
@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-} from "recharts";
+} from 'recharts';
 
 // Type definitions for chart data
 type RevenueDataPoint = { date: string; revenue: number; orders: number };
@@ -36,24 +36,22 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
   const avgOrdersPerDay =
     validOrdersPerDay.length > 0
       ? Math.round(
-        validOrdersPerDay.reduce((sum, item) => sum + item.orders, 0) /
-        validOrdersPerDay.length
-      )
+          validOrdersPerDay.reduce((sum, item) => sum + item.orders, 0) / validOrdersPerDay.length
+        )
       : 0;
 
   // Calculate average orders per hour
   const avgOrdersPerHour =
     validPeakHours.length > 0
       ? Math.round(
-        validPeakHours.reduce((sum, item) => sum + item.orders, 0) /
-        validPeakHours.length
-      )
+          validPeakHours.reduce((sum, item) => sum + item.orders, 0) / validPeakHours.length
+        )
       : 0;
 
   // Format date for display
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   // Custom tooltip for orders per day
@@ -65,8 +63,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
             {formatDate(payload[0].payload.date)}
           </p>
           <p className="text-sm text-gray-700">
-            Orders:{" "}
-            <span className="font-bold text-blue-600">{payload[0].value}</span>
+            Orders: <span className="font-bold text-blue-600">{payload[0].value}</span>
           </p>
         </div>
       );
@@ -80,21 +77,14 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
       const isPeak = payload[0].value > avgOrdersPerHour;
       return (
         <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">
-            {payload[0].payload.hour}
-          </p>
+          <p className="text-sm font-semibold text-charcoal mb-2">{payload[0].payload.hour}</p>
           <p className="text-sm text-gray-700">
-            Orders:{" "}
-            <span
-              className={`font-bold ${isPeak ? "text-orange-600" : "text-blue-600"
-                }`}
-            >
+            Orders:{' '}
+            <span className={`font-bold ${isPeak ? 'text-orange-600' : 'text-blue-600'}`}>
               {payload[0].value}
             </span>
           </p>
-          {isPeak && (
-            <p className="text-xs text-orange-600 mt-1">⭐ Peak Hour</p>
-          )}
+          {isPeak && <p className="text-xs text-orange-600 mt-1">⭐ Peak Hour</p>}
         </div>
       );
     }
@@ -102,8 +92,8 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
   };
 
   const tabs = [
-    { name: "Orders per Day", value: "orders-per-day" },
-    { name: "Peak Hours", value: "peak-hours" },
+    { name: 'Orders per Day', value: 'orders-per-day' },
+    { name: 'Peak Hours', value: 'peak-hours' },
   ];
 
   return (
@@ -111,9 +101,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-charcoal">Order Analytics</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Detailed order patterns and trends
-        </p>
+        <p className="text-sm text-gray-600 mt-1">Detailed order patterns and trends</p>
       </div>
 
       {/* Tabs */}
@@ -123,10 +111,11 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
             <Tab key={tab.value} as={Fragment}>
               {({ selected }) => (
                 <button
-                  className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${selected
-                    ? "bg-naples text-charcoal shadow"
-                    : "text-gray-600 hover:bg-white hover:text-charcoal"
-                    }`}
+                  className={`w-full rounded-md py-2.5 text-sm font-medium leading-5 transition-all ${
+                    selected
+                      ? 'bg-naples text-charcoal shadow'
+                      : 'text-gray-600 hover:bg-white hover:text-charcoal'
+                  }`}
                 >
                   {tab.name}
                 </button>
@@ -140,13 +129,11 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
           <Tab.Panel>
             <div className="mb-4">
               <p className="text-sm text-gray-600">
-                Average Orders per Day:{" "}
-                <span className="font-bold text-blue-600">
-                  {avgOrdersPerDay}
-                </span>
+                Average Orders per Day:{' '}
+                <span className="font-bold text-blue-600">{avgOrdersPerDay}</span>
               </p>
             </div>
-            <div className="w-full" style={{ height: "350px" }}>
+            <div className="w-full" style={{ height: '350px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={validOrdersPerDay}
@@ -157,18 +144,18 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     dataKey="date"
                     tickFormatter={formatDate}
                     stroke="#666"
-                    style={{ fontSize: "12px" }}
+                    style={{ fontSize: '12px' }}
                   />
-                  <YAxis stroke="#666" style={{ fontSize: "12px" }} />
+                  <YAxis stroke="#666" style={{ fontSize: '12px' }} />
                   <Tooltip content={<OrdersTooltip />} />
                   <ReferenceLine
                     y={avgOrdersPerDay}
                     stroke="#ff9800"
                     strokeDasharray="5 5"
                     label={{
-                      value: "Average",
-                      position: "right",
-                      fill: "#ff9800",
+                      value: 'Average',
+                      position: 'right',
+                      fill: '#ff9800',
                       fontSize: 12,
                     }}
                   />
@@ -177,7 +164,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     dataKey="orders"
                     stroke="#3b82f6"
                     strokeWidth={2}
-                    dot={{ fill: "#3b82f6", r: 3 }}
+                    dot={{ fill: '#3b82f6', r: 3 }}
                     activeDot={{ r: 5 }}
                   />
                 </LineChart>
@@ -189,40 +176,35 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
           <Tab.Panel>
             <div className="mb-4">
               <p className="text-sm text-gray-600">
-                Average Orders per Hour:{" "}
-                <span className="font-bold text-blue-600">
-                  {avgOrdersPerHour}
-                </span>
+                Average Orders per Hour:{' '}
+                <span className="font-bold text-blue-600">{avgOrdersPerHour}</span>
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 Peak hours (above average) are highlighted in orange
               </p>
             </div>
-            <div className="w-full" style={{ height: "350px" }}>
+            <div className="w-full" style={{ height: '350px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={validPeakHours}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
+                <BarChart data={validPeakHours} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
                     dataKey="hour"
                     stroke="#666"
-                    style={{ fontSize: "11px" }}
+                    style={{ fontSize: '11px' }}
                     angle={-45}
                     textAnchor="end"
                     height={80}
                   />
-                  <YAxis stroke="#666" style={{ fontSize: "12px" }} />
+                  <YAxis stroke="#666" style={{ fontSize: '12px' }} />
                   <Tooltip content={<PeakHoursTooltip />} />
                   <ReferenceLine
                     y={avgOrdersPerHour}
                     stroke="#ff9800"
                     strokeDasharray="5 5"
                     label={{
-                      value: "Average",
-                      position: "right",
-                      fill: "#ff9800",
+                      value: 'Average',
+                      position: 'right',
+                      fill: '#ff9800',
                       fontSize: 12,
                     }}
                   />
@@ -230,11 +212,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     {validPeakHours.map((entry, index) => (
                       <rect
                         key={`bar-${index}`}
-                        fill={
-                          entry.orders > avgOrdersPerHour
-                            ? "#fb923c"
-                            : "#3b82f6"
-                        }
+                        fill={entry.orders > avgOrdersPerHour ? '#fb923c' : '#3b82f6'}
                       />
                     ))}
                   </Bar>

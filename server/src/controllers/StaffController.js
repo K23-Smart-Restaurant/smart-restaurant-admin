@@ -60,10 +60,7 @@ class StaffController {
    */
   async update(req, res, next) {
     try {
-      const updatedStaff = await staffService.updateStaff(
-        req.params.id,
-        req.body
-      );
+      const updatedStaff = await staffService.updateStaff(req.params.id, req.body);
       res.status(200).json({
         success: true,
         message: 'Staff member updated successfully',

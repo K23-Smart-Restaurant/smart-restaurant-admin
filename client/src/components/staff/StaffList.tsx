@@ -19,12 +19,11 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
   const staffArray = Array.isArray(staff) ? staff : [];
 
   // Filter staff by role
-  const roleFilteredStaff = role === 'ALL'
-    ? staffArray
-    : staffArray.filter(member => member.role === role);
+  const roleFilteredStaff =
+    role === 'ALL' ? staffArray : staffArray.filter((member) => member.role === role);
 
   // Apply active/inactive filter
-  const filteredStaff = roleFilteredStaff.filter(member => {
+  const filteredStaff = roleFilteredStaff.filter((member) => {
     if (filter === 'ACTIVE') return member.isActive;
     if (filter === 'INACTIVE') return !member.isActive;
     return true;
@@ -128,10 +127,11 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                     {/* Status */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${member.isActive
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          member.isActive
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
-                          }`}
+                        }`}
                       >
                         {member.isActive ? 'Active' : 'Inactive'}
                       </span>

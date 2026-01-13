@@ -78,6 +78,14 @@ class SocketService {
    */
   joinRoom(socket, role, userId) {
     let room;
+  /**
+   * T413: Join a room based on user role
+   * @param {Object} socket - Socket instance
+   * @param {string} role - User role (KITCHEN_STAFF, WAITER, ADMIN)
+   * @param {string} userId - User ID
+   */
+  joinRoom(socket, role, userId) {
+    let room;
 
     switch (role) {
       case "KITCHEN_STAFF":
@@ -94,6 +102,8 @@ class SocketService {
         return;
     }
 
+    socket.join(room);
+    logger.info(`👤 User ${userId} (${role}) joined room: ${room}`);
     socket.join(room);
     logger.info(`👤 User ${userId} (${role}) joined room: ${room}`);
 

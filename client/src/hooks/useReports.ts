@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { reportService, type RevenueReport, type TopRevenueItem, type OrderAnalytics } from '../services/reportService';
+import {
+  reportService,
+  type RevenueReport,
+  type TopRevenueItem,
+  type OrderAnalytics,
+} from '../services/reportService';
 
 // Date range type for filtering
 export type DateRange = '7days' | '30days' | '3months' | 'custom';
@@ -17,7 +22,12 @@ export const useReports = () => {
   // Revenue report hook
   const useRevenue = (options: UseRevenueOptions) => {
     return useQuery({
-      queryKey: ['reports', 'revenue', options.startDate.toISOString(), options.endDate.toISOString()],
+      queryKey: [
+        'reports',
+        'revenue',
+        options.startDate.toISOString(),
+        options.endDate.toISOString(),
+      ],
       queryFn: () => reportService.getRevenue(options.startDate, options.endDate),
       enabled: !!options.startDate && !!options.endDate,
     });

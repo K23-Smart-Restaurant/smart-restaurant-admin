@@ -7,6 +7,9 @@ export interface KitchenSocketEvents {
   onOrderConfirmed?: (order: Order) => void;
   onOrderUpdated?: (order: Order) => void;
   onOrderReady?: (order: Order) => void;
+  onOrderConfirmed?: (order: Order) => void;
+  onOrderUpdated?: (order: Order) => void;
+  onOrderReady?: (order: Order) => void;
 }
 
 /**
@@ -20,6 +23,9 @@ export const useKitchenSocket = (events: KitchenSocketEvents) => {
   const eventsRef = useRef(events);
   eventsRef.current = events;
 
+  // Join kitchen room when connected
+  useEffect(() => {
+    if (!socket || !isConnected) return;
   // Join kitchen room when connected
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -85,6 +91,9 @@ export const useKitchenSocket = (events: KitchenSocketEvents) => {
   // Set up event listeners
   useEffect(() => {
     if (!socket || !isConnected) return;
+  // Set up event listeners
+  useEffect(() => {
+    if (!socket || !isConnected) return;
 
     // Register event listeners
     socket.on("order:confirmed", handleOrderConfirmed);
@@ -105,6 +114,10 @@ export const useKitchenSocket = (events: KitchenSocketEvents) => {
     handleOrderReady,
   ]);
 
+  return {
+    isConnected,
+    socket,
+  };
   return {
     isConnected,
     socket,

@@ -1,27 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { XIcon, UploadIcon, ImageIcon, StarIcon } from "lucide-react";
-import type { MenuItem, MenuCategory } from "../../hooks/useMenuItems";
-import type { PhotoInput } from "../../services/menuItemService";
-import { Button } from "../common/Button";
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { XIcon, UploadIcon, ImageIcon, StarIcon } from 'lucide-react';
+import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
+import type { PhotoInput } from '../../services/menuItemService';
+import { Button } from '../common/Button';
 
 // Validation schema
 const menuItemFormSchema = z.object({
   name: z
     .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(80, "Name must be at most 80 characters"),
-  description: z.string().max(500, "Description must be at most 500 characters").optional(),
-  category: z.enum(["APPETIZER", "MAIN_COURSE", "DESSERT", "BEVERAGE"], {
-    errorMap: () => ({ message: "Please select a category" }),
+    .min(2, 'Name must be at least 2 characters')
+    .max(80, 'Name must be at most 80 characters'),
+  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
+  category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE'], {
+    errorMap: () => ({ message: 'Please select a category' }),
   }),
-  price: z.number().min(0, "Price must be 0 or greater"),
+  price: z.number().min(0, 'Price must be 0 or greater'),
   preparationTime: z
     .number()
-    .min(0, "Preparation time must be 0 or greater")
-    .max(240, "Preparation time must be 240 minutes or less")
+    .min(0, 'Preparation time must be 0 or greater')
+    .max(240, 'Preparation time must be 240 minutes or less')
     .optional(),
   isAvailable: z.boolean().default(true),
   isSoldOut: z.boolean().default(false),
@@ -85,30 +85,30 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   } = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
-      name: menuItem?.name || "",
-      description: menuItem?.description || "",
-      category: menuItem?.category || "MAIN_COURSE",
+      name: menuItem?.name || '',
+      description: menuItem?.description || '',
+      category: menuItem?.category || 'MAIN_COURSE',
       price: menuItem?.price || 0,
       preparationTime: menuItem?.preparationTime || 15,
       isAvailable: menuItem?.isAvailable ?? true,
       isSoldOut: menuItem?.isSoldOut ?? false,
       isChefRecommendation: menuItem?.isChefRecommendation ?? false,
-      categoryId: menuItem?.categoryId || "",
+      categoryId: menuItem?.categoryId || '',
     },
   });
 
   // Pre-fill form in edit mode
   useEffect(() => {
     if (menuItem) {
-      setValue("name", menuItem.name);
-      setValue("description", menuItem.description ?? undefined);
-      setValue("category", menuItem.category);
-      setValue("price", menuItem.price);
-      setValue("preparationTime", menuItem.preparationTime ?? undefined);
-      setValue("isAvailable", menuItem.isAvailable);
-      setValue("isSoldOut", menuItem.isSoldOut);
-      setValue("isChefRecommendation", menuItem.isChefRecommendation);
-      setValue("categoryId", menuItem.categoryId || "");
+      setValue('name', menuItem.name);
+      setValue('description', menuItem.description ?? undefined);
+      setValue('category', menuItem.category);
+      setValue('price', menuItem.price);
+      setValue('preparationTime', menuItem.preparationTime ?? undefined);
+      setValue('isAvailable', menuItem.isAvailable);
+      setValue('isSoldOut', menuItem.isSoldOut);
+      setValue('isChefRecommendation', menuItem.isChefRecommendation);
+      setValue('categoryId', menuItem.categoryId || '');
     }
 
     setPhotos(initialPhotos);
@@ -121,7 +121,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     try {
       if (photos.length === 0) {
         // Validation: at least one photo required
-        console.warn("At least one image is required");
+        console.warn('At least one image is required');
         return;
       }
 
@@ -138,7 +138,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
       await onSubmit({
         data: {
           ...data,
-          description: data.description || "",
+          description: data.description || '',
           preparationTime: data.preparationTime || 15,
           categoryId: data.categoryId || undefined,
         } as MenuItemFormData,
@@ -153,7 +153,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         setFileInputKey((key) => key + 1);
       }
     } catch (error) {
-      console.error("Error saving menu item:", error);
+      console.error('Error saving menu item:', error);
       throw error; // Let parent handle the error
     } finally {
       setIsLoading(false);
@@ -211,10 +211,10 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   };
 
   const categoryOptions: { value: MenuCategory; label: string }[] = [
-    { value: "APPETIZER", label: "Appetizer" },
-    { value: "MAIN_COURSE", label: "Main Course" },
-    { value: "DESSERT", label: "Dessert" },
-    { value: "BEVERAGE", label: "Beverage" },
+    { value: 'APPETIZER', label: 'Appetizer' },
+    { value: 'MAIN_COURSE', label: 'Main Course' },
+    { value: 'DESSERT', label: 'Dessert' },
+    { value: 'BEVERAGE', label: 'Beverage' },
   ];
 
   return (
@@ -241,8 +241,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.name ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+              errors.name ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="Enter menu item name"
             maxLength={80}
           />
@@ -258,8 +259,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="description"
             {...register('description')}
             rows={3}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${errors.description ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
+              errors.description ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="Enter item description"
             maxLength={500}
           />
@@ -278,8 +280,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             <select
               id="category"
               {...register('category')}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.category ? 'border-red-500' : 'border-antiflash'
-                }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+                errors.category ? 'border-red-500' : 'border-antiflash'
+              }`}
             >
               {categoryOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -302,8 +305,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               type="number"
               step="0.01"
               {...register('price', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.price ? 'border-red-500' : 'border-antiflash'
-                }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+                errors.price ? 'border-red-500' : 'border-antiflash'
+              }`}
               placeholder="0.00"
             />
             {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
@@ -319,8 +323,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="preparationTime"
             type="number"
             {...register('preparationTime', { valueAsNumber: true })}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.preparationTime ? 'border-red-500' : 'border-antiflash'
-              }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+              errors.preparationTime ? 'border-red-500' : 'border-antiflash'
+            }`}
             placeholder="15"
           />
           {errors.preparationTime && (
@@ -354,12 +359,14 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             {photos.length > 0 && (
               <button
                 type="button"
-                onClick={() => setPhotos((prev) => {
-                  if (prev.length === 0) return prev;
-                  const next = [...prev];
-                  next[0].isPrimary = true;
-                  return next;
-                })}
+                onClick={() =>
+                  setPhotos((prev) => {
+                    if (prev.length === 0) return prev;
+                    const next = [...prev];
+                    next[0].isPrimary = true;
+                    return next;
+                  })
+                }
                 className="text-sm text-naples underline"
               >
                 Ensure primary photo is first
@@ -379,7 +386,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
                     alt={`Preview ${index + 1}`}
                     className="w-full h-32 object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://placehold.co/150?text=Image";
+                      (e.target as HTMLImageElement).src = 'https://placehold.co/150?text=Image';
                     }}
                   />
 
@@ -417,7 +424,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             <div className="border-2 border-dashed border-antiflash rounded-lg p-8 text-center">
               <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-2" />
               <p className="text-gray-600 text-sm">No photos added yet</p>
-              <p className="text-xs text-gray-500 mt-1">Upload up to 5 photos and choose a primary image</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Upload up to 5 photos and choose a primary image
+              </p>
             </div>
           )}
         </div>

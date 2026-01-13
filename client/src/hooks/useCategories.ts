@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { categoryService, type Category, type CreateCategoryDto, type UpdateCategoryDto } from '../services/categoryService';
+import {
+  categoryService,
+  type Category,
+  type CreateCategoryDto,
+  type UpdateCategoryDto,
+} from '../services/categoryService';
 
 // Re-export the Category type for convenience
 export type { Category };

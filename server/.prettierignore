@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn.lock
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Prisma generated files
+prisma/migrations/
+
+# Uploads and logs
+uploads/
+logs/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Config files
+*.config.js
+*.config.ts

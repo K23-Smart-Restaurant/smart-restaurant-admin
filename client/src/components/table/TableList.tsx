@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   PencilIcon,
   Trash2Icon,
@@ -8,16 +8,12 @@ import {
   RefreshCwIcon,
   PowerIcon,
   PowerOffIcon,
-} from "lucide-react";
-import type {
-  Table,
-  TableStatus,
-  ToggleActiveResult,
-} from "../../hooks/useTables";
-import type { ActiveOrderInfo } from "../../services/tableService";
-import { Modal } from "../common/Modal";
-import { QRCodeDisplay } from "./QRCodeDisplay";
-import { ActiveOrdersWarningDialog } from "../common/ActiveOrdersWarningDialog";
+} from 'lucide-react';
+import type { Table, TableStatus, ToggleActiveResult } from '../../hooks/useTables';
+import type { ActiveOrderInfo } from '../../services/tableService';
+import { Modal } from '../common/Modal';
+import { QRCodeDisplay } from './QRCodeDisplay';
+import { ActiveOrdersWarningDialog } from '../common/ActiveOrdersWarningDialog';
 
 interface TableListProps {
   tables: Table[];
@@ -40,14 +36,12 @@ export const TableList: React.FC<TableListProps> = ({
   onUpdateStatus,
   onToggleActive,
 }) => {
-  const [selectedTableForQR, setSelectedTableForQR] = useState<Table | null>(
-    null
-  );
+  const [selectedTableForQR, setSelectedTableForQR] = useState<Table | null>(null);
 
   // Update selectedTableForQR when tables data changes (e.g., after QR regeneration)
   React.useEffect(() => {
     if (selectedTableForQR) {
-      const updatedTable = tables.find(t => t.id === selectedTableForQR.id);
+      const updatedTable = tables.find((t) => t.id === selectedTableForQR.id);
       if (updatedTable) {
         setSelectedTableForQR(updatedTable);
       }
@@ -74,7 +68,7 @@ export const TableList: React.FC<TableListProps> = ({
     try {
       await onRegenerateQR(table.id);
     } catch (error) {
-      console.error("Error regenerating QR code:", error);
+      console.error('Error regenerating QR code:', error);
     }
   };
 
@@ -99,7 +93,7 @@ export const TableList: React.FC<TableListProps> = ({
       }
       // Success is handled silently or by parent component
     } catch (error) {
-      console.error("Error toggling table active status:", error);
+      console.error('Error toggling table active status:', error);
     } finally {
       setIsTogglingActive(false);
     }
@@ -122,7 +116,7 @@ export const TableList: React.FC<TableListProps> = ({
         setPendingDeactivation(null);
       }
     } catch (error) {
-      console.error("Error force deactivating table:", error);
+      console.error('Error force deactivating table:', error);
     } finally {
       setIsTogglingActive(false);
     }
@@ -135,18 +129,18 @@ export const TableList: React.FC<TableListProps> = ({
 
   const getStatusColor = (status: TableStatus) => {
     const colors = {
-      AVAILABLE: "bg-green-100 text-green-800 border-green-200",
-      OCCUPIED: "bg-red-100 text-red-800 border-red-200",
-      RESERVED: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      AVAILABLE: 'bg-green-100 text-green-800 border-green-200',
+      OCCUPIED: 'bg-red-100 text-red-800 border-red-200',
+      RESERVED: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     };
     return colors[status];
   };
 
   const getStatusLabel = (status: TableStatus) => {
     const labels = {
-      AVAILABLE: "Available",
-      OCCUPIED: "Occupied",
-      RESERVED: "Reserved",
+      AVAILABLE: 'Available',
+      OCCUPIED: 'Occupied',
+      RESERVED: 'Reserved',
     };
     return labels[status];
   };
@@ -157,31 +151,31 @@ export const TableList: React.FC<TableListProps> = ({
         {tables.map((table) => (
           <div
             key={table.id}
-            className={`bg-white rounded-lg shadow-md border-2 transition-all duration-200 overflow-hidden group ${table.isActive === false
-              ? "border-gray-300 opacity-60"
-              : "border-white hover:border-naples/80 hover:shadow-lg hover:shadow-naples/30"
-              }`}
+            className={`bg-white rounded-lg shadow-md border-2 transition-all duration-200 overflow-hidden group ${
+              table.isActive === false
+                ? 'border-gray-300 opacity-60'
+                : 'border-white hover:border-naples/80 hover:shadow-lg hover:shadow-naples/30'
+            }`}
           >
             {/* Header with table number */}
             <div
-              className={`${table.isActive === false ? "bg-gray-500" : "bg-charcoal"
-                } text-white p-4 flex items-center justify-between`}
+              className={`${
+                table.isActive === false ? 'bg-gray-500' : 'bg-charcoal'
+              } text-white p-4 flex items-center justify-between`}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-12 h-12 rounded-full ${table.isActive === false ? "bg-gray-400" : "bg-naples"
-                    } flex items-center justify-center ${table.isActive === false ? "text-gray-700" : "text-charcoal"
-                    } font-bold text-xl mr-3`}
+                  className={`w-12 h-12 rounded-full ${
+                    table.isActive === false ? 'bg-gray-400' : 'bg-naples'
+                  } flex items-center justify-center ${
+                    table.isActive === false ? 'text-gray-700' : 'text-charcoal'
+                  } font-bold text-xl mr-3`}
                 >
                   {table.tableNumber}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold">
-                    Table {table.tableNumber}
-                  </h3>
-                  <p className="text-xs text-antiflash opacity-90">
-                    {table.location}
-                  </p>
+                  <h3 className="text-lg font-bold">Table {table.tableNumber}</h3>
+                  <p className="text-xs text-antiflash opacity-90">{table.location}</p>
                 </div>
               </div>
               {/* M5: Active/Inactive Badge */}
@@ -219,25 +213,24 @@ export const TableList: React.FC<TableListProps> = ({
               <div className="pt-2 border-t border-antiflash">
                 <p className="text-xs text-gray-600 mb-2">Quick Status:</p>
                 <div className="flex gap-1">
-                  {(["AVAILABLE", "OCCUPIED", "RESERVED"] as TableStatus[]).map(
-                    (status) => (
-                      <button
-                        key={status}
-                        onClick={() => onUpdateStatus(table.id, status)}
-                        className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${table.status === status
+                  {(['AVAILABLE', 'OCCUPIED', 'RESERVED'] as TableStatus[]).map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => onUpdateStatus(table.id, status)}
+                      className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                        table.status === status
                           ? getStatusColor(status)
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                          }`}
-                        title={`Set to ${getStatusLabel(status)}`}
-                      >
-                        {status === "AVAILABLE"
-                          ? "Avail"
-                          : status === "OCCUPIED"
-                            ? "Occup"
-                            : "Reserv"}
-                      </button>
-                    )
-                  )}
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                      title={`Set to ${getStatusLabel(status)}`}
+                    >
+                      {status === 'AVAILABLE'
+                        ? 'Avail'
+                        : status === 'OCCUPIED'
+                          ? 'Occup'
+                          : 'Reserv'}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -279,15 +272,12 @@ export const TableList: React.FC<TableListProps> = ({
                   <button
                     onClick={() => handleToggleActive(table)}
                     disabled={isTogglingActive}
-                    className={`flex-1 flex items-center justify-center px-2 py-1.5 rounded text-xs font-medium transition-colors ${table.isActive === false
-                      ? "bg-green-50 hover:bg-green-100 text-green-700"
-                      : "bg-amber-50 hover:bg-amber-100 text-amber-700"
-                      } disabled:opacity-50`}
-                    title={
+                    className={`flex-1 flex items-center justify-center px-2 py-1.5 rounded text-xs font-medium transition-colors ${
                       table.isActive === false
-                        ? "Activate table"
-                        : "Deactivate table"
-                    }
+                        ? 'bg-green-50 hover:bg-green-100 text-green-700'
+                        : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
+                    } disabled:opacity-50`}
+                    title={table.isActive === false ? 'Activate table' : 'Deactivate table'}
                   >
                     {table.isActive === false ? (
                       <>

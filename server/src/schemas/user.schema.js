@@ -56,9 +56,4 @@ const updateUserSchema = z.object({
   email: z.string().email().optional(),
 });
 
-export {
-  createUserSchema,
-  createWaiterSchema,
-  createKitchenStaffSchema,
-  updateUserSchema,
-};
+export { createUserSchema, createWaiterSchema, createKitchenStaffSchema, updateUserSchema };

@@ -6,7 +6,7 @@ export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'WAITER' | 'KITCHEN_STAFF';
 
 // User type
 export interface User {
-  id: string;  // UUID from backend
+  id: string; // UUID from backend
   email: string;
   name: string;
   role: UserRole;
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await apiClient.post<{
         success: boolean;
         message: string;
-        data: { token: string; user: User; refreshToken?: string }
+        data: { token: string; user: User; refreshToken?: string };
       }>('/auth/login', {
         email,
         password,

@@ -99,9 +99,7 @@ class StaffService {
 
     const where = {
       role: {
-        in: role
-          ? [role]
-          : [UserRole.ADMIN, UserRole.WAITER, UserRole.KITCHEN_STAFF],
+        in: role ? [role] : [UserRole.ADMIN, UserRole.WAITER, UserRole.KITCHEN_STAFF],
       },
     };
 

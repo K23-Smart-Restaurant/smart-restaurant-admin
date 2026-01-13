@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PaginationProps {
   page: number;
@@ -29,9 +29,8 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div className="text-sm text-gray-600">
-        Showing <span className="font-semibold text-charcoal">{start === 0 ? 0 : start}</span>
-        {" "}
-        - <span className="font-semibold text-charcoal">{end}</span> of {" "}
+        Showing <span className="font-semibold text-charcoal">{start === 0 ? 0 : start}</span> -{' '}
+        <span className="font-semibold text-charcoal">{end}</span> of{' '}
         <span className="font-semibold text-charcoal">{total}</span>
       </div>
 
@@ -63,7 +62,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             Prev
           </button>
           <div className="text-sm text-gray-700">
-            Page <span className="font-semibold text-charcoal">{page}</span> of {" "}
+            Page <span className="font-semibold text-charcoal">{page}</span> of{' '}
             <span className="font-semibold text-charcoal">{totalPages}</span>
           </div>
           <button

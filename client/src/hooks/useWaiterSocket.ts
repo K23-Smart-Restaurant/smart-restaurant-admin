@@ -7,6 +7,9 @@ export interface WaiterSocketEvents {
   onOrderCreated?: (order: Order) => void;
   onOrderReady?: (order: Order) => void;
   onBillRequested?: (data: { orderId: string; tableNumber: number }) => void;
+  onOrderCreated?: (order: Order) => void;
+  onOrderReady?: (order: Order) => void;
+  onBillRequested?: (data: { orderId: string; tableNumber: number }) => void;
 }
 
 /**
@@ -20,6 +23,9 @@ export const useWaiterSocket = (events: WaiterSocketEvents) => {
   const eventsRef = useRef(events);
   eventsRef.current = events;
 
+  // Join waiter room when connected
+  useEffect(() => {
+    if (!socket || !isConnected) return;
   // Join waiter room when connected
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -85,6 +91,9 @@ export const useWaiterSocket = (events: WaiterSocketEvents) => {
   // Set up event listeners
   useEffect(() => {
     if (!socket || !isConnected) return;
+  // Set up event listeners
+  useEffect(() => {
+    if (!socket || !isConnected) return;
 
     // Register event listeners
     socket.on("order:created", handleOrderCreated);
@@ -105,6 +114,10 @@ export const useWaiterSocket = (events: WaiterSocketEvents) => {
     handleBillRequested,
   ]);
 
+  return {
+    isConnected,
+    socket,
+  };
   return {
     isConnected,
     socket,

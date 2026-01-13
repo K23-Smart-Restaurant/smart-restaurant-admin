@@ -32,10 +32,12 @@ const DashboardPage: React.FC = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const todayOrders = Array.isArray(orders) ? orders.filter(order => {
-      const orderDate = new Date(order.createdAt);
-      return orderDate >= today;
-    }) : [];
+    const todayOrders = Array.isArray(orders)
+      ? orders.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate >= today;
+        })
+      : [];
 
     const todayRevenue = todayOrders.reduce((sum, order) => {
       return sum + Number(order.totalAmount || 0);
@@ -43,10 +45,14 @@ const DashboardPage: React.FC = () => {
 
     // Table stats
     const totalTables = tableStats?.total || (Array.isArray(tables) ? tables.length : 0);
-    const activeTables = tableStats?.occupied || (Array.isArray(tables) ? tables.filter(t => t.status === 'OCCUPIED').length : 0);
+    const activeTables =
+      tableStats?.occupied ||
+      (Array.isArray(tables) ? tables.filter((t) => t.status === 'OCCUPIED').length : 0);
 
     // Staff stats - count active staff only
-    const totalStaff = Array.isArray(staff) ? staff.filter(s => s.role !== 'ADMIN' && s.isActive !== false).length : 0;
+    const totalStaff = Array.isArray(staff)
+      ? staff.filter((s) => s.role !== 'ADMIN' && s.isActive !== false).length
+      : 0;
     const staffOnline = totalStaff; // Assuming all active staff are "online" for now
 
     return {
@@ -66,7 +72,7 @@ const DashboardPage: React.FC = () => {
     return orders
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
-      .map(order => ({
+      .map((order) => ({
         id: order.id.substring(0, 8).toUpperCase(),
         table: order.table?.tableNumber ? `Table ${order.table.tableNumber}` : 'N/A',
         items: order.orderItems?.length || 0,
@@ -76,9 +82,10 @@ const DashboardPage: React.FC = () => {
       }));
   }, [orders]);
 
-  const activeTablePercentage = dashboardData.totalTables > 0
-    ? (dashboardData.activeTables / dashboardData.totalTables) * 100
-    : 0;
+  const activeTablePercentage =
+    dashboardData.totalTables > 0
+      ? (dashboardData.activeTables / dashboardData.totalTables) * 100
+      : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -104,7 +111,9 @@ const DashboardPage: React.FC = () => {
     return (
       <div>
         <div className="mb-8 animate-fade-in-down">
-          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">Dashboard</h1>
+          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
+            Dashboard
+          </h1>
           <p className="font-medium text-gray-600">Welcome back! Here's what's happening today.</p>
         </div>
         <StatsSkeleton count={4} />
@@ -117,14 +126,19 @@ const DashboardPage: React.FC = () => {
     <div>
       {/* Page title */}
       <div className="mb-8 animate-fade-in-down">
-        <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">Dashboard</h1>
+        <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
+          Dashboard
+        </h1>
         <p className="font-medium text-gray-600">Welcome back! Here's what's happening today.</p>
       </div>
 
       {/* Summary cards grid */}
       <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
         {/* Total Orders Card */}
-        <div className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group" style={{ animationDelay: '0ms' }}>
+        <div
+          className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group"
+          style={{ animationDelay: '0ms' }}
+        >
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-shine group-hover:opacity-100"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -136,13 +150,18 @@ const DashboardPage: React.FC = () => {
                 Live
               </div>
             </div>
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">Total Orders</h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
+              Total Orders
+            </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">{dashboardData.totalOrders}</p>
           </div>
         </div>
 
         {/* Today's Revenue Card */}
-        <div className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group" style={{ animationDelay: '100ms' }}>
+        <div
+          className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group"
+          style={{ animationDelay: '100ms' }}
+        >
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-shine group-hover:opacity-100"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -150,15 +169,24 @@ const DashboardPage: React.FC = () => {
                 <DollarSignIcon className="w-6 h-6 text-charcoal" />
               </div>
             </div>
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">Today's Revenue</h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
+              Today's Revenue
+            </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
-              ${dashboardData.todayRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {dashboardData.todayRevenue.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </p>
           </div>
         </div>
 
         {/* Active Tables Card */}
-        <div className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group" style={{ animationDelay: '200ms' }}>
+        <div
+          className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group"
+          style={{ animationDelay: '200ms' }}
+        >
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-shine group-hover:opacity-100"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -166,7 +194,9 @@ const DashboardPage: React.FC = () => {
                 <LayoutGridIcon className="w-6 h-6 text-charcoal" />
               </div>
             </div>
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">Active Tables</h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
+              Active Tables
+            </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
               {dashboardData.activeTables}/{dashboardData.totalTables}
             </p>
@@ -178,13 +208,18 @@ const DashboardPage: React.FC = () => {
                   style={{ width: `${activeTablePercentage}%` }}
                 ></div>
               </div>
-              <p className="mt-2 text-xs font-semibold text-charcoal/80">{activeTablePercentage.toFixed(0)}% occupied</p>
+              <p className="mt-2 text-xs font-semibold text-charcoal/80">
+                {activeTablePercentage.toFixed(0)}% occupied
+              </p>
             </div>
           </div>
         </div>
 
         {/* Staff Online Card */}
-        <div className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group" style={{ animationDelay: '300ms' }}>
+        <div
+          className="relative p-6 overflow-hidden transition-all duration-300 transform bg-gradient-to-br from-naples via-naples to-arylide rounded-2xl shadow-elevation-2 hover:shadow-glow-yellow-lg hover:scale-105 card-hover animate-fade-in-up group"
+          style={{ animationDelay: '300ms' }}
+        >
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-shine group-hover:opacity-100"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -192,7 +227,9 @@ const DashboardPage: React.FC = () => {
                 <UsersIcon className="w-6 h-6 text-charcoal" />
               </div>
             </div>
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">Staff Online</h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
+              Staff Online
+            </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
               {dashboardData.staffOnline}/{dashboardData.totalStaff}
             </p>
@@ -201,14 +238,17 @@ const DashboardPage: React.FC = () => {
               {Array.from({ length: Math.min(dashboardData.totalStaff, 8) }).map((_, index) => (
                 <div
                   key={index}
-                  className={`w-7 h-7 rounded-full transition-all duration-300 ${index < dashboardData.staffOnline
-                    ? 'bg-charcoal shadow-md transform scale-110'
-                    : 'bg-charcoal/30'
-                    }`}
+                  className={`w-7 h-7 rounded-full transition-all duration-300 ${
+                    index < dashboardData.staffOnline
+                      ? 'bg-charcoal shadow-md transform scale-110'
+                      : 'bg-charcoal/30'
+                  }`}
                 ></div>
               ))}
               {dashboardData.totalStaff > 8 && (
-                <span className="text-xs font-semibold text-charcoal/80">+{dashboardData.totalStaff - 8}</span>
+                <span className="text-xs font-semibold text-charcoal/80">
+                  +{dashboardData.totalStaff - 8}
+                </span>
               )}
             </div>
           </div>
@@ -285,7 +325,9 @@ const DashboardPage: React.FC = () => {
                         ${order.amount.toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1.5 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm transition-all duration-300 hover:scale-110 ${getStatusColor(order.status)}`}>
+                        <span
+                          className={`px-3 py-1.5 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm transition-all duration-300 hover:scale-110 ${getStatusColor(order.status)}`}
+                        >
                           {order.status}
                         </span>
                       </td>

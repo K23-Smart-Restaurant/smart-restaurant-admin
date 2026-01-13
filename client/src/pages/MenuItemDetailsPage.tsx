@@ -168,10 +168,7 @@ const MenuItemDetailsPage: React.FC = () => {
             <p className="text-gray-600 mb-6">
               The menu item you're looking for doesn't exist or has been removed.
             </p>
-            <Button
-              variant="primary"
-              onClick={() => navigate('/menu')}
-            >
+            <Button variant="primary" onClick={() => navigate('/menu')}>
               Return to Menu Management
             </Button>
           </div>
@@ -180,19 +177,13 @@ const MenuItemDetailsPage: React.FC = () => {
     );
   }
 
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              variant="secondary"
-              icon={ArrowLeftIcon}
-              onClick={() => navigate('/menu')}
-            >
+            <Button variant="secondary" icon={ArrowLeftIcon} onClick={() => navigate('/menu')}>
               Back to Menu
             </Button>
 
@@ -212,10 +203,7 @@ const MenuItemDetailsPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left Column - Image Gallery */}
           <div className="animate-fade-in-up">
-            <ImageGallery
-              images={galleryImages}
-              alt={menuItem.name}
-            />
+            <ImageGallery images={galleryImages} alt={menuItem.name} />
           </div>
 
           {/* Right Column - Item Details */}
@@ -232,15 +220,15 @@ const MenuItemDetailsPage: React.FC = () => {
                 )}
 
                 {/* Category Badge */}
-                <span className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full shadow-sm ${getCategoryBg(menuItem.category)}`}>
+                <span
+                  className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full shadow-sm ${getCategoryBg(menuItem.category)}`}
+                >
                   <TagIcon className="w-4 h-4 mr-1.5" />
                   {getCategoryLabel(menuItem.category)}
                 </span>
               </div>
 
-              <h1 className="text-3xl lg:text-4xl font-bold text-charcoal mb-2">
-                {menuItem.name}
-              </h1>
+              <h1 className="text-3xl lg:text-4xl font-bold text-charcoal mb-2">{menuItem.name}</h1>
             </div>
 
             {/* Price Card */}
@@ -272,10 +260,11 @@ const MenuItemDetailsPage: React.FC = () => {
             {/* Status Cards */}
             <div className="grid grid-cols-2 gap-4">
               {/* Availability Status */}
-              <div className={`rounded-xl p-4 border transition-all duration-300 ${menuItem.isAvailable
-                ? 'bg-green-50 border-green-200'
-                : 'bg-red-50 border-red-200'
-                }`}>
+              <div
+                className={`rounded-xl p-4 border transition-all duration-300 ${
+                  menuItem.isAvailable ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                }`}
+              >
                 <div className="flex items-center">
                   {menuItem.isAvailable ? (
                     <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3" />
@@ -284,7 +273,9 @@ const MenuItemDetailsPage: React.FC = () => {
                   )}
                   <div>
                     <p className="text-xs text-gray-500 font-medium">Availability</p>
-                    <p className={`font-semibold ${menuItem.isAvailable ? 'text-green-700' : 'text-red-700'}`}>
+                    <p
+                      className={`font-semibold ${menuItem.isAvailable ? 'text-green-700' : 'text-red-700'}`}
+                    >
                       {menuItem.isAvailable ? 'Available' : 'Unavailable'}
                     </p>
                   </div>
@@ -292,10 +283,13 @@ const MenuItemDetailsPage: React.FC = () => {
               </div>
 
               {/* Sold Out Status */}
-              <div className={`rounded-xl p-4 border transition-all duration-300 ${!menuItem.isSoldOut
-                ? 'bg-green-50 border-green-200'
-                : 'bg-orange-50 border-orange-200'
-                }`}>
+              <div
+                className={`rounded-xl p-4 border transition-all duration-300 ${
+                  !menuItem.isSoldOut
+                    ? 'bg-green-50 border-green-200'
+                    : 'bg-orange-50 border-orange-200'
+                }`}
+              >
                 <div className="flex items-center">
                   {!menuItem.isSoldOut ? (
                     <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3" />
@@ -304,7 +298,9 @@ const MenuItemDetailsPage: React.FC = () => {
                   )}
                   <div>
                     <p className="text-xs text-gray-500 font-medium">Stock Status</p>
-                    <p className={`font-semibold ${!menuItem.isSoldOut ? 'text-green-700' : 'text-orange-700'}`}>
+                    <p
+                      className={`font-semibold ${!menuItem.isSoldOut ? 'text-green-700' : 'text-orange-700'}`}
+                    >
                       {menuItem.isSoldOut ? 'Sold Out' : 'In Stock'}
                     </p>
                   </div>
@@ -330,9 +326,7 @@ const MenuItemDetailsPage: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-elevation-1 border border-gray-100 p-6">
                 <div className="flex items-center mb-4">
                   <LayersIcon className="w-5 h-5 text-naples mr-2" />
-                  <h3 className="text-lg font-semibold text-charcoal">
-                    Modifiers & Options
-                  </h3>
+                  <h3 className="text-lg font-semibold text-charcoal">Modifiers & Options</h3>
                   <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
                     {menuItem.modifiers.length} group{menuItem.modifiers.length !== 1 ? 's' : ''}
                   </span>
@@ -348,11 +342,16 @@ const MenuItemDetailsPage: React.FC = () => {
                         <div>
                           <h4 className="font-semibold text-charcoal">{group.name}</h4>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${group.selectionType === 'single'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-purple-100 text-purple-700'
-                              }`}>
-                              {group.selectionType === 'single' ? 'Single Select' : 'Multiple Select'}
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full ${
+                                group.selectionType === 'single'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-purple-100 text-purple-700'
+                              }`}
+                            >
+                              {group.selectionType === 'single'
+                                ? 'Single Select'
+                                : 'Multiple Select'}
                             </span>
                             {group.isRequired && (
                               <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full">
@@ -391,7 +390,8 @@ const MenuItemDetailsPage: React.FC = () => {
               <div className="flex flex-wrap gap-4 text-sm text-gray-500">
                 {menuItem.createdAt && (
                   <span>
-                    Created: {new Date(menuItem.createdAt).toLocaleDateString('en-US', {
+                    Created:{' '}
+                    {new Date(menuItem.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -400,7 +400,8 @@ const MenuItemDetailsPage: React.FC = () => {
                 )}
                 {menuItem.updatedAt && (
                   <span>
-                    Updated: {new Date(menuItem.updatedAt).toLocaleDateString('en-US', {
+                    Updated:{' '}
+                    {new Date(menuItem.updatedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',

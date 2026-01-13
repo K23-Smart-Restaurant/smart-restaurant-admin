@@ -59,10 +59,7 @@ class ProfileService {
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(
-      currentPassword,
-      user.passwordHash
-    );
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
 
     if (!isPasswordValid) {
       throw new Error('Current password is incorrect');

@@ -4,35 +4,35 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Order } from '../../services/orderService';
 
 interface PendingOrderCardProps {
-    order: Order;
-    onAccept: (orderId: string) => void;
-    onReject: (orderId: string) => void;
+  order: Order;
+  onAccept: (orderId: string) => void;
+  onReject: (orderId: string) => void;
 }
 
 /**
  * PendingOrderCard - Display pending order for waiter approval (Light Theme)
  */
 const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, onReject }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleAccept = async () => {
-        setIsProcessing(true);
-        try {
-            await onAccept(order.id);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+  const handleAccept = async () => {
+    setIsProcessing(true);
+    try {
+      await onAccept(order.id);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-    const handleReject = async () => {
-        setIsProcessing(true);
-        try {
-            await onReject(order.id);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+  const handleReject = async () => {
+    setIsProcessing(true);
+    try {
+      await onReject(order.id);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
     return (
         <div className="bg-white border-2 border-blue-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -80,60 +80,60 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
                 </div>
             </div>
 
-            {/* Order Items (Expandable) */}
-            {isExpanded && (
-                <div className="p-4 bg-gray-50 border-b border-gray-200">
-                    <h4 className="font-semibold text-charcoal mb-3 text-sm">Order Items:</h4>
-                    <div className="space-y-2">
-                        {order.orderItems?.map((item) => (
-                            <div
-                                key={item.id}
-                                className="flex items-center justify-between text-sm bg-white p-2 rounded-lg"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span className="font-bold text-charcoal bg-gray-100 rounded px-2 py-0.5 text-xs">
-                                        {item.quantity}x
-                                    </span>
-                                    <span className="text-gray-700">{item.menuItem?.name || 'Item'}</span>
-                                </div>
-                                <span className="text-gray-600 font-medium">
-                                    ${Number(item.subtotal).toFixed(2)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                    {order.notes && (
-                        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-yellow-800 text-xs">
-                                <span className="font-semibold">Note: </span>
-                                {order.notes}
-                            </p>
-                        </div>
-                    )}
+      {/* Order Items (Expandable) */}
+      {isExpanded && (
+        <div className="p-4 bg-gray-50 border-b border-gray-200">
+          <h4 className="font-semibold text-charcoal mb-3 text-sm">Order Items:</h4>
+          <div className="space-y-2">
+            {order.orderItems?.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between text-sm bg-white p-2 rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-charcoal bg-gray-100 rounded px-2 py-0.5 text-xs">
+                    {item.quantity}x
+                  </span>
+                  <span className="text-gray-700">{item.menuItem?.name || 'Item'}</span>
                 </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="p-4 bg-white flex gap-3">
-                <button
-                    onClick={handleReject}
-                    disabled={isProcessing}
-                    className="flex-1 py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-red-300 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <X className="w-5 h-5" />
-                    {isProcessing ? 'Processing...' : 'Reject'}
-                </button>
-                <button
-                    onClick={handleAccept}
-                    disabled={isProcessing}
-                    className="flex-1 py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <Check className="w-5 h-5" />
-                    {isProcessing ? 'Processing...' : 'Accept & Send to Kitchen'}
-                </button>
+                <span className="text-gray-600 font-medium">
+                  ${Number(item.subtotal).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+          {order.notes && (
+            <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800 text-xs">
+                <span className="font-semibold">Note: </span>
+                {order.notes}
+              </p>
             </div>
+          )}
         </div>
-    );
+      )}
+
+      {/* Action Buttons */}
+      <div className="p-4 bg-white flex gap-3">
+        <button
+          onClick={handleReject}
+          disabled={isProcessing}
+          className="flex-1 py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-red-300 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <X className="w-5 h-5" />
+          {isProcessing ? 'Processing...' : 'Reject'}
+        </button>
+        <button
+          onClick={handleAccept}
+          disabled={isProcessing}
+          className="flex-1 py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Check className="w-5 h-5" />
+          {isProcessing ? 'Processing...' : 'Accept & Send to Kitchen'}
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default PendingOrderCard;

@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from '../lib/prisma.js';
 
 class CategoryService {
   async createCategory(data) {
@@ -24,7 +24,7 @@ class CategoryService {
           select: { menuItems: true },
         },
       },
-      orderBy: { displayOrder: "asc" },
+      orderBy: { displayOrder: 'asc' },
     });
   }
 
@@ -55,10 +55,10 @@ class CategoryService {
     if (itemsCount > 0) {
       const error = new Error(
         `Cannot delete category: it contains ${itemsCount} menu item(s). ` +
-        `Please move or delete these items first.`
+          `Please move or delete these items first.`
       );
       error.statusCode = 400;
-      error.code = "CATEGORY_HAS_ITEMS";
+      error.code = 'CATEGORY_HAS_ITEMS';
       error.details = {
         categoryId: id,
         itemsCount,

@@ -32,34 +32,21 @@ const registerLimiter = rateLimit({
 });
 
 // Public routes
-router.post(
-  '/register',
-  registerLimiter,
-  validate(registerSchema),
-  (req, res, next) => authController.register(req, res, next)
+router.post('/register', registerLimiter, validate(registerSchema), (req, res, next) =>
+  authController.register(req, res, next)
 );
 
-router.post(
-  '/login',
-  loginLimiter,
-  validate(loginSchema),
-  (req, res, next) => authController.login(req, res, next)
+router.post('/login', loginLimiter, validate(loginSchema), (req, res, next) =>
+  authController.login(req, res, next)
 );
 
 // Refresh token endpoint
-router.post('/refresh', (req, res, next) =>
-  authController.refresh(req, res, next)
-);
+router.post('/refresh', (req, res, next) => authController.refresh(req, res, next));
 
 // Logout endpoint
-router.post('/logout', (req, res, next) =>
-  authController.logout(req, res, next)
-);
+router.post('/logout', (req, res, next) => authController.logout(req, res, next));
 
 // Protected routes
-router.get('/me', authenticate, (req, res, next) =>
-  authController.getMe(req, res, next)
-);
+router.get('/me', authenticate, (req, res, next) => authController.getMe(req, res, next));
 
 export default router;
-

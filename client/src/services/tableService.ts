@@ -1,8 +1,8 @@
-import { api, apiClient } from "./api";
+import { api, apiClient } from './api';
 
-export type TableStatus = "AVAILABLE" | "OCCUPIED" | "RESERVED";
+export type TableStatus = 'AVAILABLE' | 'OCCUPIED' | 'RESERVED';
 
-export type QRTokenStatus = "active" | "invalid" | "none";
+export type QRTokenStatus = 'active' | 'invalid' | 'none';
 
 export interface QRStatus {
   status: QRTokenStatus;
@@ -48,8 +48,8 @@ export interface UpdateTableDto {
 
 export interface BatchDownloadOptions {
   tableIds?: string[];
-  format: "zip" | "pdf";
-  layout?: "single" | "multiple";
+  format: 'zip' | 'pdf';
+  layout?: 'single' | 'multiple';
   restaurantName?: string;
   includeWifi?: boolean;
   wifiName?: string;
@@ -96,11 +96,9 @@ export interface ToggleActiveResult {
 export const tableService = {
   // Get all tables
   getAll: async (): Promise<Table[]> => {
-    const response = await apiClient.get<
-      { success: boolean; data: Table[] } | Table[]
-    >("/tables");
+    const response = await apiClient.get<{ success: boolean; data: Table[] } | Table[]>('/tables');
     // Handle both response formats
-    if ("data" in response.data && Array.isArray(response.data.data)) {
+    if ('data' in response.data && Array.isArray(response.data.data)) {
       return response.data.data;
     }
     return response.data as Table[];
@@ -108,10 +106,11 @@ export const tableService = {
 
   // Create a new table
   create: async (data: CreateTableDto): Promise<Table> => {
-    const response = await apiClient.post<
-      { success: boolean; data: Table } | Table
-    >("/tables", data);
-    if ("data" in response.data && "id" in response.data.data) {
+    const response = await apiClient.post<{ success: boolean; data: Table } | Table>(
+      '/tables',
+      data
+    );
+    if ('data' in response.data && 'id' in response.data.data) {
       return response.data.data;
     }
     return response.data as Table;
@@ -119,10 +118,11 @@ export const tableService = {
 
   // Update an existing table
   update: async (id: string, data: UpdateTableDto): Promise<Table> => {
-    const response = await apiClient.patch<
-      { success: boolean; data: Table } | Table
-    >(`/tables/${id}`, data);
-    if ("data" in response.data && "id" in response.data.data) {
+    const response = await apiClient.patch<{ success: boolean; data: Table } | Table>(
+      `/tables/${id}`,
+      data
+    );
+    if ('data' in response.data && 'id' in response.data.data) {
       return response.data.data;
     }
     return response.data as Table;
@@ -135,59 +135,52 @@ export const tableService = {
 
   // Regenerate QR code for a table
   regenerateQR: async (id: string): Promise<Table> => {
-    const response = await apiClient.post<
-      { success: boolean; data: Table } | Table
-    >(`/tables/${id}/regenerate-qr`);
-    if ("data" in response.data && "id" in response.data.data) {
+    const response = await apiClient.post<{ success: boolean; data: Table } | Table>(
+      `/tables/${id}/regenerate-qr`
+    );
+    if ('data' in response.data && 'id' in response.data.data) {
       return response.data.data;
     }
     return response.data as Table;
   },
 
   // Get QR code download URL
-  getQRCodeUrl: (id: string, format: "png" | "pdf" = "png"): string => {
+  getQRCodeUrl: (id: string, format: 'png' | 'pdf' = 'png'): string => {
     return `${api.defaults.baseURL}/tables/${id}/qr-code?format=${format}`;
   },
 
   // Download QR code as blob
-  downloadQRCode: async (
-    id: string,
-    format: "png" | "pdf" = "png"
-  ): Promise<Blob> => {
+  downloadQRCode: async (id: string, format: 'png' | 'pdf' = 'png'): Promise<Blob> => {
     const response = await api.get(`/tables/${id}/qr-code`, {
       params: { format },
-      responseType: "blob",
+      responseType: 'blob',
     });
     return response.data;
   },
 
   // Batch download QR codes
   downloadBatchQR: async (options: BatchDownloadOptions): Promise<Blob> => {
-    const response = await api.post("/tables/batch/download", options, {
-      responseType: "blob",
+    const response = await api.post('/tables/batch/download', options, {
+      responseType: 'blob',
     });
     return response.data;
   },
 
   // Bulk regenerate QR codes
-  bulkRegenerateQR: async (
-    tableIds?: string[]
-  ): Promise<BulkRegenerateResult> => {
-    const response = await apiClient.post<BulkRegenerateResult>(
-      "/tables/batch/regenerate",
-      {
-        tableIds,
-      }
-    );
+  bulkRegenerateQR: async (tableIds?: string[]): Promise<BulkRegenerateResult> => {
+    const response = await apiClient.post<BulkRegenerateResult>('/tables/batch/regenerate', {
+      tableIds,
+    });
     return response.data;
   },
 
   // Update table status
   updateStatus: async (id: string, status: TableStatus): Promise<Table> => {
-    const response = await apiClient.patch<
-      { success: boolean; data: Table } | Table
-    >(`/tables/${id}`, { status });
-    if ("data" in response.data && "id" in response.data.data) {
+    const response = await apiClient.patch<{ success: boolean; data: Table } | Table>(
+      `/tables/${id}`,
+      { status }
+    );
+    if ('data' in response.data && 'id' in response.data.data) {
       return response.data.data;
     }
     return response.data as Table;
@@ -211,7 +204,7 @@ export const tableService = {
     };
     error?: string;
   }> => {
-    const response = await api.get("/tables/validate-qr", {
+    const response = await api.get('/tables/validate-qr', {
       params: { token },
     });
     return response.data;
@@ -219,9 +212,7 @@ export const tableService = {
 
   // M6: Check for active orders on a table
   checkActiveOrders: async (id: string): Promise<ActiveOrdersCheckResult> => {
-    const response = await apiClient.get<ActiveOrdersCheckResult>(
-      `/tables/${id}/active-orders`
-    );
+    const response = await apiClient.get<ActiveOrdersCheckResult>(`/tables/${id}/active-orders`);
     return response.data;
   },
 
@@ -231,10 +222,10 @@ export const tableService = {
     isActive: boolean,
     force?: boolean
   ): Promise<ToggleActiveResult> => {
-    const response = await apiClient.patch<ToggleActiveResult>(
-      `/tables/${id}/toggle-active`,
-      { isActive, force }
-    );
+    const response = await apiClient.patch<ToggleActiveResult>(`/tables/${id}/toggle-active`, {
+      isActive,
+      force,
+    });
     return response.data;
   },
 };
