@@ -54,10 +54,6 @@ class KitchenService {
     const now = new Date();
     return orders.map((order) => {
       const elapsedMinutes = Math.floor((now - order.createdAt) / (1000 * 60));
-    // Add elapsed time calculation for each order
-    const now = new Date();
-    return orders.map((order) => {
-      const elapsedMinutes = Math.floor((now - order.createdAt) / (1000 * 60));
 
       // Determine urgency level based on elapsed time
       let urgency = "normal";
@@ -94,22 +90,6 @@ class KitchenService {
         orderItems: true,
       },
     });
-  /**
-   * T404: Update order status with validation
-   * Valid transitions: CONFIRMED -> PREPARING -> READY
-   * @param {string} orderId - Order ID
-   * @param {string} newStatus - New status
-   * @returns {Promise<Object>} Updated order
-   */
-  async updateOrderStatus(orderId, newStatus) {
-    // Validate order exists
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        table: true,
-        orderItems: true,
-      },
-    });
 
     if (!order) {
       throw new Error("Order not found");
@@ -128,34 +108,6 @@ class KitchenService {
       );
     }
 
-    // Update order status
-    const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: newStatus,
-        updatedAt: new Date(),
-      },
-      include: {
-        table: {
-          select: {
-            id: true,
-            tableNumber: true,
-            location: true,
-          },
-        },
-        customer: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        orderItems: {
-          include: {
-            menuItem: true,
-          },
-        },
-      },
-    });
     // Update order status
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
@@ -219,8 +171,6 @@ class KitchenService {
 
     return updatedOrder;
   }
-    return updatedOrder;
-  }
 
   /**
    * T406: Update individual order item status
@@ -281,10 +231,6 @@ class KitchenService {
     const allItems = await prisma.orderItem.findMany({
       where: { orderId },
     });
-    // Check if all items are ready, if so, update order status to READY
-    const allItems = await prisma.orderItem.findMany({
-      where: { orderId },
-    });
 
     const allReady = allItems.every((item) => item.itemStatus === "READY");
     if (allReady) {
@@ -310,8 +256,6 @@ class KitchenService {
       });
     }
 
-    return updatedItem;
-  }
     return updatedItem;
   }
 
