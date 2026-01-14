@@ -34,16 +34,11 @@ interface MenuItemListProps {
   onToggleAvailability: (id: string) => void;
   onToggleSoldOut: (id: string) => void;
 
-  // NEW: Fuzzy search props (Task 4.2)
-  fuzzyEnabled?: boolean;
-  onToggleFuzzy?: () => void;
-  showFuzzyToggle?: boolean;
-
-  // NEW: Highlight props (Task 4.3)
+  // Highlight props for fuzzy search
   getItemHighlights?: (itemId: string) => FieldHighlight[];
   getItemRelevance?: (itemId: string) => number | undefined;
 
-  // NEW: No results props (Task 4.4)
+  // No results props
   suggestions?: MenuItem[];
   isSearchActive?: boolean;
 }
@@ -67,10 +62,6 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
   onDelete,
   onToggleAvailability,
   onToggleSoldOut,
-  // Fuzzy search props
-  fuzzyEnabled = true,
-  onToggleFuzzy,
-  showFuzzyToggle = true,
   // Highlight props
   getItemHighlights,
   getItemRelevance,
@@ -109,46 +100,22 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               <SearchIcon className="w-4 h-4 inline mr-1" />
               Search
             </label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  id="search"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  placeholder="Search by name or description..."
-                  className="w-full bg-gray-200 text-black px-4 py-2 pr-10 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={handleClearSearch}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    title="Clear search"
-                  >
-                    <XCircleIcon className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Fuzzy Search Toggle Button (Task 4.2) */}
-              {showFuzzyToggle && onToggleFuzzy && (
+            <div className="relative flex-1">
+              <input
+                id="search"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Search by name or description..."
+                className="w-full bg-gray-200 text-black px-4 py-2 pr-10 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
+              />
+              {searchQuery && (
                 <button
-                  onClick={onToggleFuzzy}
-                  className={`px-3 py-2 rounded-md border transition-all duration-200 flex items-center gap-1.5 ${fuzzyEnabled
-                      ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal shadow-sm'
-                      : 'bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200'
-                    }`}
-                  title={fuzzyEnabled ? 'Smart search: ON (typo-tolerant)' : 'Smart search: OFF (exact match)'}
-                  aria-label={fuzzyEnabled ? 'Disable smart search' : 'Enable smart search'}
-                  aria-pressed={fuzzyEnabled}
-                  role="switch"
+                  onClick={handleClearSearch}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Clear search"
                 >
-                  <SparklesIcon
-                    className={`w-4 h-4 ${fuzzyEnabled ? 'text-naples' : 'text-gray-400'}`}
-                  />
-                  <span className="text-xs font-medium hidden sm:inline">
-                    {fuzzyEnabled ? 'Smart' : 'Exact'}
-                  </span>
+                  <XCircleIcon className="w-5 h-5" />
                 </button>
               )}
             </div>
@@ -217,8 +184,8 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               Category: {categoryOptions.find((c) => c.value === selectedCategory)?.label}
             </span>
           )}
-          {/* Fuzzy Search Indicator */}
-          {isSearchActive && fuzzyEnabled && (
+          {/* Smart Search Indicator - shown when search is active */}
+          {isSearchActive && (
             <span className="px-2 py-1 bg-gradient-to-r from-naples/10 to-arylide/10 border border-naples/20 text-charcoal text-xs rounded-full flex items-center gap-1">
               <SparklesIcon className="w-3 h-3 text-naples" />
               Smart search
@@ -236,8 +203,8 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
         <p className="text-sm text-gray-600">
           Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> of{' '}
           <span className="font-semibold text-charcoal">{total}</span> menu items
-          {/* Relevance sorting indicator */}
-          {isSearchActive && fuzzyEnabled && menuItems.length > 0 && (
+          {/* Relevance sorting indicator - shown when search is active */}
+          {isSearchActive && menuItems.length > 0 && (
             <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-naples/10 border border-naples/20 text-charcoal">
               <SparklesIcon className="w-3 h-3 text-naples" />
               sorted by relevance

@@ -35,9 +35,7 @@ const MenuManagementPage: React.FC = () => {
     toggleAvailability,
     toggleSoldOut,
 
-    // NEW: Fuzzy Search State & Actions (Task 5.1)
-    fuzzyEnabled,
-    toggleFuzzySearch,
+    // Fuzzy Search helpers (always enabled)
     getItemHighlights,
     getItemRelevance,
     suggestions,
@@ -221,10 +219,7 @@ const MenuManagementPage: React.FC = () => {
         onDelete={handleDeleteMenuItem}
         onToggleAvailability={toggleAvailability}
         onToggleSoldOut={toggleSoldOut}
-        // NEW: Fuzzy search props (Task 5.1)
-        fuzzyEnabled={fuzzyEnabled}
-        onToggleFuzzy={toggleFuzzySearch}
-        showFuzzyToggle={true}
+        // Fuzzy search props (always enabled)
         getItemHighlights={getItemHighlights}
         getItemRelevance={getItemRelevance}
         suggestions={suggestions}
