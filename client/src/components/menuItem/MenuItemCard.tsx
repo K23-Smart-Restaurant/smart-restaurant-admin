@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, Trash2Icon, ClockIcon, DollarSignIcon, StarIcon, EyeIcon } from 'lucide-react';
 import type { MenuItem } from '../../hooks/useMenuItems';
+import type { FieldHighlight } from '../../types/search.types';
+import { HighlightedText } from '../common/HighlightedText';
+
+/**
+ * MenuItemCard Component
+ * Task 4.3: Display Match Highlights in MenuItemCard
+ *
+ * Displays a menu item card with optional search highlighting.
+ */
 
 interface MenuItemCardProps {
   menuItem: MenuItem;
@@ -9,6 +18,10 @@ interface MenuItemCardProps {
   onDelete: (menuItem: MenuItem) => void;
   onToggleAvailability: (id: string) => void;
   onToggleSoldOut: (id: string) => void;
+
+  // NEW: Fuzzy search props (Task 4.3)
+  highlights?: FieldHighlight[];
+  relevanceScore?: number;
 }
 
 export const MenuItemCard: React.FC<MenuItemCardProps> = ({
@@ -17,6 +30,8 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onDelete,
   onToggleAvailability,
   onToggleSoldOut,
+  highlights,
+  relevanceScore,
 }) => {
   const navigate = useNavigate();
 
@@ -54,6 +69,53 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
+  // Extract highlights for specific fields (Task 4.3)
+  const { nameHighlight, descriptionHighlight } = useMemo(() => {
+    if (!highlights || highlights.length === 0) {
+      return { nameHighlight: undefined, descriptionHighlight: undefined };
+    }
+
+    const nameField = highlights.find((h) => h.field === 'name');
+    const descField = highlights.find((h) => h.field === 'description');
+
+    return {
+      nameHighlight: nameField?.segments,
+      descriptionHighlight: descField?.segments,
+    };
+  }, [highlights]);
+
+  // Render name with optional highlighting
+  const renderName = () => {
+    if (nameHighlight && nameHighlight.some((s) => s.isMatch)) {
+      return (
+        <HighlightedText
+          segments={nameHighlight}
+          textClassName="text-lg font-bold text-charcoal"
+          highlightClassName="bg-gradient-to-b from-naples/20 to-naples/30 px-0.5 rounded font-bold text-charcoal"
+          lineClamp={1}
+        />
+      );
+    }
+    return <span className="line-clamp-1">{menuItem.name}</span>;
+  };
+
+  // Render description with optional highlighting
+  const renderDescription = () => {
+    if (!menuItem.description) return null;
+
+    if (descriptionHighlight && descriptionHighlight.some((s) => s.isMatch)) {
+      return (
+        <HighlightedText
+          segments={descriptionHighlight}
+          textClassName="text-sm text-gray-600"
+          highlightClassName="bg-gradient-to-b from-naples/15 to-naples/25 px-0.5 rounded text-gray-700"
+          lineClamp={2}
+        />
+      );
+    }
+    return <span className="line-clamp-2">{menuItem.description}</span>;
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-elevation-2 border border-gray-100 hover:border-gradient-primary/30 hover:shadow-elevation-3 transition-all duration-300 overflow-hidden group card-hover animate-fade-in-up">
       {/* Image Section */}
@@ -81,6 +143,13 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <div className="absolute top-3 left-3 px-3 py-1.5 bg-gradient-to-r from-naples to-arylide text-charcoal text-xs font-bold rounded-full flex items-center shadow-glow-yellow animate-bounce-gentle">
             <StarIcon className="w-3.5 h-3.5 mr-1 fill-current" />
             Chef's Pick
+          </div>
+        )}
+
+        {/* Relevance Score Badge (Task 4.3) */}
+        {relevanceScore !== undefined && relevanceScore > 0 && (
+          <div className="absolute top-3 right-3 px-2 py-1 bg-white/90 backdrop-blur-sm text-charcoal text-xs font-semibold rounded-full shadow-sm">
+            {relevanceScore}% match
           </div>
         )}
 
@@ -115,14 +184,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         {/* Title and Category */}
         <div>
           <div className="flex items-start justify-between mb-1">
-            <h3 className="text-lg font-bold text-charcoal line-clamp-1">{menuItem.name}</h3>
+            <h3 className="text-lg font-bold text-charcoal line-clamp-1">{renderName()}</h3>
             <span
               className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor(menuItem.category)}`}
             >
               {getCategoryLabel(menuItem.category)}
             </span>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">{menuItem.description}</p>
+          <p className="text-sm text-gray-600 line-clamp-2">{renderDescription()}</p>
         </div>
 
         {/* Price and Time */}
@@ -202,3 +271,4 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     </div>
   );
 };
+
