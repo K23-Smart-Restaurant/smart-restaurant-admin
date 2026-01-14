@@ -160,63 +160,89 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
         offset: shouldFetchAll ? 0 : (page - 1) * pageSize,
       }),
     placeholderData: (previousData) => previousData,
+    // Task 6.2: Stale time optimization - cache results for 30 seconds
+    staleTime: 30 * 1000,
   });
 
   const rawMenuItems = data?.items ?? [];
   const apiTotal = data?.total ?? rawMenuItems.length;
 
   // ===========================================
-  // Task 3.1: Create Fuse Instance (Memoized)
+  // Task 6.1: Memoize Fuse Instance (Enhanced)
   // ===========================================
 
+  /**
+   * Create Fuse instance only when rawMenuItems changes
+   * Using useMemo with proper dependency tracking
+   * This prevents expensive re-indexing on every render
+   */
   const fuseInstance = useMemo(() => {
     if (!rawMenuItems || rawMenuItems.length === 0) return null;
+
+    // Performance: Only create Fuse when we have items
+    // Fuse.js builds an index on construction which can be expensive for large datasets
     return createMenuFuseInstance(rawMenuItems);
   }, [rawMenuItems]);
 
   // ===========================================
-  // Task 3.2: Client-Side Filtering Logic
+  // Task 6.2: Optimized Client-Side Filtering
   // ===========================================
 
-  const { filteredItems, filteredTotal } = useMemo(() => {
+  /**
+   * Perform search and filter items
+   * Optimized to minimize re-renders and state updates
+   */
+  const { filteredItems, filteredTotal, newScoreMap, newHighlightsMap } = useMemo(() => {
     const trimmedQuery = searchQuery.trim();
 
-    // No search query - return raw items
+    // No search query - return raw items with empty maps
     if (!trimmedQuery) {
-      // Clear maps when no search
-      setScoreMap(new Map());
-      setHighlightsMap(new Map());
-      return { filteredItems: rawMenuItems, filteredTotal: apiTotal };
+      return {
+        filteredItems: rawMenuItems,
+        filteredTotal: apiTotal,
+        newScoreMap: new Map() as ScoreMap,
+        newHighlightsMap: new Map() as HighlightsMap,
+      };
     }
 
     // Fuzzy search enabled
     if (fuzzyEnabled && fuseInstance) {
-      const { items, scoreMap: newScoreMap, highlightsMap: newHighlightsMap } = searchWithHighlights(
+      const result = searchWithHighlights(
         fuseInstance,
         trimmedQuery,
         { limit: MAX_SEARCH_RESULTS, minRelevance: MIN_RELEVANCE_THRESHOLD }
       );
 
-      // Update maps (using queueMicrotask to avoid state update during render)
-      queueMicrotask(() => {
-        setScoreMap(newScoreMap);
-        setHighlightsMap(newHighlightsMap);
-      });
-
-      return { filteredItems: items, filteredTotal: items.length };
+      return {
+        filteredItems: result.items,
+        filteredTotal: result.items.length,
+        newScoreMap: result.scoreMap,
+        newHighlightsMap: result.highlightsMap,
+      };
     }
 
     // Exact search (fuzzy disabled)
     const exactResults = performExactSearch(rawMenuItems, trimmedQuery);
 
-    // Clear fuzzy maps for exact search
-    queueMicrotask(() => {
-      setScoreMap(new Map());
-      setHighlightsMap(new Map());
+    return {
+      filteredItems: exactResults,
+      filteredTotal: exactResults.length,
+      newScoreMap: new Map() as ScoreMap,
+      newHighlightsMap: new Map() as HighlightsMap,
+    };
+  }, [searchQuery, fuzzyEnabled, fuseInstance, rawMenuItems, apiTotal]);
+
+  // Task 6.2: Update maps in a separate effect to avoid state updates during render
+  // This pattern prevents the React warning about state updates during render
+  useMemo(() => {
+    // Use requestAnimationFrame for smoother updates
+    const frameId = requestAnimationFrame(() => {
+      setScoreMap(newScoreMap);
+      setHighlightsMap(newHighlightsMap);
     });
 
-    return { filteredItems: exactResults, filteredTotal: exactResults.length };
-  }, [searchQuery, fuzzyEnabled, fuseInstance, rawMenuItems, apiTotal]);
+    return () => cancelAnimationFrame(frameId);
+  }, [newScoreMap, newHighlightsMap]);
 
   // ===========================================
   // Helper Functions for UI
