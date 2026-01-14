@@ -58,21 +58,21 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
       {/* Header with total and date range selector */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 print:mb-3">
         <div>
-          <h2 className="text-2xl font-bold text-charcoal">Revenue Over Time</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-2xl font-bold text-charcoal print:text-xl">Revenue Over Time</h2>
+          <p className="text-sm text-gray-600 mt-1 print:text-xs">
             Total Revenue:{' '}
-            <span className="text-2xl font-bold text-green-600">
+            <span className="text-2xl font-bold text-green-600 print:text-lg">
               {formatCurrency(totalRevenue)}
             </span>
           </p>
         </div>
 
-        {/* Date Range Selector */}
-        <div className="flex gap-2">
+        {/* Date Range Selector - Hide on Print */}
+        <div className="flex gap-2 print:hidden">
           <button
             onClick={() => onDateRangeChange('7days')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
@@ -107,7 +107,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       </div>
 
       {/* Chart */}
-      <div className="w-full" style={{ height: '400px' }}>
+      <div className="w-full print:w-full" style={{ height: '400px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />

@@ -97,16 +97,16 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-charcoal">Order Analytics</h2>
-        <p className="text-sm text-gray-600 mt-1">Detailed order patterns and trends</p>
+      <div className="mb-6 print:mb-3">
+        <h2 className="text-2xl font-bold text-charcoal print:text-xl">Order Analytics</h2>
+        <p className="text-sm text-gray-600 mt-1 print:text-xs">Detailed order patterns and trends</p>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs - Hide on Print */}
       <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
-        <Tab.List className="flex space-x-1 rounded-lg bg-antiflash p-1 mb-6">
+        <Tab.List className="flex space-x-1 rounded-lg bg-antiflash p-1 mb-6 print:hidden">
           {tabs.map((tab) => (
             <Tab key={tab.value} as={Fragment}>
               {({ selected }) => (
@@ -126,14 +126,14 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
 
         <Tab.Panels>
           {/* Orders per Day Chart */}
-          <Tab.Panel>
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">
+          <Tab.Panel className="print:block">
+            <div className="mb-4 print:mb-2">
+              <p className="text-sm text-gray-600 print:text-xs">
                 Average Orders per Day:{' '}
                 <span className="font-bold text-blue-600">{avgOrdersPerDay}</span>
               </p>
             </div>
-            <div className="w-full" style={{ height: '350px' }}>
+            <div className="w-full print:w-full" style={{ height: '350px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={validOrdersPerDay}
@@ -173,7 +173,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
           </Tab.Panel>
 
           {/* Peak Hours Chart */}
-          <Tab.Panel>
+          <Tab.Panel className="print:hidden">
             <div className="mb-4">
               <p className="text-sm text-gray-600">
                 Average Orders per Hour:{' '}

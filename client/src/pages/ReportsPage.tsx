@@ -109,8 +109,33 @@ const ReportsPage: React.FC = () => {
 
   return (
     <div>
-      {/* Page Header */}
-      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Print-only Header */}
+      <div className="hidden print:block print-header mb-6">
+        <div className="text-center border-b-2 border-charcoal pb-4 mb-6">
+          <h1 className="text-4xl font-bold text-charcoal mb-2">
+            Restaurant Performance Report
+          </h1>
+          <p className="text-lg text-gray-600">
+            {dateRange === '7days'
+              ? 'Last 7 Days'
+              : dateRange === '30days'
+                ? 'Last 30 Days'
+                : 'Last 3 Months'}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Generated on {new Date().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* Screen-only Page Header */}
+      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div>
           <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
           <p className="text-gray-600 mt-1">
@@ -119,7 +144,7 @@ const ReportsPage: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 no-print">
           <button
             onClick={handleExportPDF}
             className="flex items-center px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-all shadow-md"
@@ -137,90 +162,104 @@ const ReportsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Print Section Title */}
+      <div className="hidden print:block mb-4">
+        <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
+          Key Performance Indicators
+        </h2>
+      </div>
+
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 print:grid-cols-2 print:gap-4 print:mb-6">
         {/* Total Revenue */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 print:text-xs">Total Revenue</p>
+              <p className="text-xs text-gray-500 mt-1 print:hidden">
                 {dateRange === '7days'
                   ? 'Last 7 Days'
                   : dateRange === '30days'
                     ? 'Last 30 Days'
                     : 'Last 3 Months'}
               </p>
-              <p className="text-3xl font-bold text-charcoal mt-2">
+              <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {formatCurrency(totalRevenue)}
               </p>
             </div>
-            <div className="bg-green-100 p-3 rounded-full">
+            <div className="bg-green-100 p-3 rounded-full print:hidden">
               <DollarSign className="w-8 h-8 text-green-600" />
             </div>
           </div>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Orders</p>
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 print:text-xs">Total Orders</p>
+              <p className="text-xs text-gray-500 mt-1 print:hidden">
                 {dateRange === '7days'
                   ? 'Last 7 Days'
                   : dateRange === '30days'
                     ? 'Last 30 Days'
                     : 'Last 3 Months'}
               </p>
-              <p className="text-3xl font-bold text-charcoal mt-2">
+              <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {totalOrders.toLocaleString()}
               </p>
             </div>
-            <div className="bg-blue-100 p-3 rounded-full">
+            <div className="bg-blue-100 p-3 rounded-full print:hidden">
               <ShoppingCart className="w-8 h-8 text-blue-600" />
             </div>
           </div>
         </div>
 
         {/* Average Order Value */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-              <p className="text-xs text-gray-500 mt-1">Per transaction</p>
-              <p className="text-3xl font-bold text-charcoal mt-2">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 print:text-xs">Avg Order Value</p>
+              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">Per transaction</p>
+              <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {formatCurrency(avgOrderValue)}
               </p>
             </div>
-            <div className="bg-purple-100 p-3 rounded-full">
+            <div className="bg-purple-100 p-3 rounded-full print:hidden">
               <TrendingUp className="w-8 h-8 text-purple-600" />
             </div>
           </div>
         </div>
 
         {/* Most Popular Item */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Most Popular Item</p>
-              <p className="text-xs text-gray-500 mt-1">Best seller</p>
-              <p className="text-xl font-bold text-charcoal mt-2 line-clamp-2">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 print:text-xs">Most Popular Item</p>
+              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">Best seller</p>
+              <p className="text-xl font-bold text-charcoal mt-2 line-clamp-2 print:text-lg print:mt-1">
                 {mostPopularItem?.menuItemName || 'N/A'}
               </p>
               {mostPopularItem && (
-                <p className="text-xs text-gray-600 mt-1">{mostPopularItem.orderCount} orders</p>
+                <p className="text-xs text-gray-600 mt-1 print:text-[10px]">{mostPopularItem.orderCount} orders</p>
               )}
             </div>
-            <div className="bg-yellow-100 p-3 rounded-full">
+            <div className="bg-yellow-100 p-3 rounded-full print:hidden">
               <Award className="w-8 h-8 text-yellow-600" />
             </div>
           </div>
         </div>
       </div>
 
+      {/* Print Section Title */}
+      <div className="hidden print:block mb-4 print:page-break-before">
+        <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
+          Revenue Trends
+        </h2>
+      </div>
+
       {/* Revenue Chart - Full Width */}
-      <div className="mb-8">
+      <div className="mb-8 print:mb-6">
         <RevenueChart
           data={revenueChartData}
           dateRange={dateRange}
@@ -230,8 +269,32 @@ const ReportsPage: React.FC = () => {
         />
       </div>
 
-      {/* Charts Row - 50/50 Split */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Print Section Title - Top Items */}
+      <div className="hidden print:block mb-4 print:page-break-before">
+        <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
+          Top Menu Items Performance
+        </h2>
+      </div>
+
+      {/* Top Items Chart - Shows alone on print, in grid on screen */}
+      <div className="mb-8 print:mb-6 print:block lg:hidden">
+        <TopItemsChart data={topItems} />
+      </div>
+
+      {/* Print Section Title - Order Analytics */}
+      <div className="hidden print:block mb-4 print:page-break-before">
+        <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
+          Order Analytics
+        </h2>
+      </div>
+
+      {/* Order Analytics Chart - Shows alone on print, in grid on screen */}
+      <div className="mb-8 print:mb-0 print:block lg:hidden">
+        <OrderAnalyticsChart ordersPerDay={revenueChartData} peakHours={peakHours} />
+      </div>
+
+      {/* Screen-only: Charts Row - 50/50 Split (hidden on print) */}
+      <div className="hidden lg:grid grid-cols-2 gap-6 mb-8 print:hidden">
         {/* Top Items Chart */}
         <TopItemsChart data={topItems} />
 
@@ -242,16 +305,84 @@ const ReportsPage: React.FC = () => {
       {/* Print-specific styles */}
       <style>{`
         @media print {
-          .no-print {
+          /* Remove browser header/footer */
+          @page {
+            margin: 0.5in;
+            size: letter landscape;
+          }
+
+          /* Hide non-print elements */
+          .no-print,
+          nav,
+          header,
+          footer,
+          .print\\:hidden {
             display: none !important;
           }
-          body {
+
+          /* Body and root styles */
+          html, body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+
+          /* Main container */
+          #root, [data-testid="main-content"] {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+
+          /* Remove shadows, adjust borders */
+          .shadow-md,
+          .shadow-lg,
+          .shadow-xl {
+            box-shadow: none !important;
+            border: 1px solid #e5e7eb !important;
+          }
+
+          /* Ensure backgrounds are printed */
+          .bg-green-100,
+          .bg-blue-100,
+          .bg-purple-100,
+          .bg-yellow-100,
+          .bg-white {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
           }
-          .shadow-md {
-            box-shadow: none !important;
-            border: 1px solid #e5e7eb !important;
+
+          /* Page breaks */
+          .print\\:page-break-before {
+            page-break-before: always;
+          }
+
+          /* Avoid breaking inside charts */
+          .bg-white {
+            page-break-inside: avoid;
+          }
+
+          /* Reduce padding on chart cards for better fit */
+          .rounded-lg.shadow-md {
+            padding: 16pt !important;
+          }
+
+          /* Constrain chart heights to fit on page */
+          .recharts-responsive-container {
+            max-height: 500px !important;
+          }
+
+          /* Ensure chart containers don't overflow */
+          div[style*="height: 400px"] {
+            height: 400px !important;
+            max-height: 500px !important;
+          }
+
+          div[style*="height: 350px"] {
+            height: 350px !important;
+            max-height: 450px !important;
           }
         }
       `}</style>

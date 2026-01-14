@@ -69,16 +69,16 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
+    <div className="p-6 bg-white rounded-lg shadow-md print:shadow-none print:border print:border-gray-300 print:p-4">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-charcoal">Top Menu Items</h2>
-        <p className="mt-1 text-sm text-gray-600">Most ordered items by popularity</p>
+      <div className="mb-6 print:mb-3">
+        <h2 className="text-2xl font-bold text-charcoal print:text-xl">Top Menu Items</h2>
+        <p className="mt-1 text-sm text-gray-600 print:text-xs">Most ordered items by popularity</p>
       </div>
 
       {/* Selected Item Info */}
       {selectedItem && (
-        <div className="p-4 mb-4 border-l-4 rounded bg-naples/20 border-naples">
+        <div className="p-4 mb-4 border-l-4 rounded bg-naples/20 border-naples print:hidden">
           <p className="text-sm font-semibold text-charcoal">{selectedItem.menuItemName}</p>
           <p className="mt-1 text-xs text-gray-600">
             {selectedItem.orderCount} orders • {formatCurrency(selectedItem.totalRevenue)} revenue
@@ -87,7 +87,7 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
       )}
 
       {/* Chart */}
-      <div className="w-full" style={{ height: '400px' }}>
+      <div className="w-full print:w-full" style={{ height: '400px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
@@ -119,7 +119,7 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
       </div>
 
       {/* Legend */}
-      <div className="mt-4 text-center">
+      <div className="mt-4 text-center print:hidden">
         <p className="text-xs text-gray-500">Click on a bar to view detailed information</p>
       </div>
     </div>

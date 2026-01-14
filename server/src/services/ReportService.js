@@ -5,7 +5,7 @@ class ReportService {
     const orders = await prisma.order.findMany({
       where: {
         createdAt: { gte: startDate, lte: endDate },
-        status: 'PAID',
+        paymentStatus: 'PAID',
       },
       select: {
         totalAmount: true,
