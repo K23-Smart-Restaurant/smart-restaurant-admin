@@ -1,3 +1,4 @@
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   menuItemService,
@@ -11,6 +12,17 @@ import {
   type UpdateMenuItemPayload,
   type PhotoInput,
 } from '../services/menuItemService';
+import {
+  createMenuFuseInstance,
+  searchWithHighlights,
+  performExactSearch,
+  getSuggestions,
+  scoreToPercentage,
+  type ScoreMap,
+  type HighlightsMap,
+  type FieldHighlight,
+} from '../utils/fuzzySearch';
+import { FUZZY_ENABLED_STORAGE_KEY } from '../types/search.types';
 
 // Re-export types
 export type { MenuItem, MenuCategory };
@@ -46,6 +58,39 @@ export interface SaveMenuItemFormPayload {
   id?: string;
 }
 
+// ===========================================
+// Task 3.3: Local Storage Persistence Helpers
+// ===========================================
+
+/**
+ * Get fuzzy search enabled state from localStorage
+ * Defaults to true if not set
+ */
+const getFuzzyEnabledFromStorage = (): boolean => {
+  if (typeof window === 'undefined') return true;
+  const stored = localStorage.getItem(FUZZY_ENABLED_STORAGE_KEY);
+  return stored !== 'false'; // Default to true
+};
+
+/**
+ * Save fuzzy search enabled state to localStorage
+ */
+const saveFuzzyEnabledToStorage = (enabled: boolean): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(FUZZY_ENABLED_STORAGE_KEY, String(enabled));
+};
+
+// ===========================================
+// Constants
+// ===========================================
+
+const MAX_SEARCH_RESULTS = 50;
+const MIN_RELEVANCE_THRESHOLD = 15;
+
+// ===========================================
+// Main Hook
+// ===========================================
+
 export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const {
     searchQuery = '',
@@ -58,22 +103,163 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
 
   const queryClient = useQueryClient();
 
-  // Fetch all menu items
+  // ===========================================
+  // Task 3.1 & 3.3: Fuzzy Search State
+  // ===========================================
+
+  const [fuzzyEnabled, setFuzzyEnabledState] = useState<boolean>(getFuzzyEnabledFromStorage);
+  const [scoreMap, setScoreMap] = useState<ScoreMap>(new Map());
+  const [highlightsMap, setHighlightsMap] = useState<HighlightsMap>(new Map());
+
+  // Toggle fuzzy search with persistence
+  const toggleFuzzySearch = useCallback(() => {
+    setFuzzyEnabledState((prev) => {
+      const newValue = !prev;
+      saveFuzzyEnabledToStorage(newValue);
+      return newValue;
+    });
+  }, []);
+
+  const enableFuzzySearch = useCallback(() => {
+    setFuzzyEnabledState(true);
+    saveFuzzyEnabledToStorage(true);
+  }, []);
+
+  const disableFuzzySearch = useCallback(() => {
+    setFuzzyEnabledState(false);
+    saveFuzzyEnabledToStorage(false);
+  }, []);
+
+  // ===========================================
+  // Data Fetching - Fetch ALL items for client-side fuzzy search
+  // ===========================================
+
+  // When fuzzy search is enabled and there's a search query,
+  // we need ALL items for client-side filtering
+  const shouldFetchAll = fuzzyEnabled && searchQuery.trim().length > 0;
+
   const { data, isLoading, isError, error, refetch } = useQuery<MenuItemListResponse>({
-    queryKey: ['menuItems', searchQuery, selectedCategory, sortBy, sortOrder, page, pageSize],
+    queryKey: [
+      'menuItems',
+      shouldFetchAll ? '' : searchQuery, // Don't filter by name if fuzzy is enabled
+      selectedCategory,
+      sortBy,
+      sortOrder,
+      page,
+      pageSize,
+      fuzzyEnabled,
+    ],
     queryFn: () =>
       menuItemService.getAll({
-        name: searchQuery || undefined,
+        // Don't send name filter when fuzzy is enabled - we filter client-side
+        name: shouldFetchAll ? undefined : searchQuery || undefined,
         category: selectedCategory === 'ALL' ? undefined : selectedCategory,
-        sortBy,
-        sortOrder,
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
+        sortBy: shouldFetchAll ? undefined : sortBy, // Don't sort server-side when fuzzy
+        sortOrder: shouldFetchAll ? undefined : sortOrder,
+        limit: shouldFetchAll ? 200 : pageSize, // Fetch more for client-side search
+        offset: shouldFetchAll ? 0 : (page - 1) * pageSize,
       }),
     placeholderData: (previousData) => previousData,
   });
 
-  // Create menu item mutation
+  const rawMenuItems = data?.items ?? [];
+  const apiTotal = data?.total ?? rawMenuItems.length;
+
+  // ===========================================
+  // Task 3.1: Create Fuse Instance (Memoized)
+  // ===========================================
+
+  const fuseInstance = useMemo(() => {
+    if (!rawMenuItems || rawMenuItems.length === 0) return null;
+    return createMenuFuseInstance(rawMenuItems);
+  }, [rawMenuItems]);
+
+  // ===========================================
+  // Task 3.2: Client-Side Filtering Logic
+  // ===========================================
+
+  const { filteredItems, filteredTotal } = useMemo(() => {
+    const trimmedQuery = searchQuery.trim();
+
+    // No search query - return raw items
+    if (!trimmedQuery) {
+      // Clear maps when no search
+      setScoreMap(new Map());
+      setHighlightsMap(new Map());
+      return { filteredItems: rawMenuItems, filteredTotal: apiTotal };
+    }
+
+    // Fuzzy search enabled
+    if (fuzzyEnabled && fuseInstance) {
+      const { items, scoreMap: newScoreMap, highlightsMap: newHighlightsMap } = searchWithHighlights(
+        fuseInstance,
+        trimmedQuery,
+        { limit: MAX_SEARCH_RESULTS, minRelevance: MIN_RELEVANCE_THRESHOLD }
+      );
+
+      // Update maps (using queueMicrotask to avoid state update during render)
+      queueMicrotask(() => {
+        setScoreMap(newScoreMap);
+        setHighlightsMap(newHighlightsMap);
+      });
+
+      return { filteredItems: items, filteredTotal: items.length };
+    }
+
+    // Exact search (fuzzy disabled)
+    const exactResults = performExactSearch(rawMenuItems, trimmedQuery);
+
+    // Clear fuzzy maps for exact search
+    queueMicrotask(() => {
+      setScoreMap(new Map());
+      setHighlightsMap(new Map());
+    });
+
+    return { filteredItems: exactResults, filteredTotal: exactResults.length };
+  }, [searchQuery, fuzzyEnabled, fuseInstance, rawMenuItems, apiTotal]);
+
+  // ===========================================
+  // Helper Functions for UI
+  // ===========================================
+
+  /**
+   * Get highlights for a specific menu item
+   */
+  const getItemHighlights = useCallback(
+    (itemId: string): FieldHighlight[] => {
+      return highlightsMap.get(itemId) ?? [];
+    },
+    [highlightsMap]
+  );
+
+  /**
+   * Get relevance score (0-100) for a menu item
+   */
+  const getItemRelevance = useCallback(
+    (itemId: string): number | undefined => {
+      const score = scoreMap.get(itemId);
+      if (score === undefined) return undefined;
+      return scoreToPercentage(score);
+    },
+    [scoreMap]
+  );
+
+  /**
+   * Get suggestions for "no results" state
+   */
+  const suggestions = useMemo(() => {
+    if (filteredItems.length > 0 || !searchQuery.trim()) return [];
+    return getSuggestions(rawMenuItems, searchQuery, 3);
+  }, [filteredItems.length, searchQuery, rawMenuItems]);
+
+  // Computed values
+  const isSearchActive = searchQuery.trim().length > 0;
+  const hasNoResults = isSearchActive && filteredItems.length === 0;
+
+  // ===========================================
+  // Mutations (unchanged)
+  // ===========================================
+
   const createMutation = useMutation({
     mutationFn: (payload: CreateMenuItemPayload) => menuItemService.create(payload),
     onSuccess: () => {
@@ -81,7 +267,6 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     },
   });
 
-  // Update menu item mutation
   const updateMutation = useMutation({
     mutationFn: (payload: UpdateMenuItemPayload) => menuItemService.update(payload),
     onSuccess: () => {
@@ -89,7 +274,6 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     },
   });
 
-  // Delete menu item mutation
   const deleteMutation = useMutation({
     mutationFn: menuItemService.delete,
     onSuccess: () => {
@@ -97,7 +281,6 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     },
   });
 
-  // Toggle availability mutation
   const toggleAvailabilityMutation = useMutation({
     mutationFn: ({ id, isAvailable }: { id: string; isAvailable: boolean }) =>
       menuItemService.toggleAvailability(id, isAvailable),
@@ -106,7 +289,6 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     },
   });
 
-  // Toggle sold out mutation
   const toggleSoldOutMutation = useMutation({
     mutationFn: ({ id, isSoldOut }: { id: string; isSoldOut: boolean }) =>
       menuItemService.toggleSoldOut(id, isSoldOut),
@@ -115,10 +297,10 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     },
   });
 
-  const menuItemsData = data?.items ?? [];
-  const total = data?.total ?? menuItemsData.length;
+  // ===========================================
+  // CRUD Helper Functions
+  // ===========================================
 
-  // Helper functions
   const createMenuItem = (payload: SaveMenuItemFormPayload) => {
     return createMutation.mutateAsync({
       data: payload.data as CreateMenuItemDto,
@@ -143,7 +325,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   };
 
   const toggleAvailability = (id: string) => {
-    const item = menuItemsData.find((i) => i.id === id);
+    const item = filteredItems.find((i) => i.id === id) ?? rawMenuItems.find((i) => i.id === id);
     if (item) {
       return toggleAvailabilityMutation.mutateAsync({ id, isAvailable: !item.isAvailable });
     }
@@ -151,40 +333,74 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   };
 
   const toggleSoldOut = (id: string) => {
-    const item = menuItemsData.find((i) => i.id === id);
+    const item = filteredItems.find((i) => i.id === id) ?? rawMenuItems.find((i) => i.id === id);
     if (item) {
       return toggleSoldOutMutation.mutateAsync({ id, isSoldOut: !item.isSoldOut });
     }
     return Promise.reject(new Error('Menu item not found'));
   };
 
+  // ===========================================
+  // Return Value
+  // ===========================================
+
   return {
-    menuItems: menuItemsData,
-    allMenuItems: menuItemsData,
-    total,
+    // Menu items - use filtered items when searching
+    menuItems: filteredItems,
+    allMenuItems: rawMenuItems,
+    total: isSearchActive && fuzzyEnabled ? filteredTotal : apiTotal,
+
+    // Loading states
     isLoading,
     isError,
     error,
     refetch,
+
+    // CRUD operations
     createMenuItem,
     updateMenuItem,
     deleteMenuItem,
     toggleAvailability,
     toggleSoldOut,
+
     // Mutation states
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
     isTogglingAvailability: toggleAvailabilityMutation.isPending,
     isTogglingSoldOut: toggleSoldOutMutation.isPending,
+
+    // ===========================================
+    // NEW: Fuzzy Search State & Actions (Task 3.1, 3.3)
+    // ===========================================
+    fuzzyEnabled,
+    toggleFuzzySearch,
+    enableFuzzySearch,
+    disableFuzzySearch,
+
+    // ===========================================
+    // NEW: Search Result Helpers (Task 3.1)
+    // ===========================================
+    scoreMap,
+    highlightsMap,
+    getItemHighlights,
+    getItemRelevance,
+    suggestions,
+
+    // ===========================================
+    // NEW: Computed Values (Task 3.2)
+    // ===========================================
+    isSearchActive,
+    hasNoResults,
+
     // Legacy properties for compatibility
     searchQuery,
-    setSearchQuery: () => {}, // Deprecated - use options instead
+    setSearchQuery: () => { }, // Deprecated - use options instead
     selectedCategory,
-    setSelectedCategory: () => {}, // Deprecated - use options instead
+    setSelectedCategory: () => { }, // Deprecated - use options instead
     sortBy,
-    setSortBy: () => {}, // Deprecated - use options instead
+    setSortBy: () => { }, // Deprecated - use options instead
     sortOrder,
-    setSortOrder: () => {}, // Deprecated - use options instead
+    setSortOrder: () => { }, // Deprecated - use options instead
   };
 };
