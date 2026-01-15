@@ -45,42 +45,42 @@ const StaffLayout: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Minimal Header - Using DashboardLayout styling */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-elevation-1 z-20">
-        <div className="flex items-center justify-between px-4 lg:px-8 py-4">
+        <div className="flex items-center justify-between px-3 sm:px-4 lg:px-8 py-2.5 sm:py-4 gap-2 sm:gap-3">
           {/* Left: App Title & User Role */}
-          <div className="flex items-center space-x-4">
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-primary to-gradient-secondary bg-clip-text text-transparent">
+          <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-shrink">
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-gradient-primary to-gradient-secondary bg-clip-text text-transparent truncate">
                 Smart Restaurant
               </h1>
-              <p className="text-sm text-gray-600 mt-0.5">
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">
                 {user?.role === 'KITCHEN_STAFF' ? 'Kitchen Display' : 'Waiter Dashboard'}
               </p>
             </div>
           </div>
 
           {/* Center: Clock */}
-          <div className="flex items-center space-x-2 bg-gradient-to-r from-naples/10 to-arylide/10 px-4 py-2.5 rounded-xl border border-naples/20 shadow-sm">
-            <ClockIcon className="w-5 h-5 text-naples" />
+          <div className="flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-naples/10 to-arylide/10 px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border border-naples/20 shadow-sm flex-shrink-0">
+            <ClockIcon className="w-4 h-4 sm:w-5 sm:h-5 text-naples" />
             <div className="text-center">
-              <div className="text-xl font-bold text-charcoal tabular-nums">
+              <div className="text-sm sm:text-lg lg:text-xl font-bold text-charcoal tabular-nums">
                 {formatTime(currentTime)}
               </div>
-              <div className="text-xs text-gray-600">{formatDate(currentTime)}</div>
+              <div className="text-xs text-gray-600 hidden sm:block">{formatDate(currentTime)}</div>
             </div>
           </div>
 
           {/* Right: WiFi Status & Profile Dropdown */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             {/* WiFi/Socket Status */}
             <div
-              className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 ${
+              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
                 isConnected
                   ? 'bg-green-50 text-green-600 border border-green-200'
                   : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
               }`}
               title={isConnected ? 'Connected' : 'Disconnected'}
             >
-              {isConnected ? <WifiIcon className="w-5 h-5" /> : <WifiOffIcon className="w-5 h-5" />}
+              {isConnected ? <WifiIcon className="w-4 h-4 sm:w-5 sm:h-5" /> : <WifiOffIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
               <span className="text-xs font-semibold hidden md:inline">
                 {isConnected ? 'Online' : 'Offline'}
               </span>
@@ -90,10 +90,10 @@ const StaffLayout: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center space-x-3 px-3 py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-105 group"
+                className="flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-1.5 sm:py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 group"
               >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
-                  <span className="text-charcoal font-bold text-base">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
+                  <span className="text-charcoal font-bold text-sm sm:text-base">
                     {user?.name?.charAt(0).toUpperCase() || 'S'}
                   </span>
                 </div>
