@@ -108,7 +108,7 @@ class MenuItemController {
       const uploadedPhotos = [];
 
       // Determine if an existing photo is being set as primary
-      const {primaryPhotoId} = req.body;
+      const { primaryPhotoId } = req.body;
       const hasExistingPrimaryPhoto =
         primaryPhotoId && typeof primaryPhotoId === 'string' && primaryPhotoId.length > 0;
 

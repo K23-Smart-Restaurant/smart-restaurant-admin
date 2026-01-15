@@ -256,7 +256,7 @@ class QRCodeService {
     }
 
     // Token is valid
-    const {exp} = verification.data;
+    const { exp } = verification.data;
     const now = Math.floor(Date.now() / 1000);
     const daysUntilExpiry = Math.ceil((exp - now) / (60 * 60 * 24));
 
@@ -313,10 +313,10 @@ class QRCodeService {
 
           if (table.location) {
             doc
-                .fontSize(14)
-                .font('Helvetica')
-                .fillColor('#666666')
-                .text(table.location, { align: 'center' });
+              .fontSize(14)
+              .font('Helvetica')
+              .fillColor('#666666')
+              .text(table.location, { align: 'center' });
           }
 
           doc.moveDown(1);

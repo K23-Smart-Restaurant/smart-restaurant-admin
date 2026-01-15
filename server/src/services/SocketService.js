@@ -1,6 +1,6 @@
-import { Server } from "socket.io";
-import { logger } from "../config/winston.config.js";
-import { REDIS_CHANNELS } from "../config/redis.config.js";
+import { Server } from 'socket.io';
+import { logger } from '../config/winston.config.js';
+import { REDIS_CHANNELS } from '../config/redis.config.js';
 
 /**
  * T410-T413: Socket.IO service for real-time communication
@@ -10,9 +10,9 @@ class SocketService {
   constructor() {
     this.io = null;
     this.rooms = {
-      kitchen: "kitchen",
-      waiter: "waiter",
-      admin: "admin",
+      kitchen: 'kitchen',
+      waiter: 'waiter',
+      admin: 'admin',
     };
   }
 
@@ -28,20 +28,20 @@ class SocketService {
           process.env.VERCEL_ADMIN_URL,
           process.env.CLIENT_URL,
           process.env.CUSTOMER_APP_URL,
-          "http://localhost:5173",
-          "http://localhost:5174",
-          "http://localhost:3000",
-          "http://127.0.0.1:5173",
-          "http://127.0.0.1:5174",
-          "http://127.0.0.1:3000",
+          'http://localhost:5173',
+          'http://localhost:5174',
+          'http://localhost:3000',
+          'http://127.0.0.1:5173',
+          'http://127.0.0.1:5174',
+          'http://127.0.0.1:3000',
         ].filter(Boolean),
-        methods: ["GET", "POST"],
+        methods: ['GET', 'POST'],
         credentials: true,
       },
     });
 
     this.setupEventHandlers();
-    logger.info("✅ Socket.IO initialized successfully");
+    logger.info('✅ Socket.IO initialized successfully');
     return this.io;
   }
 
@@ -49,22 +49,22 @@ class SocketService {
    * Setup Socket.IO event handlers
    */
   setupEventHandlers() {
-    this.io.on("connection", (socket) => {
+    this.io.on('connection', (socket) => {
       logger.info(`🔌 Client connected: ${socket.id}`);
 
       // T413: Handle room joining
-      socket.on("join:room", (data) => {
+      socket.on('join:room', (data) => {
         const { role, userId } = data;
         this.joinRoom(socket, role, userId);
       });
 
       // Handle disconnection
-      socket.on("disconnect", () => {
+      socket.on('disconnect', () => {
         logger.info(`🔌 Client disconnected: ${socket.id}`);
       });
 
       // Handle errors
-      socket.on("error", (error) => {
+      socket.on('error', (error) => {
         logger.error(`Socket error: ${error.message}`);
       });
     });
@@ -80,13 +80,13 @@ class SocketService {
     let room;
 
     switch (role) {
-      case "KITCHEN_STAFF":
+      case 'KITCHEN_STAFF':
         room = this.rooms.kitchen;
         break;
-      case "WAITER":
+      case 'WAITER':
         room = this.rooms.waiter;
         break;
-      case "ADMIN":
+      case 'ADMIN':
         room = this.rooms.admin;
         break;
       default:
@@ -98,13 +98,13 @@ class SocketService {
     logger.info(`👤 User ${userId} (${role}) joined room: ${room}`);
 
     // Notify the client
-    socket.emit("room:joined", {
+    socket.emit('room:joined', {
       room,
       message: `Successfully joined ${room} room`,
     });
 
     // Admins can join all rooms to monitor
-    if (role === "ADMIN") {
+    if (role === 'ADMIN') {
       socket.join(this.rooms.kitchen);
       socket.join(this.rooms.waiter);
       logger.info(`👤 Admin ${userId} joined all monitoring rooms`);
@@ -118,18 +118,16 @@ class SocketService {
    */
   emitOrderCreated(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
-    this.io.to(this.rooms.waiter).emit("order:created", {
+    this.io.to(this.rooms.waiter).emit('order:created', {
       order,
       timestamp: new Date().toISOString(),
     });
 
-    logger.info(
-      `📢 Emitted order:created to waiter room: Order #${order.orderNumber}`
-    );
+    logger.info(`📢 Emitted order:created to waiter room: Order #${order.orderNumber}`);
   }
 
   /**
@@ -139,18 +137,16 @@ class SocketService {
    */
   emitOrderConfirmed(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
-    this.io.to(this.rooms.kitchen).emit("order:confirmed", {
+    this.io.to(this.rooms.kitchen).emit('order:confirmed', {
       order,
       timestamp: new Date().toISOString(),
     });
 
-    logger.info(
-      `📢 Emitted order:confirmed to kitchen room: Order #${order.orderNumber}`
-    );
+    logger.info(`📢 Emitted order:confirmed to kitchen room: Order #${order.orderNumber}`);
   }
 
   /**
@@ -160,18 +156,16 @@ class SocketService {
    */
   emitOrderReady(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
-    this.io.to(this.rooms.waiter).emit("order:ready", {
+    this.io.to(this.rooms.waiter).emit('order:ready', {
       order,
       timestamp: new Date().toISOString(),
     });
 
-    logger.info(
-      `📢 Emitted order:ready to waiter room: Order #${order.orderNumber}`
-    );
+    logger.info(`📢 Emitted order:ready to waiter room: Order #${order.orderNumber}`);
   }
 
   /**
@@ -181,18 +175,18 @@ class SocketService {
    */
   emitOrderPreparing(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
     // Notify kitchen to update UI
-    this.io.to(this.rooms.kitchen).emit("order:preparing", {
+    this.io.to(this.rooms.kitchen).emit('order:preparing', {
       order,
       timestamp: new Date().toISOString(),
     });
 
     // Also notify waiters
-    this.io.to(this.rooms.waiter).emit("order:preparing", {
+    this.io.to(this.rooms.waiter).emit('order:preparing', {
       order,
       timestamp: new Date().toISOString(),
     });
@@ -207,12 +201,12 @@ class SocketService {
    */
   emitPaymentCompleted(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
     // Notify waiters
-    this.io.to(this.rooms.waiter).emit("payment:completed", {
+    this.io.to(this.rooms.waiter).emit('payment:completed', {
       order,
       orderId: order.id,
       tableNumber: order.table?.tableNumber,
@@ -229,20 +223,18 @@ class SocketService {
    */
   emitBillRequested(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
-    this.io.to(this.rooms.waiter).emit("bill:requested", {
+    this.io.to(this.rooms.waiter).emit('bill:requested', {
       orderId: order.id || order.orderId,
       tableNumber: order.tableNumber || order.table?.tableNumber,
       order,
       timestamp: new Date().toISOString(),
     });
 
-    logger.info(
-      `📢 Emitted bill:requested to waiter room: Order #${order.orderNumber}`
-    );
+    logger.info(`📢 Emitted bill:requested to waiter room: Order #${order.orderNumber}`);
   }
 
   /**
@@ -252,17 +244,17 @@ class SocketService {
    */
   emitOrderCancelled(order) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized");
+      logger.warn('Socket.IO not initialized');
       return;
     }
 
     // Notify both kitchen and waiter
-    this.io.to(this.rooms.kitchen).emit("order:cancelled", {
+    this.io.to(this.rooms.kitchen).emit('order:cancelled', {
       order,
       timestamp: new Date().toISOString(),
     });
 
-    this.io.to(this.rooms.waiter).emit("order:cancelled", {
+    this.io.to(this.rooms.waiter).emit('order:cancelled', {
       order,
       timestamp: new Date().toISOString(),
     });
@@ -278,7 +270,7 @@ class SocketService {
    */
   handleRedisMessage(channel, data) {
     if (!this.io) {
-      logger.warn("Socket.IO not initialized, cannot handle Redis message");
+      logger.warn('Socket.IO not initialized, cannot handle Redis message');
       return;
     }
 
@@ -292,13 +284,13 @@ class SocketService {
 
       case REDIS_CHANNELS.ORDER_STATUS_UPDATED:
         // Order status changed → notify appropriate rooms
-        if (data.newStatus === "CONFIRMED") {
+        if (data.newStatus === 'CONFIRMED') {
           this.emitOrderConfirmed(data.order);
-        } else if (data.newStatus === "PREPARING") {
+        } else if (data.newStatus === 'PREPARING') {
           this.emitOrderPreparing(data.order);
-        } else if (data.newStatus === "READY") {
+        } else if (data.newStatus === 'READY') {
           this.emitOrderReady(data.order);
-        } else if (data.newStatus === "CANCELLED") {
+        } else if (data.newStatus === 'CANCELLED') {
           this.emitOrderCancelled(data.order);
         }
         break;
@@ -323,7 +315,7 @@ class SocketService {
    */
   getIO() {
     if (!this.io) {
-      throw new Error("Socket.IO not initialized. Call initialize() first.");
+      throw new Error('Socket.IO not initialized. Call initialize() first.');
     }
     return this.io;
   }
