@@ -188,19 +188,19 @@ const KitchenDisplayPage: React.FC = () => {
   return (
     <div className="h-full overflow-hidden flex flex-col">
       {/* Header Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm rounded-t-lg">
+      <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shadow-sm rounded-t-lg">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">Kitchen Display System</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">Kitchen Display System</h1>
+          <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">
             {orders.length} active order{orders.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hide">
           {/* Offline Warning */}
           {!isConnected && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-600">
-              <WifiOff className="w-5 h-5 animate-pulse" />
-              <span className="font-semibold">Offline</span>
+            <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-red-50 border border-red-200 rounded-lg text-red-600 flex-shrink-0">
+              <WifiOff className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+              <span className="font-semibold text-xs sm:text-sm">Offline</span>
             </div>
           )}
 
@@ -208,16 +208,16 @@ const KitchenDisplayPage: React.FC = () => {
           <button
             onClick={fetchOrders}
             disabled={isLoading}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 text-charcoal flex items-center gap-2 border border-gray-200"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 text-charcoal flex items-center gap-1 sm:gap-2 border border-gray-200 flex-shrink-0 text-xs sm:text-sm"
           >
-            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
           </button>
 
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
-            className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm ${
               soundEnabled
                 ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
                 : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
@@ -225,13 +225,13 @@ const KitchenDisplayPage: React.FC = () => {
           >
             {soundEnabled ? (
               <>
-                <Volume2 className="w-5 h-5" />
-                Sound On
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden md:inline">Sound On</span>
               </>
             ) : (
               <>
-                <VolumeX className="w-5 h-5" />
-                Sound Off
+                <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden md:inline">Sound Off</span>
               </>
             )}
           </button>
@@ -239,25 +239,27 @@ const KitchenDisplayPage: React.FC = () => {
           {/* History Button */}
           <button
             onClick={() => setIsHistoryOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 rounded-lg transition-all duration-200 text-charcoal flex items-center gap-2"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 rounded-lg transition-all duration-200 text-charcoal flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm"
           >
-            <History className="w-5 h-5" />
-            History ({completedOrders.length})
+            <History className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">History</span>
+            <span className="sm:hidden">({completedOrders.length})</span>
+            <span className="hidden sm:inline">({completedOrders.length})</span>
           </button>
         </div>
       </div>
 
       {/* Orders Grid */}
-      <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50/50 via-white to-gray-100/50">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gradient-to-br from-gray-50/50 via-white to-gray-100/50">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="w-16 h-16 border-4 border-naples/30 border-t-naples rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 text-lg">Loading orders...</p>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-naples/30 border-t-naples rounded-full animate-spin mx-auto mb-3 sm:mb-4" />
+              <p className="text-gray-600 text-sm sm:text-lg">Loading orders...</p>
             </div>
           </div>
         ) : sortedOrders.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-min">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 auto-rows-min">
             {sortedOrders.map((order) => (
               <KitchenOrderCard
                 key={order.id}
@@ -270,9 +272,9 @@ const KitchenDisplayPage: React.FC = () => {
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="bg-gray-100 rounded-full p-8 mx-auto mb-6 inline-block">
+              <div className="bg-gray-100 rounded-full p-6 sm:p-8 mx-auto mb-4 sm:mb-6 inline-block">
                 <svg
-                  className="w-24 h-24 text-gray-400"
+                  className="w-16 h-16 sm:w-24 sm:h-24 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -285,8 +287,8 @@ const KitchenDisplayPage: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No Active Orders</h2>
-              <p className="text-gray-600">New orders will appear here automatically</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">No Active Orders</h2>
+              <p className="text-sm sm:text-base text-gray-600">New orders will appear here automatically</p>
             </div>
           </div>
         )}
