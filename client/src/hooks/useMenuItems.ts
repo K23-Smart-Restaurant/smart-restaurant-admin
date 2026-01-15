@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useTransition, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   menuItemService,
@@ -22,7 +22,7 @@ import {
   type HighlightsMap,
   type FieldHighlight,
 } from '../utils/fuzzySearch';
-import { FUZZY_ENABLED_STORAGE_KEY } from '../types/search.types';
+
 
 // Re-export types
 export type { MenuItem, MenuCategory };
@@ -59,26 +59,8 @@ export interface SaveMenuItemFormPayload {
 }
 
 // ===========================================
-// Task 3.3: Local Storage Persistence Helpers
+// Note: Fuzzy search is always enabled (matching customer app behavior)
 // ===========================================
-
-/**
- * Get fuzzy search enabled state from localStorage
- * Defaults to true if not set
- */
-const getFuzzyEnabledFromStorage = (): boolean => {
-  if (typeof window === 'undefined') return true;
-  const stored = localStorage.getItem(FUZZY_ENABLED_STORAGE_KEY);
-  return stored !== 'false'; // Default to true
-};
-
-/**
- * Save fuzzy search enabled state to localStorage
- */
-const saveFuzzyEnabledToStorage = (enabled: boolean): void => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(FUZZY_ENABLED_STORAGE_KEY, String(enabled));
-};
 
 // ===========================================
 // Constants
@@ -104,39 +86,24 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const queryClient = useQueryClient();
 
   // ===========================================
-  // Task 3.1 & 3.3: Fuzzy Search State
+  // Fuzzy Search State (always enabled, matching customer app)
   // ===========================================
 
-  const [fuzzyEnabled, setFuzzyEnabledState] = useState<boolean>(getFuzzyEnabledFromStorage);
+  // Fuzzy search is always enabled (no toggle needed)
+  const fuzzyEnabled = true;
   const [scoreMap, setScoreMap] = useState<ScoreMap>(new Map());
   const [highlightsMap, setHighlightsMap] = useState<HighlightsMap>(new Map());
 
-  // Toggle fuzzy search with persistence
-  const toggleFuzzySearch = useCallback(() => {
-    setFuzzyEnabledState((prev) => {
-      const newValue = !prev;
-      saveFuzzyEnabledToStorage(newValue);
-      return newValue;
-    });
-  }, []);
-
-  const enableFuzzySearch = useCallback(() => {
-    setFuzzyEnabledState(true);
-    saveFuzzyEnabledToStorage(true);
-  }, []);
-
-  const disableFuzzySearch = useCallback(() => {
-    setFuzzyEnabledState(false);
-    saveFuzzyEnabledToStorage(false);
-  }, []);
+  // useTransition for non-blocking search updates (matches customer app)
+  const [isSearchPending, startSearchTransition] = useTransition();
 
   // ===========================================
   // Data Fetching - Fetch ALL items for client-side fuzzy search
   // ===========================================
 
-  // When fuzzy search is enabled and there's a search query,
-  // we need ALL items for client-side filtering
-  const shouldFetchAll = fuzzyEnabled && searchQuery.trim().length > 0;
+  // Always use client-side fuzzy search when there's a query (matching customer app)
+  // Fetch all items to enable proper fuzzy matching
+  const shouldFetchAll = searchQuery.trim().length > 0;
 
   const { data, isLoading, isError, error, refetch } = useQuery<MenuItemListResponse>({
     queryKey: [
@@ -156,7 +123,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
         category: selectedCategory === 'ALL' ? undefined : selectedCategory,
         sortBy: shouldFetchAll ? undefined : sortBy, // Don't sort server-side when fuzzy
         sortOrder: shouldFetchAll ? undefined : sortOrder,
-        limit: shouldFetchAll ? 200 : pageSize, // Fetch more for client-side search
+        limit: shouldFetchAll ? 500 : pageSize, // Fetch all for client-side fuzzy search
         offset: shouldFetchAll ? 0 : (page - 1) * pageSize,
       }),
     placeholderData: (previousData) => previousData,
@@ -232,17 +199,14 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     };
   }, [searchQuery, fuzzyEnabled, fuseInstance, rawMenuItems, apiTotal]);
 
-  // Task 6.2: Update maps in a separate effect to avoid state updates during render
+  // Task 6.2: Update maps using useEffect with startSearchTransition (matches customer app)
   // This pattern prevents the React warning about state updates during render
-  useMemo(() => {
-    // Use requestAnimationFrame for smoother updates
-    const frameId = requestAnimationFrame(() => {
+  useEffect(() => {
+    startSearchTransition(() => {
       setScoreMap(newScoreMap);
       setHighlightsMap(newHighlightsMap);
     });
-
-    return () => cancelAnimationFrame(frameId);
-  }, [newScoreMap, newHighlightsMap]);
+  }, [newScoreMap, newHighlightsMap, startSearchTransition]);
 
   // ===========================================
   // Helper Functions for UI
@@ -397,12 +361,9 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     isTogglingSoldOut: toggleSoldOutMutation.isPending,
 
     // ===========================================
-    // NEW: Fuzzy Search State & Actions (Task 3.1, 3.3)
+    // Fuzzy Search State (always enabled, matching customer app)
     // ===========================================
-    fuzzyEnabled,
-    toggleFuzzySearch,
-    enableFuzzySearch,
-    disableFuzzySearch,
+    fuzzyEnabled, // Always true
 
     // ===========================================
     // NEW: Search Result Helpers (Task 3.1)
@@ -418,6 +379,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     // ===========================================
     isSearchActive,
     hasNoResults,
+    isSearchPending, // True when search state updates are pending (matches customer app)
 
     // Legacy properties for compatibility
     searchQuery,

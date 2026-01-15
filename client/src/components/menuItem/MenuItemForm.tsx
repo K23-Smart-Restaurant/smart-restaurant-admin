@@ -127,11 +127,15 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
 
       setIsLoading(true);
 
+      // Check if any photo is already marked as primary
+      const hasPrimary = photos.some((p) => p.isPrimary);
+
       const normalizedPhotos: PhotoInput[] = photos.map((photo, index) => ({
         id: photo.id,
         file: photo.file,
         url: photo.url,
-        isPrimary: photo.isPrimary || (!photo.isPrimary && index === 0),
+        // Only set first photo as primary if no photo is explicitly marked as primary
+        isPrimary: hasPrimary ? photo.isPrimary : index === 0,
       }));
 
       // Await the onSubmit to keep loading state during the operation
@@ -241,9 +245,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="name"
             type="text"
             {...register('name')}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.name ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.name ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter menu item name"
             maxLength={80}
           />
@@ -259,9 +262,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="description"
             {...register('description')}
             rows={3}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
-              errors.description ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${errors.description ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="Enter item description"
             maxLength={500}
           />
@@ -280,9 +282,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             <select
               id="category"
               {...register('category')}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.category ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.category ? 'border-red-500' : 'border-antiflash'
+                }`}
             >
               {categoryOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -305,9 +306,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               type="number"
               step="0.01"
               {...register('price', { valueAsNumber: true })}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.price ? 'border-red-500' : 'border-antiflash'
-              }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.price ? 'border-red-500' : 'border-antiflash'
+                }`}
               placeholder="0.00"
             />
             {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
@@ -323,9 +323,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             id="preparationTime"
             type="number"
             {...register('preparationTime', { valueAsNumber: true })}
-            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-              errors.preparationTime ? 'border-red-500' : 'border-antiflash'
-            }`}
+            className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.preparationTime ? 'border-red-500' : 'border-antiflash'
+              }`}
             placeholder="15"
           />
           {errors.preparationTime && (

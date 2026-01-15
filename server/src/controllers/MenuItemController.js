@@ -1,5 +1,6 @@
 import MenuItemService from '../services/MenuItemService.js';
 import StorageService from '../services/StorageService.js';
+import MenuItemPhotoService from '../services/MenuItemPhotoService.js';
 
 const menuItemService = new MenuItemService();
 
@@ -47,22 +48,26 @@ class MenuItemController {
       if (req.files) {
         // Collect all files to upload
         const filesToUpload = [];
-        let primaryIndex = 0;
 
-        // Check 'image' field first (for backward compatibility)
-        if (req.files.image && req.files.image[0]) {
+        // Get primaryPhotoIndex from request body (for new photos)
+        const primaryPhotoIndex =
+          req.body.primaryPhotoIndex !== undefined ? parseInt(req.body.primaryPhotoIndex, 10) : 0;
+
+        // Check 'image' field first (for backward compatibility with legacy clients)
+        if (req.files.image && req.files.image[0] && !req.files.photos) {
+          // Only use 'image' field if 'photos' field is NOT provided (legacy client)
           filesToUpload.push(req.files.image[0]);
-          primaryIndex = 0;
         }
 
-        // Add 'photos' field files
+        // Add 'photos' field files (preferred method)
         if (req.files.photos) {
           filesToUpload.push(...req.files.photos);
-          // If no image was set, first photo becomes primary
-          if (filesToUpload.length > 0 && !req.files.image) {
-            primaryIndex = 0;
-          }
         }
+
+        // Determine primary index - use provided index or default to 0
+        const primaryIndex = primaryPhotoIndex >= 0 && primaryPhotoIndex < filesToUpload.length
+          ? primaryPhotoIndex
+          : 0;
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
@@ -122,21 +127,22 @@ class MenuItemController {
         // Default to -1 (no primary among new photos) if an existing photo is set as primary
         let primaryIndex = hasExistingPrimaryPhoto ? -1 : 0;
 
-        // Check 'image' field first (for backward compatibility)
-        if (req.files.image && req.files.image[0]) {
+        // Check 'image' field first (for backward compatibility with legacy clients)
+        if (req.files.image && req.files.image[0] && !req.files.photos) {
+          // Only use 'image' field if 'photos' field is NOT provided (legacy client)
           filesToUpload.push(req.files.image[0]);
           if (!hasExistingPrimaryPhoto) {
             primaryIndex = 0;
           }
         }
 
-        // Add 'photos' field files
+        // Add 'photos' field files (preferred method)
         if (req.files.photos) {
           filesToUpload.push(...req.files.photos);
           // Use primaryPhotoIndex if provided and no existing photo is primary
           if (!hasExistingPrimaryPhoto && primaryPhotoIndex !== null && primaryPhotoIndex >= 0) {
             primaryIndex = primaryPhotoIndex;
-          } else if (!hasExistingPrimaryPhoto && filesToUpload.length > 0 && !req.files.image) {
+          } else if (!hasExistingPrimaryPhoto && filesToUpload.length > 0) {
             primaryIndex = 0;
           }
         }
@@ -153,6 +159,23 @@ class MenuItemController {
               imageUrl = photo.url;
             }
           });
+        }
+      }
+
+      // Handle photo deletions (removedPhotoIds from frontend)
+      const removedPhotoIds = req.body.removedPhotoIds;
+      if (removedPhotoIds) {
+        // removedPhotoIds can be a string (single ID) or array (multiple IDs)
+        const idsToDelete = Array.isArray(removedPhotoIds) ? removedPhotoIds : [removedPhotoIds];
+        for (const photoId of idsToDelete) {
+          if (photoId && typeof photoId === 'string' && photoId.length > 0) {
+            try {
+              await MenuItemPhotoService.deletePhoto(req.params.id, photoId);
+            } catch (err) {
+              console.warn(`Failed to delete photo ${photoId}:`, err.message);
+              // Continue with other deletions even if one fails
+            }
+          }
         }
       }
 
