@@ -9,7 +9,7 @@ import CashPaymentForm from '../components/waiter/CashPaymentForm';
 import useWaiterSocket from '../hooks/useWaiterSocket';
 import { waiterService } from '../services/waiterService';
 import { tableService } from '../services/tableService';
-import type { Order } from '../services/orderService';
+import type { Order, OrderStatus } from '../services/orderService';
 import { useToast } from '../hooks/useToast';
 
 type TabType = 'pending' | 'ready' | 'tables';
@@ -198,7 +198,7 @@ const WaiterDashboardPage: React.FC = () => {
             guestName: table.currentOrder.guestName,
             guestContact: null,
             waiterId: null,
-            status: table.currentOrder.orderStatus as any,
+            status: table.currentOrder.orderStatus as OrderStatus,
             totalAmount: table.currentOrder.totalAmount,
             paymentStatus: 'UNPAID',
             paymentIntentId: null,
@@ -287,7 +287,7 @@ const WaiterDashboardPage: React.FC = () => {
       setSelectedOrder(null);
       fetchTables(); // Refresh tables to show AVAILABLE status
       fetchReadyOrders(); // Refresh in case order was in ready state
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to process cash payment:', error);
       throw error; // Re-throw to let the form handle the error
     }

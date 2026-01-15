@@ -35,8 +35,9 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
     setIsProcessing(true);
     try {
       await onSubmit(paymentMethod, paidAmount);
-    } catch (err: any) {
-      setError(err.message || 'Failed to process payment');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to process payment';
+      setError(errorMessage);
     } finally {
       setIsProcessing(false);
     }

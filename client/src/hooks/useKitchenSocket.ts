@@ -18,7 +18,11 @@ export const useKitchenSocket = (events: KitchenSocketEvents) => {
 
   // Use refs to store event handlers to avoid re-registering listeners on every render
   const eventsRef = useRef(events);
-  eventsRef.current = events;
+
+  // Update ref in useEffect to avoid ref assignment during render
+  useEffect(() => {
+    eventsRef.current = events;
+  });
 
   // Join kitchen room when connected
   useEffect(() => {

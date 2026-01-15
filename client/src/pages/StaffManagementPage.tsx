@@ -12,6 +12,9 @@ import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
 import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 
+// Type for staff data from forms (matches what forms actually send)
+type StaffFormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>;
+
 const StaffManagementPage: React.FC = () => {
   const { showSuccess, showError } = useToastContext();
 
@@ -26,16 +29,29 @@ const StaffManagementPage: React.FC = () => {
   const [staffToToggle, setStaffToToggle] = useState<Staff | null>(null);
   const [isTogglingActive, setIsTogglingActive] = useState(false);
 
-  const handleAddWaiter = async (staffData: any) => {
+  const handleAddWaiter = async (staffData: StaffFormData) => {
     try {
       if (editingStaff) {
-        await updateStaff(editingStaff.id, staffData);
-        showSuccess('Waiter Updated', `${staffData.username} has been successfully updated.`);
+        // For updates, transform to UpdateStaffDto
+        const updateData = {
+          email: staffData.email,
+          name: staffData.name || undefined,
+          phoneNumber: staffData.phoneNumber || undefined,
+        };
+        await updateStaff(editingStaff.id, updateData);
+        showSuccess('Waiter Updated', `${staffData.name || staffData.email} has been successfully updated.`);
       } else {
-        await createWaiter(staffData);
+        // For creation, extract only the fields needed for CreateWaiterDto
+        const createData = {
+          email: staffData.email,
+          password: (staffData as StaffFormData & { password: string }).password,
+          name: staffData.name || undefined,
+          phoneNumber: staffData.phoneNumber || undefined,
+        };
+        await createWaiter(createData);
         showSuccess(
           'Waiter Created',
-          `${staffData.username} has been successfully added to the team.`
+          `${staffData.name || staffData.email} has been successfully added to the team.`
         );
       }
       closeWaiterModal();
@@ -46,19 +62,32 @@ const StaffManagementPage: React.FC = () => {
     }
   };
 
-  const handleAddKitchenStaff = async (staffData: any) => {
+  const handleAddKitchenStaff = async (staffData: StaffFormData) => {
     try {
       if (editingStaff) {
-        await updateStaff(editingStaff.id, staffData);
+        // For updates, transform to UpdateStaffDto
+        const updateData = {
+          email: staffData.email,
+          name: staffData.name || undefined,
+          phoneNumber: staffData.phoneNumber || undefined,
+        };
+        await updateStaff(editingStaff.id, updateData);
         showSuccess(
           'Kitchen Staff Updated',
-          `${staffData.username} has been successfully updated.`
+          `${staffData.name || staffData.email} has been successfully updated.`
         );
       } else {
-        await createKitchenStaff(staffData);
+        // For creation, extract only the fields needed for CreateKitchenStaffDto
+        const createData = {
+          email: staffData.email,
+          password: (staffData as StaffFormData & { password: string }).password,
+          name: staffData.name || undefined,
+          phoneNumber: staffData.phoneNumber || undefined,
+        };
+        await createKitchenStaff(createData);
         showSuccess(
           'Kitchen Staff Created',
-          `${staffData.username} has been successfully added to the team.`
+          `${staffData.name || staffData.email} has been successfully added to the team.`
         );
       }
       closeKitchenStaffModal();

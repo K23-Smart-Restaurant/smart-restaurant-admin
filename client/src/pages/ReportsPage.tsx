@@ -65,9 +65,9 @@ const ReportsPage: React.FC = () => {
 
   // Transform peakHours to match chart expected format
   const peakHoursArray = Array.isArray(analyticsData?.peakHours) ? analyticsData.peakHours : [];
-  const peakHours = peakHoursArray.map((item: any) => ({
-    hour: item.hour,
-    orders: item.orderCount || item.orders || 0,
+  const peakHours = peakHoursArray.map((item: { hour: number; orderCount: number }) => ({
+    hour: String(item.hour),
+    orders: item.orderCount || 0,
   }));
 
   // Show loading state AFTER all hooks have been called

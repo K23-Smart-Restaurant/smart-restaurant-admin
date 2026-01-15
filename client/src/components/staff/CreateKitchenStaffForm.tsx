@@ -52,7 +52,7 @@ export const CreateKitchenStaffForm: React.FC<CreateKitchenStaffFormProps> = ({
   const onFormSubmit = async (data: KitchenStaffFormData) => {
     try {
       // Remove confirmPassword before submitting
-      const { confirmPassword, ...staffData } = data;
+      const { confirmPassword: _confirmPassword, ...staffData } = data;
 
       // Call parent's onSubmit with staff data
       onSubmit({

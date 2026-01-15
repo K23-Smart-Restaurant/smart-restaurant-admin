@@ -48,7 +48,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
   const onFormSubmit = async (data: WaiterFormData) => {
     try {
       // Remove confirmPassword before submitting
-      const { confirmPassword, ...staffData } = data;
+      const { confirmPassword: _confirmPassword, ...staffData } = data;
 
       // Call parent's onSubmit with staff data
       onSubmit({

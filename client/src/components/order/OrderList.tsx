@@ -18,7 +18,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
 
   // Filter orders by tab status
   const getFilteredOrders = () => {
-    let filtered =
+    const filtered =
       activeTab === 'ALL' ? orders : orders.filter((order) => order.status === activeTab);
 
     // Sort orders

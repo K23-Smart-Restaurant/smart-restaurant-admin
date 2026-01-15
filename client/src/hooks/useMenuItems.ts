@@ -164,7 +164,8 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     staleTime: 30 * 1000,
   });
 
-  const rawMenuItems = data?.items ?? [];
+  // Stabilize rawMenuItems to prevent unnecessary re-renders in downstream hooks
+  const rawMenuItems = useMemo(() => data?.items ?? [], [data?.items]);
   const apiTotal = data?.total ?? rawMenuItems.length;
 
   // ===========================================
