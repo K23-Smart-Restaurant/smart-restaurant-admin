@@ -52,50 +52,49 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" onClick={onCancel} />
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md animate-scale-in">
           {/* Header */}
-          <div className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-2">
-                <AlertCircle className="w-5 h-5 text-charcoal" />
+          <div className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-4 sm:p-6 flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-1.5 sm:p-2">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal" />
               </div>
-              <h3 className="text-xl font-bold text-charcoal">Update Item Status</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-charcoal">Update Item Status</h3>
             </div>
             <button
               onClick={onCancel}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            >
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors duration-200">
               <X className="w-5 h-5 text-gray-600" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="p-6">
-            <p className="text-gray-700 mb-4">Are you sure you want to update the status for:</p>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-              <p className="font-semibold text-charcoal text-lg">{itemName}</p>
+          <div className="p-4 sm:p-6">
+            <p className="text-gray-700 mb-3 sm:mb-4 text-sm sm:text-base">Are you sure you want to update the status for:</p>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+              <p className="font-semibold text-charcoal text-base sm:text-lg">{itemName}</p>
             </div>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <span className={`font-semibold ${getStatusColor(currentStatus)}`}>
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className={`font-semibold text-sm sm:text-base ${getStatusColor(currentStatus)}`}>
                 {currentStatus}
               </span>
               <span className="text-gray-400">→</span>
-              <span className={`font-semibold ${getStatusColor(newStatus)}`}>{newStatus}</span>
+              <span className={`font-semibold text-sm sm:text-base ${getStatusColor(newStatus)}`}>{newStatus}</span>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 p-4 flex gap-3">
+          <div className="border-t border-gray-200 p-3 sm:p-4 flex gap-2 sm:gap-3">
             <button
               onClick={onCancel}
-              className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors duration-200 border border-gray-300"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors duration-200 border border-gray-300 text-sm sm:text-base"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-naples to-arylide hover:from-naples/90 hover:to-arylide/90 text-charcoal rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-naples to-arylide hover:from-naples/90 hover:to-arylide/90 text-charcoal rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
             >
               Confirm
             </button>
@@ -252,30 +251,30 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
       <div className="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
         {/* Header */}
         <div
-          className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-4 cursor-pointer"
+          className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-3 sm:p-4 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-3">
-                <ChefHat className="w-6 h-6 text-charcoal" />
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-2 sm:p-3">
+                <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-charcoal flex items-center gap-3">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-charcoal flex flex-wrap items-center gap-2 sm:gap-3">
                   Table #{order.table?.tableNumber || 'N/A'}
                   {getStatusBadge()}
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Order #{order.orderNumber}
                   {order.guestName && ` • ${order.guestName}`}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <TimerBadge startTime={order.createdAt} />
-              <div className="bg-gray-100 rounded-full p-2">
+              <div className="bg-gray-100 rounded-full p-1.5 sm:p-2">
                 <ChevronDown
-                  className={`w-6 h-6 text-charcoal transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-charcoal transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                 />
               </div>
             </div>
@@ -284,26 +283,26 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
 
         {/* Body - Order Items */}
         {isExpanded && (
-          <div className="p-4 space-y-3">
+          <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
             {order.orderItems && order.orderItems.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {order.orderItems.map((item: OrderItem) => (
                   <div
                     key={item.id}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:bg-gray-100 transition-all duration-200"
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4 hover:bg-gray-100 transition-all duration-200"
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-xl font-bold text-charcoal bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples/40 rounded-full w-10 h-10 flex items-center justify-center shadow-sm">
+                    <div className="flex items-start sm:items-center justify-between gap-2 sm:gap-4 flex-col sm:flex-row">
+                      <div className="flex-1 w-full">
+                        <div className="flex items-start sm:items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                          <span className="text-base sm:text-lg lg:text-xl font-bold text-charcoal bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples/40 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-sm flex-shrink-0">
                             {item.quantity}
                           </span>
-                          <div>
-                            <h4 className="text-lg font-semibold text-charcoal">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-base sm:text-lg font-semibold text-charcoal">
                               {item.menuItem?.name || 'Unknown Item'}
                             </h4>
                             {item.specialInstructions && (
-                              <p className="text-sm text-yellow-700 bg-yellow-50 px-3 py-1.5 rounded-lg mt-2 inline-block border border-yellow-200">
+                              <p className="text-xs sm:text-sm text-yellow-700 bg-yellow-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg mt-1 sm:mt-2 inline-block border border-yellow-200">
                                 <span className="font-semibold">📝 Note:</span>{' '}
                                 {item.specialInstructions}
                               </p>
@@ -313,7 +312,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
                       </div>
                       <div
                         onClick={() => handleItemStatusClick(item)}
-                        className={`transform hover:scale-105 transition-transform duration-200 ${item.itemStatus === 'READY' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                        className={`transform hover:scale-105 transition-transform duration-200 w-full sm:w-auto ${item.itemStatus === 'READY' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                       >
                         {getItemStatusBadge(item.itemStatus)}
                       </div>
@@ -322,13 +321,13 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-4">No items in this order</p>
+              <p className="text-gray-500 text-center py-3 sm:py-4 text-sm sm:text-base">No items in this order</p>
             )}
 
             {/* Notes */}
             {order.notes && (
-              <div className="mt-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-                <p className="text-blue-700 text-sm">
+              <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                <p className="text-blue-700 text-xs sm:text-sm">
                   <span className="font-semibold">📋 Order Notes: </span>
                   {order.notes}
                 </p>
@@ -340,7 +339,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               <button
                 onClick={handleMarkReady}
                 disabled={!canMarkReady || isUpdating}
-                className={`w-full mt-4 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
+                className={`w-full mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ${
                   canMarkReady && !isUpdating
                     ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
                     : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
@@ -348,12 +347,12 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               >
                 {isUpdating ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="w-5 h-5 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
                     Updating...
                   </span>
                 ) : canMarkReady ? (
                   <span className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-6 h-6" />
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                     Mark Order Ready
                   </span>
                 ) : (
@@ -363,9 +362,9 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
             )}
 
             {order.status === 'READY' && (
-              <div className="mt-4 py-4 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-300 text-center">
-                <span className="text-green-700 font-bold text-lg flex items-center justify-center gap-2">
-                  <CheckCircle className="w-6 h-6" />
+              <div className="mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-300 text-center">
+                <span className="text-green-700 font-bold text-base sm:text-lg flex items-center justify-center gap-2">
+                  <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                   Order Ready for Pickup
                 </span>
               </div>

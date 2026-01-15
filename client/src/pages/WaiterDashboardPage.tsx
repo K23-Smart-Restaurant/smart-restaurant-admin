@@ -293,19 +293,22 @@ const WaiterDashboardPage: React.FC = () => {
     }
   };
 
+
   // Handle refresh tab
-  const refreshTab = (tab: TabType) => {
+  const refreshTab = async (tab: TabType) => {
+    setIsLoading(true);
     switch (tab) {
       case 'pending':
-        fetchPendingOrders();
+        await fetchPendingOrders();
         break;
       case 'ready':
-        fetchReadyOrders();
+        await fetchReadyOrders();
         break;
       case 'tables':
-        fetchTables();
+        await fetchTables();
         break;
     }
+    setIsLoading(false);
   };
 
   const tabs = [
@@ -323,39 +326,39 @@ const WaiterDashboardPage: React.FC = () => {
     <div className="h-full flex flex-col">
       {/* Header with Tabs */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-charcoal">Waiter Dashboard</h1>
-              <p className="text-gray-600 mt-1">Manage orders, tables, and billing</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">Waiter Dashboard</h1>
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">Manage orders, tables, and billing</p>
             </div>
             {!isConnected && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-600">
-                <Bell className="w-5 h-5 animate-pulse" />
-                <span className="font-semibold">Offline</span>
+              <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-red-50 border border-red-200 rounded-lg text-red-600">
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+                <span className="font-semibold text-xs sm:text-sm">Offline</span>
               </div>
             )}
           </div>
 
-          <div className="flex justify-between">
-            {/* Tabs */}
-            <div className="flex gap-2">
+          <div className="flex justify-between items-center gap-2">
+            {/* Tabs - Scrollable on mobile */}
+            <div className="flex gap-2 overflow-x-auto flex-1 scrollbar-hide pb-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
+                    className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
                       activeTab === tab.id
                         ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples text-charcoal'
                         : 'bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    {tab.label}
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline text-sm sm:text-base">{tab.label}</span>
                     {tab.count > 0 && (
-                      <span className="ml-1 px-2 py-0.5 bg-red-500 text-white rounded-full text-xs font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 bg-red-500 text-white rounded-full text-xs font-bold">
                         {tab.count}
                       </span>
                     )}
@@ -366,17 +369,17 @@ const WaiterDashboardPage: React.FC = () => {
             {/* Refresh button */}
             <button
               onClick={() => refreshTab(activeTab)}
-              className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200"
+              className="px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200 flex-shrink-0"
             >
-              <RefreshCw className="w-5 h-5" />
-              Refresh
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline text-sm sm:text-base">Refresh</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50/50 via-white to-gray-100/50">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gradient-to-br from-gray-50/50 via-white to-gray-100/50">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -390,7 +393,7 @@ const WaiterDashboardPage: React.FC = () => {
             {activeTab === 'pending' && (
               <div>
                 {pendingOrders.length > 0 ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
                     {pendingOrders.map((order) => (
                       <PendingOrderCard
                         key={order.id}
@@ -401,10 +404,10 @@ const WaiterDashboardPage: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-charcoal mb-2">No Pending Orders</h2>
-                    <p className="text-gray-600">New orders will appear here automatically</p>
+                  <div className="text-center py-8 sm:py-12">
+                    <ClipboardList className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">No Pending Orders</h2>
+                    <p className="text-sm sm:text-base text-gray-600">New orders will appear here automatically</p>
                   </div>
                 )}
               </div>
@@ -414,7 +417,7 @@ const WaiterDashboardPage: React.FC = () => {
             {activeTab === 'ready' && (
               <div>
                 {readyOrders.length > 0 ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
                     {readyOrders.map((order) => (
                       <ReadyOrderCard
                         key={order.id}
@@ -428,10 +431,10 @@ const WaiterDashboardPage: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <Utensils className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-charcoal mb-2">No Ready Orders</h2>
-                    <p className="text-gray-600">Orders ready from kitchen will appear here</p>
+                  <div className="text-center py-8 sm:py-12">
+                    <Utensils className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">No Ready Orders</h2>
+                    <p className="text-sm sm:text-base text-gray-600">Orders ready from kitchen will appear here</p>
                   </div>
                 )}
               </div>

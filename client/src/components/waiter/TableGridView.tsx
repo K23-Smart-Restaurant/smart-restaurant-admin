@@ -85,7 +85,7 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
       {tables.map((table) => {
         const styles = getStatusStyles(table.status);
 
@@ -93,19 +93,19 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
           <button
             key={table.id}
             onClick={() => onTableClick(table)}
-            className={`${styles.bg} border-2 ${styles.border} rounded-xl p-4 hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-left`}
+            className={`${styles.bg} border-2 ${styles.border} rounded-xl p-3 sm:p-4 hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-left`}
           >
             {/* Table Number */}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div>
-                <h3 className={`text-2xl font-bold ${styles.text}`}>Table {table.tableNumber}</h3>
-                <div className="flex items-center gap-1 mt-1">
-                  <Users className={`w-4 h-4 ${styles.icon}`} />
+                <h3 className={`text-xl sm:text-2xl font-bold ${styles.text}`}>Table {table.tableNumber}</h3>
+                <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
+                  <Users className={`w-3 h-3 sm:w-4 sm:h-4 ${styles.icon}`} />
                   <span className={`text-xs ${styles.text}`}>{table.capacity} seats</span>
                 </div>
               </div>
               {table.status === 'BILL_REQUESTED' && (
-                <Receipt className={`w-6 h-6 ${styles.icon} animate-pulse`} />
+                <Receipt className={`w-5 h-5 sm:w-6 sm:h-6 ${styles.icon} animate-pulse`} />
               )}
             </div>
 
@@ -118,14 +118,14 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
 
             {/* Order Info (if occupied) */}
             {table.currentOrder && table.status !== 'AVAILABLE' && (
-              <div className="mt-3 pt-3 border-t border-current/20">
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-current/20">
                 <p className={`text-xs ${styles.text} font-medium`}>
                   Order #{table.currentOrder.orderNumber}
                 </p>
                 <p className={`text-xs ${styles.text} opacity-80 mt-0.5`}>
                   {table.currentOrder.guestName || 'Guest'}
                 </p>
-                <p className={`text-sm font-bold ${styles.text} mt-1`}>
+                <p className={`text-sm ${styles.text} font-bold mt-1`}>
                   ${Number(table.currentOrder.totalAmount).toFixed(2)}
                 </p>
               </div>

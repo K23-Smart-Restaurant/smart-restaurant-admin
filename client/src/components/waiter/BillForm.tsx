@@ -57,143 +57,143 @@ const BillForm: React.FC<BillFormProps> = ({
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-3">
-                <Receipt className="w-6 h-6 text-charcoal" />
+          <div className="bg-gradient-to-r from-naples/10 to-arylide/10 border-b border-gray-200 p-4 sm:p-6 flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-2 sm:p-3">
+                <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-charcoal">Bill Summary</h2>
-                <p className="text-gray-600 text-sm">
+                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">Bill Summary</h2>
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Table #{order.table?.tableNumber} • Order #{order.orderNumber}
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
             >
-              <X className="w-6 h-6 text-gray-600" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
             {/* Order Items */}
-            <div className="mb-6">
-              <h3 className="font-semibold text-charcoal mb-3">Order Items:</h3>
+            <div className="mb-4 sm:mb-6">
+              <h3 className="font-semibold text-charcoal mb-2 sm:mb-3 text-sm sm:text-base">Order Items:</h3>
               <div className="space-y-2">
                 {order.orderItems?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                    className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold text-charcoal bg-gradient-to-r from-naples/20 to-arylide/20 border border-naples/30 rounded px-2 py-1 text-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="font-bold text-charcoal bg-gradient-to-r from-naples/20 to-arylide/20 border border-naples/30 rounded px-1.5 sm:px-2 py-1 text-xs sm:text-sm">
                         {item.quantity}x
                       </span>
                       <div>
-                        <p className="font-medium text-charcoal">{item.menuItem?.name || 'Item'}</p>
+                        <p className="font-medium text-charcoal text-sm sm:text-base">{item.menuItem?.name || 'Item'}</p>
                         <p className="text-xs text-gray-600">${item.unitPrice.toFixed(2)} each</p>
                       </div>
                     </div>
-                    <p className="font-semibold text-charcoal">${item.subtotal.toFixed(2)}</p>
+                    <p className="font-semibold text-charcoal text-sm sm:text-base">${item.subtotal.toFixed(2)}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Discount Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-charcoal mb-2">Discount (%)</label>
+            <div className="mb-4 sm:mb-6">
+              <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2">Discount (%)</label>
               <input
                 type="number"
                 min="0"
                 max="100"
                 value={discount}
                 onChange={(e) => setDiscount(Math.min(100, Math.max(0, Number(e.target.value))))}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-naples focus:outline-none transition-colors duration-200"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-naples focus:outline-none transition-colors duration-200 text-sm sm:text-base"
                 placeholder="Enter discount percentage"
               />
             </div>
 
             {/* Bill Summary */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 rounded-xl p-4 mb-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-gray-700">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="space-y-1.5 sm:space-y-2">
+                <div className="flex justify-between text-gray-700 text-sm sm:text-base">
                   <span>Subtotal:</span>
                   <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-700">
+                <div className="flex justify-between text-gray-700 text-sm sm:text-base">
                   <span>Tax (10%):</span>
                   <span className="font-medium">${tax.toFixed(2)}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-green-700">
+                  <div className="flex justify-between text-green-700 text-sm sm:text-base">
                     <span>Discount ({discount}%):</span>
                     <span className="font-medium">-${discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-t-2 border-gray-300 pt-2 mt-2">
                   <div className="flex justify-between text-charcoal">
-                    <span className="text-lg font-bold">Total:</span>
-                    <span className="text-2xl font-bold text-naples">${total.toFixed(2)}</span>
+                    <span className="text-base sm:text-lg font-bold">Total:</span>
+                    <span className="text-xl sm:text-2xl font-bold text-naples">${total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Payment Method */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-charcoal mb-3">
+            <div className="mb-4 sm:mb-6">
+              <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2 sm:mb-3">
                 Payment Method
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <button
                   onClick={() => setPaymentMethod('CASH')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${
                     paymentMethod === 'CASH'
                       ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
                       : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                   }`}
                 >
-                  <DollarSign className="w-6 h-6 mx-auto mb-2" />
-                  <span className="font-semibold">Cash</span>
+                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
+                  <span className="font-semibold text-sm sm:text-base">Cash</span>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('CARD')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${
                     paymentMethod === 'CARD'
                       ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
                       : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                   }`}
                 >
-                  <CreditCard className="w-6 h-6 mx-auto mb-2" />
-                  <span className="font-semibold">Card</span>
+                  <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
+                  <span className="font-semibold text-sm sm:text-base">Card</span>
                 </button>
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 p-4 bg-gray-50 flex gap-3">
+          <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50 flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={handleGenerateBill}
               disabled={isProcessing}
-              className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              <Printer className="w-5 h-5" />
+              <Printer className="w-4 h-4 sm:w-5 sm:h-5" />
               Print Bill
             </button>
             <button
               onClick={handleMarkPaid}
               disabled={isProcessing}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              <CreditCard className="w-5 h-5" />
+              <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
               {isProcessing ? 'Processing...' : 'Mark as Paid'}
             </button>
           </div>
