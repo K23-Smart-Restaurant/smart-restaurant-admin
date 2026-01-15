@@ -202,7 +202,9 @@ const KitchenDisplayPage: React.FC = () => {
       {/* Header Bar */}
       <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shadow-sm rounded-t-lg">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">Kitchen Display System</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
+            Kitchen Display System
+          </h1>
           <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">
             {orders.length} active order{orders.length !== 1 ? 's' : ''}
           </p>
@@ -247,7 +249,6 @@ const KitchenDisplayPage: React.FC = () => {
               </>
             )}
           </button>
-
 
           {/* History Button */}
           <button
@@ -303,8 +304,12 @@ const KitchenDisplayPage: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">No Active Orders</h2>
-              <p className="text-sm sm:text-base text-gray-600">New orders will appear here automatically</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">
+                No Active Orders
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600">
+                New orders will appear here automatically
+              </p>
             </div>
           </div>
         )}

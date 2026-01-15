@@ -64,23 +64,30 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             </div>
             <button
               onClick={onCancel}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            >
               <X className="w-5 h-5 text-gray-600" />
             </button>
           </div>
 
           {/* Body */}
           <div className="p-4 sm:p-6">
-            <p className="text-gray-700 mb-3 sm:mb-4 text-sm sm:text-base">Are you sure you want to update the status for:</p>
+            <p className="text-gray-700 mb-3 sm:mb-4 text-sm sm:text-base">
+              Are you sure you want to update the status for:
+            </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
               <p className="font-semibold text-charcoal text-base sm:text-lg">{itemName}</p>
             </div>
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <span className={`font-semibold text-sm sm:text-base ${getStatusColor(currentStatus)}`}>
+              <span
+                className={`font-semibold text-sm sm:text-base ${getStatusColor(currentStatus)}`}
+              >
                 {currentStatus}
               </span>
               <span className="text-gray-400">→</span>
-              <span className={`font-semibold text-sm sm:text-base ${getStatusColor(newStatus)}`}>{newStatus}</span>
+              <span className={`font-semibold text-sm sm:text-base ${getStatusColor(newStatus)}`}>
+                {newStatus}
+              </span>
             </div>
           </div>
 
@@ -321,7 +328,9 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-3 sm:py-4 text-sm sm:text-base">No items in this order</p>
+              <p className="text-gray-500 text-center py-3 sm:py-4 text-sm sm:text-base">
+                No items in this order
+              </p>
             )}
 
             {/* Notes */}

@@ -35,9 +35,7 @@ const OrdersTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
     const data = payload[0].payload as RevenueDataPoint;
     return (
       <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-        <p className="text-sm font-semibold text-charcoal mb-2">
-          {formatDate(data.date)}
-        </p>
+        <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
         <p className="text-sm text-gray-700">
           Orders: <span className="font-bold text-blue-600">{payload[0].value}</span>
         </p>
@@ -48,7 +46,11 @@ const OrdersTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
 };
 
 // Custom tooltip for peak hours (defined outside component)
-const PeakHoursTooltip: React.FC<TooltipProps & { avgOrdersPerHour: number }> = ({ active, payload, avgOrdersPerHour }) => {
+const PeakHoursTooltip: React.FC<TooltipProps & { avgOrdersPerHour: number }> = ({
+  active,
+  payload,
+  avgOrdersPerHour,
+}) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload as PeakHourData;
     const isPeak = payload[0].value > avgOrdersPerHour;
@@ -109,7 +111,9 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
       {/* Header */}
       <div className="mb-6 print:mb-3">
         <h2 className="text-2xl font-bold text-charcoal print:text-xl">Order Analytics</h2>
-        <p className="text-sm text-gray-600 mt-1 print:text-xs">Detailed order patterns and trends</p>
+        <p className="text-sm text-gray-600 mt-1 print:text-xs">
+          Detailed order patterns and trends
+        </p>
       </div>
 
       {/* Tabs - Hide on Print */}

@@ -39,7 +39,10 @@ const StaffManagementPage: React.FC = () => {
           phoneNumber: staffData.phoneNumber || undefined,
         };
         await updateStaff(editingStaff.id, updateData);
-        showSuccess('Waiter Updated', `${staffData.name || staffData.email} has been successfully updated.`);
+        showSuccess(
+          'Waiter Updated',
+          `${staffData.name || staffData.email} has been successfully updated.`
+        );
       } else {
         // For creation, extract only the fields needed for CreateWaiterDto
         const createData = {

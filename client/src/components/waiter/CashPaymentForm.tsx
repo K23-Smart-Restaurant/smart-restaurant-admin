@@ -68,13 +68,17 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-700 font-medium text-sm sm:text-base">Order Total:</span>
-              <span className="text-2xl sm:text-3xl font-bold text-emerald-600">${totalAmount.toFixed(2)}</span>
+              <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
+                ${totalAmount.toFixed(2)}
+              </span>
             </div>
           </div>
 
           {/* Payment Method Selection */}
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Payment Method</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
+              Payment Method
+            </label>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <button
                 type="button"
@@ -128,8 +132,12 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           {paymentMethod === 'CASH' && paidAmount >= totalAmount && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium text-sm sm:text-base">Change to Return:</span>
-                <span className="text-xl sm:text-2xl font-bold text-amber-600">${change.toFixed(2)}</span>
+                <span className="text-gray-700 font-medium text-sm sm:text-base">
+                  Change to Return:
+                </span>
+                <span className="text-xl sm:text-2xl font-bold text-amber-600">
+                  ${change.toFixed(2)}
+                </span>
               </div>
             </div>
           )}

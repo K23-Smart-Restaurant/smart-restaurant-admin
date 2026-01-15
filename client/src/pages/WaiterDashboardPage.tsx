@@ -293,7 +293,6 @@ const WaiterDashboardPage: React.FC = () => {
     }
   };
 
-
   // Handle refresh tab
   const refreshTab = async (tab: TabType) => {
     setIsLoading(true);
@@ -329,8 +328,12 @@ const WaiterDashboardPage: React.FC = () => {
         <div className="px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">Waiter Dashboard</h1>
-              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">Manage orders, tables, and billing</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
+                Waiter Dashboard
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">
+                Manage orders, tables, and billing
+              </p>
             </div>
             {!isConnected && (
               <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-red-50 border border-red-200 rounded-lg text-red-600">
@@ -406,8 +409,12 @@ const WaiterDashboardPage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8 sm:py-12">
                     <ClipboardList className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
-                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">No Pending Orders</h2>
-                    <p className="text-sm sm:text-base text-gray-600">New orders will appear here automatically</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">
+                      No Pending Orders
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-600">
+                      New orders will appear here automatically
+                    </p>
                   </div>
                 )}
               </div>
@@ -433,8 +440,12 @@ const WaiterDashboardPage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8 sm:py-12">
                     <Utensils className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
-                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">No Ready Orders</h2>
-                    <p className="text-sm sm:text-base text-gray-600">Orders ready from kitchen will appear here</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">
+                      No Ready Orders
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-600">
+                      Orders ready from kitchen will appear here
+                    </p>
                   </div>
                 )}
               </div>

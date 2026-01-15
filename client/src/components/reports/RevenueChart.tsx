@@ -37,9 +37,7 @@ const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
     const data = payload[0].payload;
     return (
       <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-        <p className="text-sm font-semibold text-charcoal mb-2">
-          {formatDate(data.date)}
-        </p>
+        <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
         <p className="text-sm text-gray-700">
           Revenue:{' '}
           <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>

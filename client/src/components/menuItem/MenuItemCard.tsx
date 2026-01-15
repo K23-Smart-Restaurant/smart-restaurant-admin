@@ -271,4 +271,3 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     </div>
   );
 };
-
