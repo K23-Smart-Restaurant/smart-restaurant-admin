@@ -229,7 +229,7 @@ class KitchenService {
     const orderItem = await prisma.orderItem.findFirst({
       where: {
         id: itemId,
-        orderId: orderId,
+        orderId,
       },
       include: {
         order: {
@@ -325,7 +325,7 @@ class KitchenService {
    * @returns {Promise<Array>} Recently completed orders
    */
   async getOrderHistory() {
-    return await prisma.order.findMany({
+    return prisma.order.findMany({
       where: {
         status: {
           in: ['SERVED', 'COMPLETED'],

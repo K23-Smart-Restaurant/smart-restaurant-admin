@@ -1,6 +1,5 @@
 import React, { createContext, useContext } from 'react';
 import { useToast } from '../hooks/useToast';
-import type { ToastData } from '../hooks/useToast';
 import { ToastContainer } from '../components/common/ToastContainer';
 
 interface ToastContextValue {
@@ -21,6 +20,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToastContext = () => {
   const context = useContext(ToastContext);
   if (!context) {

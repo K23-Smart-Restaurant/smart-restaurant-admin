@@ -2,9 +2,9 @@ name: Code Quality Checks
 
 on:
   push:
-    branches: [production, develop]
+    branches: [main, develop]
   pull_request:
-    branches: [production, develop]
+    branches: [main, develop]
 
 jobs:
   # Server - Linting & Formatting

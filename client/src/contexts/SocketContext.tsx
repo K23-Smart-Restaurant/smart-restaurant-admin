@@ -121,6 +121,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 };
 
 // Custom hook to use socket context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSocket = () => {
   const context = useContext(SocketContext);
   if (context === undefined) {

@@ -1,28 +1,28 @@
 import Fuse, { type IFuseOptions, type FuseResult } from 'fuse.js';
 import type { MenuItem } from '../services/menuItemService';
 import type {
-    FuzzySearchConfig,
-    SearchKey,
-    FuzzySearchResult,
-    FuzzyMatch,
-    HighlightSegment,
-    FieldHighlight,
-    ScoreMap,
-    HighlightsMap,
-    FuzzySearchOptions,
+  FuzzySearchConfig,
+  SearchKey,
+  FuzzySearchResult,
+  FuzzyMatch,
+  HighlightSegment,
+  FieldHighlight,
+  ScoreMap,
+  HighlightsMap,
+  FuzzySearchOptions,
 } from '../types/search.types';
 
 // Re-export types for convenience
 export type {
-    FuzzySearchConfig,
-    SearchKey,
-    FuzzySearchResult,
-    FuzzyMatch,
-    HighlightSegment,
-    FieldHighlight,
-    ScoreMap,
-    HighlightsMap,
-    FuzzySearchOptions,
+  FuzzySearchConfig,
+  SearchKey,
+  FuzzySearchResult,
+  FuzzyMatch,
+  HighlightSegment,
+  FieldHighlight,
+  ScoreMap,
+  HighlightsMap,
+  FuzzySearchOptions,
 };
 
 /**
@@ -56,13 +56,13 @@ export type {
  * - ignoreLocation: true - Don't penalize matches at end of description
  */
 export const DEFAULT_FUZZY_CONFIG: FuzzySearchConfig = {
-    threshold: 0.35,
-    distance: 100,
-    ignoreLocation: true,
-    includeScore: true,
-    includeMatches: true,
-    minMatchCharLength: 2,
-    useExtendedSearch: false,
+  threshold: 0.35,
+  distance: 100,
+  ignoreLocation: true,
+  includeScore: true,
+  includeMatches: true,
+  minMatchCharLength: 2,
+  useExtendedSearch: false,
 };
 
 /**
@@ -74,35 +74,35 @@ export const DEFAULT_FUZZY_CONFIG: FuzzySearchConfig = {
  * 3. category (0.5) - Helpful but less specific
  */
 export const MENU_SEARCH_KEYS: SearchKey[] = [
-    { name: 'name', weight: 2.0 },
-    { name: 'description', weight: 1.0 },
-    { name: 'category', weight: 0.5 },
+  { name: 'name', weight: 2.0 },
+  { name: 'description', weight: 1.0 },
+  { name: 'category', weight: 0.5 },
 ];
 
 /**
  * Stricter configuration for more precise matching
  */
 export const STRICT_FUZZY_CONFIG: FuzzySearchConfig = {
-    threshold: 0.2,
-    distance: 50,
-    ignoreLocation: false,
-    includeScore: true,
-    includeMatches: true,
-    minMatchCharLength: 3,
-    useExtendedSearch: false,
+  threshold: 0.2,
+  distance: 50,
+  ignoreLocation: false,
+  includeScore: true,
+  includeMatches: true,
+  minMatchCharLength: 3,
+  useExtendedSearch: false,
 };
 
 /**
  * Looser configuration for more forgiving matching
  */
 export const LOOSE_FUZZY_CONFIG: FuzzySearchConfig = {
-    threshold: 0.5,
-    distance: 200,
-    ignoreLocation: true,
-    includeScore: true,
-    includeMatches: true,
-    minMatchCharLength: 1,
-    useExtendedSearch: false,
+  threshold: 0.5,
+  distance: 200,
+  ignoreLocation: true,
+  includeScore: true,
+  includeMatches: true,
+  minMatchCharLength: 1,
+  useExtendedSearch: false,
 };
 
 // ===========================================
@@ -124,31 +124,31 @@ export const LOOSE_FUZZY_CONFIG: FuzzySearchConfig = {
  * ```
  */
 export function createMenuFuseInstance(
-    items: MenuItem[],
-    config: Partial<FuzzySearchConfig> = {},
-    keys: SearchKey[] = MENU_SEARCH_KEYS
+  items: MenuItem[],
+  config: Partial<FuzzySearchConfig> = {},
+  keys: SearchKey[] = MENU_SEARCH_KEYS
 ): Fuse<MenuItem> {
-    const mergedConfig = { ...DEFAULT_FUZZY_CONFIG, ...config };
+  const mergedConfig = { ...DEFAULT_FUZZY_CONFIG, ...config };
 
-    const fuseOptions: IFuseOptions<MenuItem> = {
-        keys: keys.map((k) => ({
-            name: k.name as string,
-            weight: k.weight,
-        })),
-        threshold: mergedConfig.threshold,
-        distance: mergedConfig.distance,
-        ignoreLocation: mergedConfig.ignoreLocation,
-        includeScore: mergedConfig.includeScore,
-        includeMatches: mergedConfig.includeMatches,
-        minMatchCharLength: mergedConfig.minMatchCharLength,
-        useExtendedSearch: mergedConfig.useExtendedSearch,
-        // Additional optimizations
-        shouldSort: true, // Sort by score
-        findAllMatches: false, // Stop at first match per key for performance
-        isCaseSensitive: false, // Case-insensitive search
-    };
+  const fuseOptions: IFuseOptions<MenuItem> = {
+    keys: keys.map((k) => ({
+      name: k.name as string,
+      weight: k.weight,
+    })),
+    threshold: mergedConfig.threshold,
+    distance: mergedConfig.distance,
+    ignoreLocation: mergedConfig.ignoreLocation,
+    includeScore: mergedConfig.includeScore,
+    includeMatches: mergedConfig.includeMatches,
+    minMatchCharLength: mergedConfig.minMatchCharLength,
+    useExtendedSearch: mergedConfig.useExtendedSearch,
+    // Additional optimizations
+    shouldSort: true, // Sort by score
+    findAllMatches: false, // Stop at first match per key for performance
+    isCaseSensitive: false, // Case-insensitive search
+  };
 
-    return new Fuse(items, fuseOptions);
+  return new Fuse(items, fuseOptions);
 }
 
 // ===========================================
@@ -170,33 +170,33 @@ export function createMenuFuseInstance(
  * ```
  */
 export function searchMenuItems(
-    fuseInstance: Fuse<MenuItem>,
-    query: string,
-    options: { limit?: number } = {}
+  fuseInstance: Fuse<MenuItem>,
+  query: string,
+  options: { limit?: number } = {}
 ): FuzzySearchResult<MenuItem>[] {
-    const { limit = 50 } = options;
+  const { limit = 50 } = options;
 
-    // Return empty for empty/whitespace queries
-    if (!query || !query.trim()) {
-        return [];
-    }
+  // Return empty for empty/whitespace queries
+  if (!query || !query.trim()) {
+    return [];
+  }
 
-    const trimmedQuery = query.trim();
+  const trimmedQuery = query.trim();
 
-    // Perform search
-    const results = fuseInstance.search(trimmedQuery, { limit });
+  // Perform search
+  const results = fuseInstance.search(trimmedQuery, { limit });
 
-    // Transform to our result type
-    return results.map((result: FuseResult<MenuItem>) => ({
-        item: result.item,
-        score: result.score ?? 1,
-        refIndex: result.refIndex,
-        matches: result.matches?.map((match) => ({
-            key: match.key ?? '',
-            value: match.value ?? '',
-            indices: match.indices,
-        })),
-    }));
+  // Transform to our result type
+  return results.map((result: FuseResult<MenuItem>) => ({
+    item: result.item,
+    score: result.score ?? 1,
+    refIndex: result.refIndex,
+    matches: result.matches?.map((match) => ({
+      key: match.key ?? '',
+      value: match.value ?? '',
+      indices: match.indices,
+    })),
+  }));
 }
 
 /**
@@ -209,13 +209,13 @@ export function searchMenuItems(
  * @returns Search results
  */
 export function quickSearch(
-    items: MenuItem[],
-    query: string,
-    options: { limit?: number; config?: Partial<FuzzySearchConfig> } = {}
+  items: MenuItem[],
+  query: string,
+  options: { limit?: number; config?: Partial<FuzzySearchConfig> } = {}
 ): FuzzySearchResult<MenuItem>[] {
-    const { limit, config } = options;
-    const fuse = createMenuFuseInstance(items, config);
-    return searchMenuItems(fuse, query, { limit });
+  const { limit, config } = options;
+  const fuse = createMenuFuseInstance(items, config);
+  return searchMenuItems(fuse, query, { limit });
 }
 
 // ===========================================
@@ -239,46 +239,46 @@ export function quickSearch(
  * ```
  */
 export function generateHighlightSegments(
-    text: string,
-    indices: ReadonlyArray<[number, number]>
+  text: string,
+  indices: ReadonlyArray<[number, number]>
 ): HighlightSegment[] {
-    if (!text || !indices || indices.length === 0) {
-        return [{ text, isMatch: false }];
+  if (!text || !indices || indices.length === 0) {
+    return [{ text, isMatch: false }];
+  }
+
+  const segments: HighlightSegment[] = [];
+  let lastIndex = 0;
+
+  // Sort indices by start position
+  const sortedIndices = [...indices].sort((a, b) => a[0] - b[0]);
+
+  for (const [start, end] of sortedIndices) {
+    // Add non-matching segment before this match
+    if (start > lastIndex) {
+      segments.push({
+        text: text.slice(lastIndex, start),
+        isMatch: false,
+      });
     }
 
-    const segments: HighlightSegment[] = [];
-    let lastIndex = 0;
+    // Add matching segment (end is inclusive in Fuse.js)
+    segments.push({
+      text: text.slice(start, end + 1),
+      isMatch: true,
+    });
 
-    // Sort indices by start position
-    const sortedIndices = [...indices].sort((a, b) => a[0] - b[0]);
+    lastIndex = end + 1;
+  }
 
-    for (const [start, end] of sortedIndices) {
-        // Add non-matching segment before this match
-        if (start > lastIndex) {
-            segments.push({
-                text: text.slice(lastIndex, start),
-                isMatch: false,
-            });
-        }
+  // Add remaining non-matching text
+  if (lastIndex < text.length) {
+    segments.push({
+      text: text.slice(lastIndex),
+      isMatch: false,
+    });
+  }
 
-        // Add matching segment (end is inclusive in Fuse.js)
-        segments.push({
-            text: text.slice(start, end + 1),
-            isMatch: true,
-        });
-
-        lastIndex = end + 1;
-    }
-
-    // Add remaining non-matching text
-    if (lastIndex < text.length) {
-        segments.push({
-            text: text.slice(lastIndex),
-            isMatch: false,
-        });
-    }
-
-    return segments;
+  return segments;
 }
 
 /**
@@ -294,14 +294,14 @@ export function generateHighlightSegments(
  * ```
  */
 export function getFieldHighlights(result: FuzzySearchResult<MenuItem>): FieldHighlight[] {
-    if (!result.matches || result.matches.length === 0) {
-        return [];
-    }
+  if (!result.matches || result.matches.length === 0) {
+    return [];
+  }
 
-    return result.matches.map((match) => ({
-        field: match.key,
-        segments: generateHighlightSegments(match.value, match.indices),
-    }));
+  return result.matches.map((match) => ({
+    field: match.key,
+    segments: generateHighlightSegments(match.value, match.indices),
+  }));
 }
 
 /**
@@ -312,15 +312,15 @@ export function getFieldHighlights(result: FuzzySearchResult<MenuItem>): FieldHi
  * @returns Highlight segments or null if no match on this field
  */
 export function getFieldHighlight(
-    result: FuzzySearchResult<MenuItem>,
-    field: string
+  result: FuzzySearchResult<MenuItem>,
+  field: string
 ): HighlightSegment[] | null {
-    if (!result.matches) return null;
+  if (!result.matches) return null;
 
-    const match = result.matches.find((m) => m.key === field);
-    if (!match) return null;
+  const match = result.matches.find((m) => m.key === field);
+  if (!match) return null;
 
-    return generateHighlightSegments(match.value, match.indices);
+  return generateHighlightSegments(match.value, match.indices);
 }
 
 // ===========================================
@@ -334,7 +334,7 @@ export function getFieldHighlight(
  * @returns Percentage (0-100, higher is better)
  */
 export function scoreToPercentage(score: number): number {
-    return Math.round((1 - score) * 100);
+  return Math.round((1 - score) * 100);
 }
 
 /**
@@ -345,7 +345,7 @@ export function scoreToPercentage(score: number): number {
  * @returns Whether the result is relevant enough
  */
 export function isRelevant(score: number, minRelevance: number = 30): boolean {
-    return scoreToPercentage(score) >= minRelevance;
+  return scoreToPercentage(score) >= minRelevance;
 }
 
 /**
@@ -356,10 +356,10 @@ export function isRelevant(score: number, minRelevance: number = 30): boolean {
  * @returns Filtered results
  */
 export function filterByRelevance<T>(
-    results: FuzzySearchResult<T>[],
-    minRelevance: number = 30
+  results: FuzzySearchResult<T>[],
+  minRelevance: number = 30
 ): FuzzySearchResult<T>[] {
-    return results.filter((r) => isRelevant(r.score, minRelevance));
+  return results.filter((r) => isRelevant(r.score, minRelevance));
 }
 
 /**
@@ -372,12 +372,12 @@ export function filterByRelevance<T>(
  * @returns Suggested menu items
  */
 export function getSuggestions(items: MenuItem[], query: string, limit: number = 5): MenuItem[] {
-    if (!query || query.length < 2) return [];
+  if (!query || query.length < 2) return [];
 
-    const fuse = createMenuFuseInstance(items, LOOSE_FUZZY_CONFIG);
-    const results = searchMenuItems(fuse, query, { limit });
+  const fuse = createMenuFuseInstance(items, LOOSE_FUZZY_CONFIG);
+  const results = searchMenuItems(fuse, query, { limit });
 
-    return results.map((r) => r.item);
+  return results.map((r) => r.item);
 }
 
 // ===========================================
@@ -399,13 +399,13 @@ export function getSuggestions(items: MenuItem[], query: string, limit: number =
  * ```
  */
 export function createScoreMap(results: FuzzySearchResult<MenuItem>[]): ScoreMap {
-    const map: ScoreMap = new Map();
+  const map: ScoreMap = new Map();
 
-    for (const result of results) {
-        map.set(result.item.id, result.score);
-    }
+  for (const result of results) {
+    map.set(result.item.id, result.score);
+  }
 
-    return map;
+  return map;
 }
 
 /**
@@ -423,16 +423,16 @@ export function createScoreMap(results: FuzzySearchResult<MenuItem>[]): ScoreMap
  * ```
  */
 export function createHighlightsMap(results: FuzzySearchResult<MenuItem>[]): HighlightsMap {
-    const map: HighlightsMap = new Map();
+  const map: HighlightsMap = new Map();
 
-    for (const result of results) {
-        const highlights = getFieldHighlights(result);
-        if (highlights.length > 0) {
-            map.set(result.item.id, highlights);
-        }
+  for (const result of results) {
+    const highlights = getFieldHighlights(result);
+    if (highlights.length > 0) {
+      map.set(result.item.id, highlights);
     }
+  }
 
-    return map;
+  return map;
 }
 
 /**
@@ -451,35 +451,35 @@ export function createHighlightsMap(results: FuzzySearchResult<MenuItem>[]): Hig
  * ```
  */
 export function searchWithHighlights(
-    fuseInstance: Fuse<MenuItem>,
-    query: string,
-    options: { limit?: number; minRelevance?: number } = {}
+  fuseInstance: Fuse<MenuItem>,
+  query: string,
+  options: { limit?: number; minRelevance?: number } = {}
 ): {
-    items: MenuItem[];
-    results: FuzzySearchResult<MenuItem>[];
-    scoreMap: ScoreMap;
-    highlightsMap: HighlightsMap;
+  items: MenuItem[];
+  results: FuzzySearchResult<MenuItem>[];
+  scoreMap: ScoreMap;
+  highlightsMap: HighlightsMap;
 } {
-    const { limit = 50, minRelevance } = options;
+  const { limit = 50, minRelevance } = options;
 
-    // Perform search
-    let results = searchMenuItems(fuseInstance, query, { limit });
+  // Perform search
+  let results = searchMenuItems(fuseInstance, query, { limit });
 
-    // Filter by relevance if specified
-    if (minRelevance !== undefined) {
-        results = filterByRelevance(results, minRelevance);
-    }
+  // Filter by relevance if specified
+  if (minRelevance !== undefined) {
+    results = filterByRelevance(results, minRelevance);
+  }
 
-    // Create maps
-    const scoreMap = createScoreMap(results);
-    const highlightsMap = createHighlightsMap(results);
+  // Create maps
+  const scoreMap = createScoreMap(results);
+  const highlightsMap = createHighlightsMap(results);
 
-    return {
-        items: results.map((r) => r.item),
-        results,
-        scoreMap,
-        highlightsMap,
-    };
+  return {
+    items: results.map((r) => r.item),
+    results,
+    scoreMap,
+    highlightsMap,
+  };
 }
 
 /**
@@ -497,25 +497,25 @@ export function searchWithHighlights(
  * ```
  */
 export function performExactSearch(
-    items: MenuItem[],
-    query: string,
-    fields: (keyof MenuItem)[] = ['name', 'description']
+  items: MenuItem[],
+  query: string,
+  fields: (keyof MenuItem)[] = ['name', 'description']
 ): MenuItem[] {
-    if (!query || !query.trim()) {
-        return items;
-    }
+  if (!query || !query.trim()) {
+    return items;
+  }
 
-    const lowerQuery = query.toLowerCase().trim();
+  const lowerQuery = query.toLowerCase().trim();
 
-    return items.filter((item) => {
-        return fields.some((field) => {
-            const value = item[field];
-            if (typeof value === 'string') {
-                return value.toLowerCase().includes(lowerQuery);
-            }
-            return false;
-        });
+  return items.filter((item) => {
+    return fields.some((field) => {
+      const value = item[field];
+      if (typeof value === 'string') {
+        return value.toLowerCase().includes(lowerQuery);
+      }
+      return false;
     });
+  });
 }
 
 /**
@@ -527,26 +527,26 @@ export function performExactSearch(
  * @returns Comparison object with counts and timing
  */
 export function compareSearchMethods(
-    items: MenuItem[],
-    query: string
+  items: MenuItem[],
+  query: string
 ): {
-    fuzzy: { count: number; timeMs: number };
-    exact: { count: number; timeMs: number };
+  fuzzy: { count: number; timeMs: number };
+  exact: { count: number; timeMs: number };
 } {
-    // Fuzzy search
-    const fuzzyStart = performance.now();
-    const fuzzyResults = quickSearch(items, query);
-    const fuzzyTime = performance.now() - fuzzyStart;
+  // Fuzzy search
+  const fuzzyStart = performance.now();
+  const fuzzyResults = quickSearch(items, query);
+  const fuzzyTime = performance.now() - fuzzyStart;
 
-    // Exact search
-    const exactStart = performance.now();
-    const exactResults = performExactSearch(items, query);
-    const exactTime = performance.now() - exactStart;
+  // Exact search
+  const exactStart = performance.now();
+  const exactResults = performExactSearch(items, query);
+  const exactTime = performance.now() - exactStart;
 
-    return {
-        fuzzy: { count: fuzzyResults.length, timeMs: Math.round(fuzzyTime * 100) / 100 },
-        exact: { count: exactResults.length, timeMs: Math.round(exactTime * 100) / 100 },
-    };
+  return {
+    fuzzy: { count: fuzzyResults.length, timeMs: Math.round(fuzzyTime * 100) / 100 },
+    exact: { count: exactResults.length, timeMs: Math.round(exactTime * 100) / 100 },
+  };
 }
 
 // ===========================================
@@ -554,36 +554,36 @@ export function compareSearchMethods(
 // ===========================================
 
 const fuzzySearch = {
-    // Factory
-    createMenuFuseInstance,
+  // Factory
+  createMenuFuseInstance,
 
-    // Search
-    searchMenuItems,
-    quickSearch,
-    getSuggestions,
-    searchWithHighlights,
-    performExactSearch,
-    compareSearchMethods,
+  // Search
+  searchMenuItems,
+  quickSearch,
+  getSuggestions,
+  searchWithHighlights,
+  performExactSearch,
+  compareSearchMethods,
 
-    // Map Generators
-    createScoreMap,
-    createHighlightsMap,
+  // Map Generators
+  createScoreMap,
+  createHighlightsMap,
 
-    // Highlighting
-    generateHighlightSegments,
-    getFieldHighlights,
-    getFieldHighlight,
+  // Highlighting
+  generateHighlightSegments,
+  getFieldHighlights,
+  getFieldHighlight,
 
-    // Utilities
-    scoreToPercentage,
-    isRelevant,
-    filterByRelevance,
+  // Utilities
+  scoreToPercentage,
+  isRelevant,
+  filterByRelevance,
 
-    // Configs
-    DEFAULT_FUZZY_CONFIG,
-    STRICT_FUZZY_CONFIG,
-    LOOSE_FUZZY_CONFIG,
-    MENU_SEARCH_KEYS,
+  // Configs
+  DEFAULT_FUZZY_CONFIG,
+  STRICT_FUZZY_CONFIG,
+  LOOSE_FUZZY_CONFIG,
+  MENU_SEARCH_KEYS,
 };
 
 export default fuzzySearch;

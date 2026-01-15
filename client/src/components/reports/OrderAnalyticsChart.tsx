@@ -17,6 +17,59 @@ import {
 type RevenueDataPoint = { date: string; revenue: number; orders: number };
 type PeakHourData = { hour: string; orders: number };
 
+// Tooltip prop types for Recharts
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: RevenueDataPoint | PeakHourData; value: number }>;
+}
+
+// Format date for display
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+// Custom tooltip for orders per day (defined outside component)
+const OrdersTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload as RevenueDataPoint;
+    return (
+      <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+        <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
+        <p className="text-sm text-gray-700">
+          Orders: <span className="font-bold text-blue-600">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom tooltip for peak hours (defined outside component)
+const PeakHoursTooltip: React.FC<TooltipProps & { avgOrdersPerHour: number }> = ({
+  active,
+  payload,
+  avgOrdersPerHour,
+}) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload as PeakHourData;
+    const isPeak = payload[0].value > avgOrdersPerHour;
+    return (
+      <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+        <p className="text-sm font-semibold text-charcoal mb-2">{data.hour}</p>
+        <p className="text-sm text-gray-700">
+          Orders:{' '}
+          <span className={`font-bold ${isPeak ? 'text-orange-600' : 'text-blue-600'}`}>
+            {payload[0].value}
+          </span>
+        </p>
+        {isPeak && <p className="text-xs text-orange-600 mt-1">⭐ Peak Hour</p>}
+      </div>
+    );
+  }
+  return null;
+};
+
 interface OrderAnalyticsChartProps {
   ordersPerDay: RevenueDataPoint[];
   peakHours: PeakHourData[];
@@ -48,49 +101,6 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
         )
       : 0;
 
-  // Format date for display
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  // Custom tooltip for orders per day
-  const OrdersTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">
-            {formatDate(payload[0].payload.date)}
-          </p>
-          <p className="text-sm text-gray-700">
-            Orders: <span className="font-bold text-blue-600">{payload[0].value}</span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Custom tooltip for peak hours
-  const PeakHoursTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const isPeak = payload[0].value > avgOrdersPerHour;
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">{payload[0].payload.hour}</p>
-          <p className="text-sm text-gray-700">
-            Orders:{' '}
-            <span className={`font-bold ${isPeak ? 'text-orange-600' : 'text-blue-600'}`}>
-              {payload[0].value}
-            </span>
-          </p>
-          {isPeak && <p className="text-xs text-orange-600 mt-1">⭐ Peak Hour</p>}
-        </div>
-      );
-    }
-    return null;
-  };
-
   const tabs = [
     { name: 'Orders per Day', value: 'orders-per-day' },
     { name: 'Peak Hours', value: 'peak-hours' },
@@ -101,7 +111,9 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
       {/* Header */}
       <div className="mb-6 print:mb-3">
         <h2 className="text-2xl font-bold text-charcoal print:text-xl">Order Analytics</h2>
-        <p className="text-sm text-gray-600 mt-1 print:text-xs">Detailed order patterns and trends</p>
+        <p className="text-sm text-gray-600 mt-1 print:text-xs">
+          Detailed order patterns and trends
+        </p>
       </div>
 
       {/* Tabs - Hide on Print */}
@@ -196,7 +208,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     height={80}
                   />
                   <YAxis stroke="#666" style={{ fontSize: '12px' }} />
-                  <Tooltip content={<PeakHoursTooltip />} />
+                  <Tooltip content={<PeakHoursTooltip avgOrdersPerHour={avgOrdersPerHour} />} />
                   <ReferenceLine
                     y={avgOrdersPerHour}
                     stroke="#ff9800"

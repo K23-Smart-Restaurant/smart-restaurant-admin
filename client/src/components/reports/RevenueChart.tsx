@@ -11,8 +11,48 @@ import {
 } from 'recharts';
 import type { DateRange } from '../../hooks/useReports';
 
+// Type for revenue data point
+type RevenueDataPoint = { date: string; revenue: number; orders: number };
+
+// Tooltip props type
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: RevenueDataPoint; value: number }>;
+}
+
+// Format date for display
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+// Format currency
+const formatCurrency = (value: number) => {
+  return `$${value.toLocaleString()}`;
+};
+
+// Custom tooltip component (defined outside to avoid recreation on each render)
+const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+        <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
+        <p className="text-sm text-gray-700">
+          Revenue:{' '}
+          <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
+        </p>
+        <p className="text-sm text-gray-700">
+          Orders: <span className="font-bold text-blue-600">{data.orders}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 interface RevenueChartProps {
-  data: Array<{ date: string; revenue: number; orders: number }>;
+  data: RevenueDataPoint[];
   dateRange: DateRange;
   onDateRangeChange: (range: DateRange) => void;
 }
@@ -24,38 +64,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 }) => {
   // Calculate total revenue for selected period
   const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
-
-  // Format date for display
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return `$${value.toLocaleString()}`;
-  };
-
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">
-            {formatDate(payload[0].payload.date)}
-          </p>
-          <p className="text-sm text-gray-700">
-            Revenue:{' '}
-            <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
-          </p>
-          <p className="text-sm text-gray-700">
-            Orders: <span className="font-bold text-blue-600">{payload[0].payload.orders}</span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">

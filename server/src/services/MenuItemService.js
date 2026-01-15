@@ -111,7 +111,7 @@ class MenuItemService {
   }
 
   async getMenuItemById(id) {
-    return await prisma.menuItem.findUnique({
+    return prisma.menuItem.findUnique({
       where: { id },
       include: {
         modifiers: {
@@ -170,7 +170,7 @@ class MenuItemService {
       });
 
       // Refetch to include photos
-      return await this.getMenuItemById(menuItem.id);
+      return this.getMenuItemById(menuItem.id);
     }
 
     return menuItem;
@@ -292,7 +292,7 @@ class MenuItemService {
       });
 
       // Refetch to include new photos
-      return await this.getMenuItemById(menuItem.id);
+      return this.getMenuItemById(menuItem.id);
     }
 
     return menuItem;
@@ -307,7 +307,7 @@ class MenuItemService {
     const photo = await prisma.menuItemPhoto.findFirst({
       where: {
         id: photoId,
-        menuItemId: menuItemId,
+        menuItemId,
       },
     });
 
@@ -317,7 +317,7 @@ class MenuItemService {
 
     // Reset all photos' isPrimary to false for this menu item
     await prisma.menuItemPhoto.updateMany({
-      where: { menuItemId: menuItemId },
+      where: { menuItemId },
       data: { isPrimary: false },
     });
 
@@ -333,11 +333,11 @@ class MenuItemService {
       data: { imageUrl: photo.url },
     });
 
-    return await this.getMenuItemById(menuItemId);
+    return this.getMenuItemById(menuItemId);
   }
 
   async updateStatus(id, status) {
-    return await prisma.menuItem.update({
+    return prisma.menuItem.update({
       where: { id },
       data: status,
     });
@@ -391,7 +391,7 @@ class MenuItemService {
     });
 
     // Finally, delete the menu item
-    return await prisma.menuItem.delete({
+    return prisma.menuItem.delete({
       where: { id },
     });
   }

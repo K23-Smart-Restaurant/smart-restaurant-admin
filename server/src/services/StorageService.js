@@ -38,7 +38,7 @@ class StorageService {
     const storagePath = `${folder}/${uniqueName}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
       .from(BUCKET_NAME)
       .upload(storagePath, fileBuffer, {
         contentType: mimeType,

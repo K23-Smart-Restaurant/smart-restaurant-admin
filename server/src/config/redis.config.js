@@ -60,8 +60,8 @@ export const connectRedis = async (onMessage) => {
         await new Promise((resolve, reject) => {
             let connected = 0;
             const timeout = setTimeout(() => reject(new Error('Connection timeout')), 10000);
-            const onReady = () => { 
-                connected++; 
+            const onReady = () => {
+                connected++;
                 if (connected === 2) {
                     clearTimeout(timeout);
                     resolve();
@@ -106,8 +106,8 @@ export const connectRedis = async (onMessage) => {
     } catch (error) {
         isConnected = false;
         // Clean up failed connections
-        if (publisher) { try { await publisher.quit(); } catch (e) {} publisher = null; }
-        if (subscriber) { try { await subscriber.quit(); } catch (e) {} subscriber = null; }
+        if (publisher) { try { await publisher.quit(); } catch { publisher = null; } }
+        if (subscriber) { try { await subscriber.quit(); } catch { subscriber = null; } }
         logger.warn(`[Redis] Connection failed (optional feature): ${error.message}`);
     }
 };

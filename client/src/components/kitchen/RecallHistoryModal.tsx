@@ -84,7 +84,10 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                     <div className="space-y-1.5 sm:space-y-2 ml-6 sm:ml-8">
                       {order.orderItems &&
                         order.orderItems.map((item) => (
-                          <div key={item.id} className="flex items-start sm:items-center justify-between text-xs sm:text-sm gap-2 flex-col sm:flex-row">
+                          <div
+                            key={item.id}
+                            className="flex items-start sm:items-center justify-between text-xs sm:text-sm gap-2 flex-col sm:flex-row"
+                          >
                             <div className="flex items-center gap-2">
                               <span className="text-charcoal font-semibold bg-gradient-to-r from-naples/20 to-arylide/20 border border-naples/30 rounded px-1.5 sm:px-2 py-0.5 text-xs">
                                 {item.quantity}x

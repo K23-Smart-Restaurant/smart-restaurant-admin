@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Clock, DollarSign, FileText, ChevronRight } from 'lucide-react';
 import type { Order, OrderStatus } from '../../hooks/useOrders';
 import type { OrderItemStatus } from '../../services/orderService';
@@ -18,10 +18,28 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onUpdateOrderStatus,
   onUpdateItemStatus,
 }) => {
-  if (!isOpen || !order) return null;
+  // Track elapsed time in state to avoid calling Date.now() during render
+  const [elapsedMinutes, setElapsedMinutes] = useState(0);
 
-  // Calculate elapsed time
-  const elapsedMinutes = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+  // Calculate elapsed time when modal opens or order changes
+  useEffect(() => {
+    if (!order) {
+      setElapsedMinutes(0);
+      return;
+    }
+
+    const updateElapsedTime = () => {
+      const elapsed = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+      setElapsedMinutes(elapsed);
+    };
+
+    updateElapsedTime();
+    const interval = setInterval(updateElapsedTime, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [order, isOpen]);
+
+  if (!isOpen || !order) return null;
 
   // Format currency
   const formatCurrency = (amount: number) => {

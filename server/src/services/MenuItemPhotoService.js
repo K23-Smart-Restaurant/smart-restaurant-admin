@@ -115,7 +115,7 @@ class MenuItemPhotoService {
       }),
     ]);
 
-    return await prisma.menuItemPhoto.findUnique({
+    return prisma.menuItemPhoto.findUnique({
       where: { id: photoId },
     });
   }

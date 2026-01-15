@@ -33,7 +33,7 @@ server.listen(PORT, HOST, async () => {
   logger.info(`✅ Admin server is running on port ${PORT}`);
   logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.info(`🔗 Health check: http://${HOST}:${PORT}/health`);
-  
+
   // Initialize Redis after server starts
   await initRedis();
 });
@@ -41,13 +41,13 @@ server.listen(PORT, HOST, async () => {
 // Graceful shutdown
 const gracefulShutdown = async (signal) => {
   logger.info(`${signal} signal received: closing HTTP server`);
-  
+
   // Disconnect Redis
   await disconnectRedis();
-  
+
   server.close(() => {
     logger.info('HTTP server closed');
-    process.exit(0);
+    throw new Error('Shutting down');
   });
 };
 
@@ -55,4 +55,3 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 export default server;
-

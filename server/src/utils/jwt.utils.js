@@ -43,7 +43,7 @@ const verifyToken = (token) => {
     return jwt.verify(token, JWT_SECRET, {
       algorithms: ['HS256'],
     });
-  } catch (error) {
+  } catch {
     throw new Error('Invalid or expired token');
   }
 };
@@ -58,7 +58,7 @@ const verifyRefreshToken = (token) => {
     return jwt.verify(token, REFRESH_TOKEN_SECRET, {
       algorithms: ['HS256'],
     });
-  } catch (error) {
+  } catch {
     throw new Error('Invalid or expired refresh token');
   }
 };

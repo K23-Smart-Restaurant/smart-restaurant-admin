@@ -34,56 +34,58 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
     }
   };
 
-    return (
-        <div className="bg-white border-2 border-blue-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 p-3 sm:p-4">
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-2 sm:p-3">
-                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg sm:text-xl font-bold text-charcoal">
-                                Table #{order.table?.tableNumber || 'N/A'}
-                            </h3>
-                            <p className="text-gray-600 text-xs sm:text-sm">
-                                Order #{order.orderNumber}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-2">
-                        <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-200 text-blue-800 rounded-lg text-xs font-semibold border border-blue-300">
-                            PENDING
-                        </span>
-                        <button
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className="bg-white rounded-full p-1 sm:p-1.5 hover:bg-gray-50 transition-colors duration-200"
-                        >
-                            <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-charcoal transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-                    <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
-                        <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="font-medium">{order.guestName || 'Guest'}</span>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
-                        <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
-                    </div>
-                    <div className="text-gray-500 text-xs ml-auto">
-                        {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
-                    </div>
-                </div>
+  return (
+    <div className="bg-white border-2 border-blue-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 p-3 sm:p-4">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-2 sm:p-3">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal" />
             </div>
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-charcoal">
+                Table #{order.table?.tableNumber || 'N/A'}
+              </h3>
+              <p className="text-gray-600 text-xs sm:text-sm">Order #{order.orderNumber}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-200 text-blue-800 rounded-lg text-xs font-semibold border border-blue-300">
+              PENDING
+            </span>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="bg-white rounded-full p-1 sm:p-1.5 hover:bg-gray-50 transition-colors duration-200"
+            >
+              <ChevronDown
+                className={`w-4 h-4 sm:w-5 sm:h-5 text-charcoal transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+          <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
+            <User className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="font-medium">{order.guestName || 'Guest'}</span>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
+            <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
+          </div>
+          <div className="text-gray-500 text-xs ml-auto">
+            {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+          </div>
+        </div>
+      </div>
 
       {/* Order Items (Expandable) */}
       {isExpanded && (
         <div className="p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
-          <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">Order Items:</h4>
+          <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">
+            Order Items:
+          </h4>
           <div className="space-y-2">
             {order.orderItems?.map((item) => (
               <div
@@ -129,7 +131,14 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
           className="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           <Check className="w-4 h-4 sm:w-5 sm:h-5" />
-          {isProcessing ? 'Processing...' : <><span className="hidden sm:inline">Accept & Send to Kitchen</span><span className="sm:hidden">Accept</span></>}
+          {isProcessing ? (
+            'Processing...'
+          ) : (
+            <>
+              <span className="hidden sm:inline">Accept & Send to Kitchen</span>
+              <span className="sm:hidden">Accept</span>
+            </>
+          )}
         </button>
       </div>
     </div>

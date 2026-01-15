@@ -88,7 +88,9 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
       {/* Order Items (Expandable) */}
       {isExpanded && (
         <div className="p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
-          <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">Order Items:</h4>
+          <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">
+            Order Items:
+          </h4>
           <div className="space-y-2">
             {order.orderItems?.map((item) => (
               <div

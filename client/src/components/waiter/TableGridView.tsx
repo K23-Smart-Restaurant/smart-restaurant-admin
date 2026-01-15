@@ -98,7 +98,9 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
             {/* Table Number */}
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div>
-                <h3 className={`text-xl sm:text-2xl font-bold ${styles.text}`}>Table {table.tableNumber}</h3>
+                <h3 className={`text-xl sm:text-2xl font-bold ${styles.text}`}>
+                  Table {table.tableNumber}
+                </h3>
                 <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
                   <Users className={`w-3 h-3 sm:w-4 sm:h-4 ${styles.icon}`} />
                   <span className={`text-xs ${styles.text}`}>{table.capacity} seats</span>

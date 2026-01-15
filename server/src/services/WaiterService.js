@@ -178,14 +178,14 @@ class WaiterService {
       },
     });
 
-        // T411: Emit socket event for order confirmed (notify kitchen)
-        socketService.emitOrderConfirmed(updatedOrder);
-        // Publish to Redis for customer app
-        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
-            order: updatedOrder,
-            orderId,
-            newStatus: 'CONFIRMED',
-        });
+    // T411: Emit socket event for order confirmed (notify kitchen)
+    socketService.emitOrderConfirmed(updatedOrder);
+    // Publish to Redis for customer app
+    publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+      order: updatedOrder,
+      orderId,
+      newStatus: 'CONFIRMED',
+    });
 
     return updatedOrder;
   }
@@ -232,14 +232,14 @@ class WaiterService {
       },
     });
 
-        // Emit socket event for order cancelled
-        socketService.emitOrderCancelled(updatedOrder);
-        // Publish to Redis for customer app
-        publishEvent(REDIS_CHANNELS.ORDER_CANCELLED, {
-            order: updatedOrder,
-            orderId,
-            newStatus: 'CANCELLED',
-        });
+    // Emit socket event for order cancelled
+    socketService.emitOrderCancelled(updatedOrder);
+    // Publish to Redis for customer app
+    publishEvent(REDIS_CHANNELS.ORDER_CANCELLED, {
+      order: updatedOrder,
+      orderId,
+      newStatus: 'CANCELLED',
+    });
 
     return updatedOrder;
   }
@@ -262,26 +262,26 @@ class WaiterService {
       throw new Error('Only READY orders can be marked as SERVED');
     }
 
-        const updatedOrder = await prisma.order.update({
-            where: { id: orderId },
-            data: {
-                status: 'SERVED',
-                updatedAt: new Date(),
-            },
-            include: {
-                table: { select: { id: true, tableNumber: true } },
-            },
-        });
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'SERVED',
+        updatedAt: new Date(),
+      },
+      include: {
+        table: { select: { id: true, tableNumber: true } },
+      },
+    });
 
-        // Publish to Redis for customer app
-        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
-            order: updatedOrder,
-            orderId,
-            newStatus: 'SERVED',
-        });
+    // Publish to Redis for customer app
+    publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+      order: updatedOrder,
+      orderId,
+      newStatus: 'SERVED',
+    });
 
-        return updatedOrder;
-    }
+    return updatedOrder;
+  }
 
   /**
    * Process cash/card payment at restaurant
@@ -390,15 +390,15 @@ class WaiterService {
       return updatedOrder;
     });
 
-        // Emit socket event for payment completed
-        socketService.emitPaymentCompleted(result);
-        // Publish to Redis for customer app
-        publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
-            order: result,
-            orderId,
-            newStatus: 'COMPLETED',
-            paymentStatus: 'PAID',
-        });
+    // Emit socket event for payment completed
+    socketService.emitPaymentCompleted(result);
+    // Publish to Redis for customer app
+    publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+      order: result,
+      orderId,
+      newStatus: 'COMPLETED',
+      paymentStatus: 'PAID',
+    });
 
     return result;
   }
