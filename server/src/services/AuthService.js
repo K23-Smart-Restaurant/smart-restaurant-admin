@@ -85,6 +85,11 @@ class AuthService {
       throw new Error('Unauthorized role');
     }
 
+    // Check if user is active
+    if (!user.isActive) {
+      throw new Error('User is not active');
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
@@ -128,6 +133,12 @@ class AuthService {
 
       result.refreshToken = refreshToken;
     }
+
+    // Update user's last login time
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
 
     console.log(result);
 
