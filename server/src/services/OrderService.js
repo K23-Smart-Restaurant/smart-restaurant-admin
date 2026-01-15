@@ -94,7 +94,7 @@ class OrderService {
       throw new Error(`Cannot transition from ${order.status} to ${status}`);
     }
 
-    return await prisma.order.update({
+    return prisma.order.update({
       where: { id },
       data: { status },
     });

@@ -22,7 +22,7 @@ class TableService {
     );
 
     // Update table with QR data
-    return await prisma.table.update({
+    return prisma.table.update({
       where: { id: table.id },
       data: {
         qrCode,
@@ -45,7 +45,7 @@ class TableService {
 
     // Log old token invalidation
     if (existingTable.qrToken) {
-      console.log(`Invalidating old QR token for table ${tableId}`);
+      console.info(`Invalidating old QR token for table ${tableId}`);
     }
 
     // Generate new QR code and token (pass old URL for cleanup)
@@ -56,7 +56,7 @@ class TableService {
     );
 
     // Update table with new QR data (old token is automatically invalidated)
-    return await prisma.table.update({
+    return prisma.table.update({
       where: { id: tableId },
       data: {
         qrCode,
@@ -77,12 +77,12 @@ class TableService {
     }
 
     if (format === 'pdf') {
-      return await qrCodeService.generateTablePDF(table);
+      return qrCodeService.generateTablePDF(table);
     }
 
     // PNG format - generate high-resolution buffer
     const url = qrCodeService.generateQRUrl(table.id, table.qrToken);
-    return await qrCodeService.generateQRBuffer(url, { width: 800 });
+    return qrCodeService.generateQRBuffer(url, { width: 800 });
   }
 
   async getTableWithQRStatus(tableId) {
@@ -122,7 +122,7 @@ class TableService {
       ...(data.isActive !== undefined && { isActive: data.isActive }), // M5: Support isActive field
     };
 
-    return await prisma.table.update({
+    return prisma.table.update({
       where: { id },
       data: updateData,
     });
@@ -210,7 +210,7 @@ class TableService {
 
     // Log the deactivation
     if (!isActive) {
-      console.log(
+      console.info(
         `Table ${updatedTable.tableNumber} (ID: ${tableId}) deactivated${force ? ' (forced)' : ''}`
       );
     }
@@ -264,9 +264,9 @@ class TableService {
     }
 
     if (format === 'zip') {
-      return await qrCodeService.generateBatchZip(tablesWithQR);
+      return qrCodeService.generateBatchZip(tablesWithQR);
     } else if (format === 'pdf') {
-      return await qrCodeService.generateBatchPDF(tablesWithQR, options);
+      return qrCodeService.generateBatchPDF(tablesWithQR, options);
     }
 
     throw new Error("Invalid format. Use 'zip' or 'pdf'");
@@ -279,7 +279,7 @@ class TableService {
       tableIds = allTables.map((t) => t.id);
     }
 
-    return await qrCodeService.bulkRegenerateQR(tableIds);
+    return qrCodeService.bulkRegenerateQR(tableIds);
   }
 }
 

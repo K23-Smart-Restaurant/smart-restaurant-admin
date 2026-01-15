@@ -31,7 +31,7 @@ class QRCodeService {
       createdAt: new Date().toISOString(),
     };
 
-    console.log(QR_TOKEN_SECRET);
+    console.info(QR_TOKEN_SECRET);
     const token = jwt.sign(payload, QR_TOKEN_SECRET, {
       algorithm: 'HS256',
       expiresIn,
@@ -256,7 +256,7 @@ class QRCodeService {
     }
 
     // Token is valid
-    const exp = verification.data.exp;
+    const {exp} = verification.data;
     const now = Math.floor(Date.now() / 1000);
     const daysUntilExpiry = Math.ceil((exp - now) / (60 * 60 * 24));
 
@@ -281,100 +281,101 @@ class QRCodeService {
       includeWifi = false,
       wifiName = '',
       wifiPassword = '',
-      logoPath = null,
       restaurantName = 'Smart Restaurant',
     } = options;
 
-    return new Promise(async (resolve, reject) => {
-      try {
-        const doc = new PDFDocument({
-          size: 'A5',
-          margin: 40,
-        });
-
-        const chunks = [];
-        doc.on('data', (chunk) => chunks.push(chunk));
-        doc.on('end', () => resolve(Buffer.concat(chunks)));
-
-        // Generate QR code buffer
-        const url = this.generateQRUrl(table.id, table.qrToken);
-        const qrBuffer = await this.generateQRBuffer(url, { width: 600 });
-
-        // Restaurant name header
-        doc.fontSize(24).font('Helvetica-Bold').text(restaurantName, { align: 'center' });
-
-        doc.moveDown(0.5);
-
-        // Table number
-        doc
-          .fontSize(32)
-          .font('Helvetica-Bold')
-          .text(`Table ${table.tableNumber}`, { align: 'center' });
-
-        if (table.location) {
-          doc
-            .fontSize(14)
-            .font('Helvetica')
-            .fillColor('#666666')
-            .text(table.location, { align: 'center' });
-        }
-
-        doc.moveDown(1);
-
-        // QR Code image - centered
-        const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-        const qrSize = Math.min(250, pageWidth - 40);
-        const qrX = (doc.page.width - qrSize) / 2;
-
-        doc.image(qrBuffer, qrX, doc.y, {
-          width: qrSize,
-          height: qrSize,
-        });
-
-        doc.y += qrSize + 20;
-
-        // Scan instruction
-        doc
-          .fontSize(18)
-          .font('Helvetica-Bold')
-          .fillColor('#000000')
-          .text('Scan to Order', { align: 'center' });
-
-        doc.moveDown(0.5);
-
-        doc
-          .fontSize(12)
-          .font('Helvetica')
-          .fillColor('#666666')
-          .text('Scan this QR code with your phone camera to view our menu and place orders.', {
-            align: 'center',
-            width: pageWidth - 40,
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          const doc = new PDFDocument({
+            size: 'A5',
+            margin: 40,
           });
 
-        // WiFi info if provided
-        if (includeWifi && wifiName) {
-          doc.moveDown(1);
+          const chunks = [];
+          doc.on('data', (chunk) => chunks.push(chunk));
+          doc.on('end', () => resolve(Buffer.concat(chunks)));
+
+          // Generate QR code buffer
+          const url = this.generateQRUrl(table.id, table.qrToken);
+          const qrBuffer = await this.generateQRBuffer(url, { width: 600 });
+
+          // Restaurant name header
+          doc.fontSize(24).font('Helvetica-Bold').text(restaurantName, { align: 'center' });
+
+          doc.moveDown(0.5);
+
+          // Table number
           doc
-            .fontSize(12)
+            .fontSize(32)
+            .font('Helvetica-Bold')
+            .text(`Table ${table.tableNumber}`, { align: 'center' });
+
+          if (table.location) {
+            doc
+                .fontSize(14)
+                .font('Helvetica')
+                .fillColor('#666666')
+                .text(table.location, { align: 'center' });
+          }
+
+          doc.moveDown(1);
+
+          // QR Code image - centered
+          const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+          const qrSize = Math.min(250, pageWidth - 40);
+          const qrX = (doc.page.width - qrSize) / 2;
+
+          doc.image(qrBuffer, qrX, doc.y, {
+            width: qrSize,
+            height: qrSize,
+          });
+
+          doc.y += qrSize + 20;
+
+          // Scan instruction
+          doc
+            .fontSize(18)
             .font('Helvetica-Bold')
             .fillColor('#000000')
-            .text('WiFi Information', { align: 'center' });
+            .text('Scan to Order', { align: 'center' });
+
+          doc.moveDown(0.5);
 
           doc
-            .fontSize(11)
+            .fontSize(12)
             .font('Helvetica')
             .fillColor('#666666')
-            .text(`Network: ${wifiName}`, { align: 'center' });
+            .text('Scan this QR code with your phone camera to view our menu and place orders.', {
+              align: 'center',
+              width: pageWidth - 40,
+            });
 
-          if (wifiPassword) {
-            doc.text(`Password: ${wifiPassword}`, { align: 'center' });
+          // WiFi info if provided
+          if (includeWifi && wifiName) {
+            doc.moveDown(1);
+            doc
+              .fontSize(12)
+              .font('Helvetica-Bold')
+              .fillColor('#000000')
+              .text('WiFi Information', { align: 'center' });
+
+            doc
+              .fontSize(11)
+              .font('Helvetica')
+              .fillColor('#666666')
+              .text(`Network: ${wifiName}`, { align: 'center' });
+
+            if (wifiPassword) {
+              doc.text(`Password: ${wifiPassword}`, { align: 'center' });
+            }
           }
-        }
 
-        doc.end();
-      } catch (error) {
-        reject(error);
-      }
+          doc.end();
+        } catch (error) {
+          reject(error);
+        }
+      })();
     });
   }
 
@@ -393,59 +394,60 @@ class QRCodeService {
       wifiPassword = '',
     } = options;
 
-    return new Promise(async (resolve, reject) => {
-      try {
-        const doc = new PDFDocument({
-          size: layout === 'single' ? 'A5' : 'A4',
-          margin: layout === 'single' ? 40 : 30,
-        });
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          const doc = new PDFDocument({
+            size: layout === 'single' ? 'A5' : 'A4',
+            margin: layout === 'single' ? 40 : 30,
+          });
 
-        const chunks = [];
-        doc.on('data', (chunk) => chunks.push(chunk));
-        doc.on('end', () => resolve(Buffer.concat(chunks)));
+          const chunks = [];
+          doc.on('data', (chunk) => chunks.push(chunk));
+          doc.on('end', () => resolve(Buffer.concat(chunks)));
 
-        if (layout === 'single') {
-          // One table per page
-          for (let i = 0; i < tables.length; i++) {
-            if (i > 0) doc.addPage();
-            await this.addTableToPage(doc, tables[i], {
-              restaurantName,
-              includeWifi,
-              wifiName,
-              wifiPassword,
-              layout: 'full',
-            });
-          }
-        } else {
-          // Multiple tables per page (2x2 grid)
-          const pageWidth = doc.page.width - 60;
-          const pageHeight = doc.page.height - 60;
-          const cellWidth = pageWidth / 2;
-          const cellHeight = pageHeight / 2;
-
-          for (let i = 0; i < tables.length; i++) {
-            const pageIndex = Math.floor(i / 4);
-            const positionIndex = i % 4;
-
-            if (positionIndex === 0 && i > 0) {
-              doc.addPage();
+          if (layout === 'single') {
+            // One table per page
+            for (let i = 0; i < tables.length; i++) {
+              if (i > 0) doc.addPage();
+              await this.addTableToPage(doc, tables[i], {
+                restaurantName,
+                includeWifi,
+                wifiName,
+                wifiPassword,
+                layout: 'full',
+              });
             }
+          } else {
+            // Multiple tables per page (2x2 grid)
+            const pageWidth = doc.page.width - 60;
+            const pageHeight = doc.page.height - 60;
+            const cellWidth = pageWidth / 2;
+            const cellHeight = pageHeight / 2;
 
-            const col = positionIndex % 2;
-            const row = Math.floor(positionIndex / 2);
-            const x = 30 + col * cellWidth;
-            const y = 30 + row * cellHeight;
+            for (let i = 0; i < tables.length; i++) {
+              const positionIndex = i % 4;
 
-            await this.addTableToCell(doc, tables[i], x, y, cellWidth - 10, cellHeight - 10, {
-              restaurantName,
-            });
+              if (positionIndex === 0 && i > 0) {
+                doc.addPage();
+              }
+
+              const col = positionIndex % 2;
+              const row = Math.floor(positionIndex / 2);
+              const x = 30 + col * cellWidth;
+              const y = 30 + row * cellHeight;
+
+              await this.addTableToCell(doc, tables[i], x, y, cellWidth - 10, cellHeight - 10, {
+                restaurantName,
+              });
+            }
           }
-        }
 
-        doc.end();
-      } catch (error) {
-        reject(error);
-      }
+          doc.end();
+        } catch (error) {
+          reject(error);
+        }
+      })();
     });
   }
 
@@ -526,7 +528,7 @@ class QRCodeService {
    * Add a table QR to a cell in grid layout
    */
   async addTableToCell(doc, table, x, y, width, height, options) {
-    const { restaurantName } = options;
+    const { restaurantName: _restaurantName } = options;
 
     // Generate QR code buffer
     const url = this.generateQRUrl(table.id, table.qrToken);
@@ -576,28 +578,30 @@ class QRCodeService {
    * @returns {Promise<Buffer>} ZIP buffer
    */
   async generateBatchZip(tables) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const archive = archiver('zip', { zlib: { level: 9 } });
-        const chunks = [];
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          const archive = archiver('zip', { zlib: { level: 9 } });
+          const chunks = [];
 
-        archive.on('data', (chunk) => chunks.push(chunk));
-        archive.on('end', () => resolve(Buffer.concat(chunks)));
-        archive.on('error', (err) => reject(err));
+          archive.on('data', (chunk) => chunks.push(chunk));
+          archive.on('end', () => resolve(Buffer.concat(chunks)));
+          archive.on('error', (err) => reject(err));
 
-        // Add each table's QR code as PNG
-        for (const table of tables) {
-          const url = this.generateQRUrl(table.id, table.qrToken);
-          const qrBuffer = await this.generateQRBuffer(url, { width: 800 });
-          archive.append(qrBuffer, {
-            name: `table-${table.tableNumber}-qr.png`,
-          });
+          // Add each table's QR code as PNG
+          for (const table of tables) {
+            const url = this.generateQRUrl(table.id, table.qrToken);
+            const qrBuffer = await this.generateQRBuffer(url, { width: 800 });
+            archive.append(qrBuffer, {
+              name: `table-${table.tableNumber}-qr.png`,
+            });
+          }
+
+          archive.finalize();
+        } catch (error) {
+          reject(error);
         }
-
-        archive.finalize();
-      } catch (error) {
-        reject(error);
-      }
+      })();
     });
   }
 

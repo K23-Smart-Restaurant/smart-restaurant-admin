@@ -123,7 +123,7 @@ class SocketService {
     }
 
     this.io.to(this.rooms.waiter).emit("order:created", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
@@ -144,7 +144,7 @@ class SocketService {
     }
 
     this.io.to(this.rooms.kitchen).emit("order:confirmed", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
@@ -165,7 +165,7 @@ class SocketService {
     }
 
     this.io.to(this.rooms.waiter).emit("order:ready", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
@@ -187,13 +187,13 @@ class SocketService {
 
     // Notify kitchen to update UI
     this.io.to(this.rooms.kitchen).emit("order:preparing", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
     // Also notify waiters
     this.io.to(this.rooms.waiter).emit("order:preparing", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
@@ -213,7 +213,7 @@ class SocketService {
 
     // Notify waiters
     this.io.to(this.rooms.waiter).emit("payment:completed", {
-      order: order,
+      order,
       orderId: order.id,
       tableNumber: order.table?.tableNumber,
       timestamp: new Date().toISOString(),
@@ -236,7 +236,7 @@ class SocketService {
     this.io.to(this.rooms.waiter).emit("bill:requested", {
       orderId: order.id || order.orderId,
       tableNumber: order.tableNumber || order.table?.tableNumber,
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
@@ -258,12 +258,12 @@ class SocketService {
 
     // Notify both kitchen and waiter
     this.io.to(this.rooms.kitchen).emit("order:cancelled", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 
     this.io.to(this.rooms.waiter).emit("order:cancelled", {
-      order: order,
+      order,
       timestamp: new Date().toISOString(),
     });
 

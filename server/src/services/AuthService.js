@@ -105,7 +105,7 @@ class AuthService {
     });
 
     // Return user data without password hash
-    const { passwordHash, ...userWithoutPassword } = user;
+    const { passwordHash: _passwordHash, ...userWithoutPassword } = user;
 
     const result = {
       user: userWithoutPassword,
@@ -140,7 +140,7 @@ class AuthService {
       data: { lastLoginAt: new Date() },
     });
 
-    console.log(result);
+    console.info(result);
 
     return result;
   }
@@ -183,7 +183,7 @@ class AuthService {
     let decoded;
     try {
       decoded = verifyRefreshToken(refreshToken);
-    } catch (error) {
+    } catch {
       throw new Error('Invalid or expired refresh token');
     }
 

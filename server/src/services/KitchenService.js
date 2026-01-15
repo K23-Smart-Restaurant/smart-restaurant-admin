@@ -148,7 +148,7 @@ class KitchenService {
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: updatedOrder,
-        orderId: orderId,
+        orderId,
         newStatus: "PREPARING",
       });
     }
@@ -164,7 +164,7 @@ class KitchenService {
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: updatedOrder,
-        orderId: orderId,
+        orderId,
         newStatus: "READY",
       });
     }
@@ -184,7 +184,7 @@ class KitchenService {
     const orderItem = await prisma.orderItem.findFirst({
       where: {
         id: itemId,
-        orderId: orderId,
+        orderId,
       },
       include: {
         order: {
@@ -251,7 +251,7 @@ class KitchenService {
       socketService.emitOrderReady(updatedOrder);
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: updatedOrder,
-        orderId: orderId,
+        orderId,
         newStatus: "READY",
       });
     }
@@ -264,7 +264,7 @@ class KitchenService {
    * @returns {Promise<Array>} Recently completed orders
    */
   async getOrderHistory() {
-    return await prisma.order.findMany({
+    return prisma.order.findMany({
       where: {
         status: {
           in: ["SERVED", "COMPLETED"],

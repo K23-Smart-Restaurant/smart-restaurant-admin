@@ -68,7 +68,7 @@ class PublicMenuController {
       if (req.query.qrToken) {
         const tableContext = await PublicMenuService.validateQrToken(req.query.qrToken);
         if (tableContext) {
-          restaurantId = tableContext.restaurantId;
+          ({ restaurantId } = tableContext);
         }
       }
 
