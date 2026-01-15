@@ -1,0 +1,23 @@
+{
+  "title": "Bảng điều khiển",
+  "welcomeMessage": "Chào mừng trở lại, {{name}}!",
+  "stats": {
+    "totalOrders": "Tổng đơn hàng",
+    "revenue": "Doanh thu",
+    "activeOrders": "Đơn hàng đang xử lý",
+    "tablesOccupied": "Bàn đang sử dụng",
+    "todayOrders": "Đơn hàng hôm nay",
+    "todayRevenue": "Doanh thu hôm nay"
+  },
+  "charts": {
+    "orderTrends": "xu hướng đơn hàng",
+    "revenueOverview": "Tổng quan doanh thu",
+    "popularItems": "Món ăn phổ biến"
+  },
+  "quickActions": {
+    "title": "Thao tác nhanh",
+    "newOrder": "Đơn hàng mới",
+    "viewMenu": "Xem thực đơn",
+    "manageStaff": "Quản lý nhân viên"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Table Management",
+  "list": {
+    "tableNumber": "Table #{{number}}",
+    "capacity": "Capacity",
+    "status": "Status",
+    "qrCode": "QR Code"
+  },
+  "status": {
+    "available": "Available",
+    "occupied": "Occupied",
+    "reserved": "Reserved",
+    "maintenance": "Maintenance"
+  },
+  "actions": {
+    "addTable": "Add Table",
+    "editTable": "Edit Table",
+    "generateQR": "Generate QR Code",
+    "downloadQR": "Download QR",
+    "printQR": "Print QR"
+  },
+  "form": {
+    "tableNumber": "Table Number",
+    "capacity": "Capacity (people)",
+    "location": "Location",
+    "notes": "Notes"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Màn hình bếp",
+  "orders": {
+    "newOrder": "Đơn hàng mới",
+    "table": "Bàn {{number}}",
+    "orderTime": "{{time}} trước",
+    "items": "{{count}} món"
+  },
+  "actions": {
+    "startCooking": "Bắt đầu nấu",
+    "markReady": "Đánh dấu hoàn thành",
+    "recall": "Gọi lại",
+    "viewHistory": "Xem lịch sử"
+  },
+  "filters": {
+    "all": "Tất cả đơn hàng",
+    "pending": "Chờ xử lý",
+    "cooking": "Đang nấu",
+    "ready": "Sẵn sàng"
+  }
+}

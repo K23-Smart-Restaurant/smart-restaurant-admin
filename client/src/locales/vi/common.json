@@ -1,0 +1,68 @@
+{
+  "appName": "Quản Lý Nhà Hàng Thông Minh",
+  "buttons": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "add": "Thêm",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "export": "Xuất",
+    "import": "Nhập",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "submit": "Gửi",
+    "reset": "Đặt lại",
+    "clear": "Xóa"
+  },
+  "actions": {
+    "loading": "Đang tải...",
+    "saving": "Đang lưu...",
+    "deleting": "Đang xóa...",
+    "processing": "Đang xử lý..."
+  },
+  "messages": {
+    "success": "Thao tác thành công",
+    "error": "Đã xảy ra lỗi",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa mục này?",
+    "deleteWarning": "Hành động này không thể hoàn tác. Mục sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.",
+    "unsavedChanges": "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời khỏi?",
+    "noData": "Không có dữ liệu",
+    "searchPlaceholder": "Tìm kiếm..."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Địa chỉ email không hợp lệ",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "minLength": "Yêu cầu tối thiểu {{count}} ký tự",
+    "maxLength": "Tối đa {{count}} ký tự",
+    "mustBePositive": "Phải là số dương"
+  },
+  "navigation": {
+    "dashboard": "Bảng điều khiển",
+    "menu": "Quản lý thực đơn",
+    "orders": "Đơn hàng",
+    "kitchen": "Màn hình bếp",
+    "tables": "Bàn ăn",
+    "staff": "Nhân viên",
+    "reports": "Báo cáo",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "pending": "Chờ xử lý",
+    "completed": "Hoàn thành",
+    "cancelled": "Đã hủy"
+  },
+  "pagination": {
+    "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} mục",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "page": "Trang {{page}}"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Quản lý bàn ăn",
+  "list": {
+    "tableNumber": "Bàn #{{number}}",
+    "capacity": "Sức chứa",
+    "status": "Trạng thái",
+    "qrCode": "Mã QR"
+  },
+  "status": {
+    "available": "Trống",
+    "occupied": "Đang sử dụng",
+    "reserved": "Đã đặt",
+    "maintenance": "Bảo trì"
+  },
+  "actions": {
+    "addTable": "Thêm bàn",
+    "editTable": "Sửa bàn",
+    "generateQR": "Tạo mã QR",
+    "downloadQR": "Tải mã QR",
+    "printQR": "In mã QR"
+  },
+  "form": {
+    "tableNumber": "Số bàn",
+    "capacity": "Sức chứa (người)",
+    "location": "Vị trí",
+    "notes": "Ghi chú"
+  }
+}

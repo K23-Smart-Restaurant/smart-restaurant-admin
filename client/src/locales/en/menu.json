@@ -1,0 +1,32 @@
+{
+  "title": "Menu Management",
+  "categories": {
+    "title": "Categories",
+    "add": "Add Category",
+    "edit": "Edit Category",
+    "name": "Category Name",
+    "description": "Description",
+    "displayOrder": "Display Order"
+  },
+  "items": {
+    "title": "Menu Items",
+    "add": "Add Menu Item",
+    "edit": "Edit Menu Item",
+    "name": "Item Name",
+    "description": "Description",
+    "price": "Price",
+    "category": "Category",
+    "image": "Image",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "featured": "Featured"
+  },
+  "modifiers": {
+    "title": "Modifiers",
+    "add": "Add Modifier Group",
+    "name": "Modifier Name",
+    "required": "Required",
+    "optional": "Optional",
+    "maxSelection": "Maximum Selection"
+  }
+}

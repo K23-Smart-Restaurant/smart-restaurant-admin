@@ -1,0 +1,32 @@
+{
+  "title": "Quản lý thực đơn",
+  "categories": {
+    "title": "Danh mục",
+    "add": "Thêm danh mục",
+    "edit": "Sửa danh mục",
+    "name": "Tên danh mục",
+    "description": "Mô tả",
+    "displayOrder": "Thứ tự hiển thị"
+  },
+  "items": {
+    "title": "Món ăn",
+    "add": "Thêm món ăn",
+    "edit": "Sửa món ăn",
+    "name": "Tên món ăn",
+    "description": "Mô tả",
+    "price": "Giá",
+    "category": "Danh mục",
+    "image": "Hình ảnh",
+    "available": "Còn hàng",
+    "unavailable": "Hết hàng",
+    "featured": "Nổi bật"
+  },
+  "modifiers": {
+    "title": "Tùy chọn",
+    "add": "Thêm nhóm tùy chọn",
+    "name": "Tên tùy chọn",
+    "required": "Bắt buộc",
+    "optional": "Tùy chọn",
+    "maxSelection": "Số lượng chọn tối đa"
+  }
+}

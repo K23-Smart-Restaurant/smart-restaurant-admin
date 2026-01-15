@@ -1,0 +1,32 @@
+{
+  "title": "Quản lý nhân viên",
+  "list": {
+    "name": "Tên",
+    "role": "Vai trò",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "status": "Trạng thái"
+  },
+  "roles": {
+    "admin": "Quản trị viên",
+    "manager": "Quản lý",
+    "waiter": "Phục vụ",
+    "kitchen": "Nhân viên bếp",
+    "cashier": "Thu ngân"
+  },
+  "actions": {
+    "addStaff": "Thêm nhân viên",
+    "editStaff": "Sửa thông tin",
+    "deactivate": "Vô hiệu hóa",
+    "activate": "Kích hoạt"
+  },
+  "form": {
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "role": "Vai trò",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu"
+  }
+}

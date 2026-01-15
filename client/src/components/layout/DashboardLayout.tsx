@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import {
   HomeIcon,
   UsersIcon,
@@ -16,6 +18,7 @@ import {
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
+  const { t } = useTranslation(['common']);
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,22 +28,42 @@ const DashboardLayout: React.FC = () => {
 
   const navigation = [
     {
-      name: 'Dashboard',
+      name: t('navigation.dashboard'),
       path: '/dashboard',
       icon: HomeIcon,
       roles: ['ADMIN', 'SUPER_ADMIN', 'WAITER', 'KITCHEN_STAFF'],
     },
-    { name: 'Staff Management', path: '/staff', icon: UsersIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
-    { name: 'Categories', path: '/categories', icon: FolderIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
-    { name: 'Menu Items', path: '/menu', icon: UtensilsIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
-    { name: 'Tables', path: '/tables', icon: LayoutGridIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
     {
-      name: 'Orders',
+      name: t('navigation.staff'),
+      path: '/staff',
+      icon: UsersIcon,
+      roles: ['ADMIN', 'SUPER_ADMIN'],
+    },
+    { name: 'Categories', path: '/categories', icon: FolderIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
+    {
+      name: t('navigation.menu'),
+      path: '/menu',
+      icon: UtensilsIcon,
+      roles: ['ADMIN', 'SUPER_ADMIN'],
+    },
+    {
+      name: t('navigation.tables'),
+      path: '/tables',
+      icon: LayoutGridIcon,
+      roles: ['ADMIN', 'SUPER_ADMIN'],
+    },
+    {
+      name: t('navigation.orders'),
       path: '/orders',
       icon: ShoppingCartIcon,
       roles: ['ADMIN', 'SUPER_ADMIN', 'WAITER', 'KITCHEN_STAFF'],
     },
-    { name: 'Reports', path: '/reports', icon: BarChart3Icon, roles: ['ADMIN', 'SUPER_ADMIN'] },
+    {
+      name: t('navigation.reports'),
+      path: '/reports',
+      icon: BarChart3Icon,
+      roles: ['ADMIN', 'SUPER_ADMIN'],
+    },
   ];
 
   // Show all navigation if user not loaded, otherwise filter by role
@@ -135,8 +158,10 @@ const DashboardLayout: React.FC = () => {
               </h2>
             </div>
 
-            {/* Right side: Notifications & Profile */}
+            {/* Right side: Language, Notifications & Profile */}
             <div className="flex items-center space-x-4 ml-auto">
+              {/* Language Switcher */}
+              <LanguageSwitcher />
               {/* Notifications */}
               {/* <button className="relative p-2.5 text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-110 group">
                 <BellIcon className="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" />
@@ -184,7 +209,7 @@ const DashboardLayout: React.FC = () => {
                         }}
                         className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 flex items-center space-x-2 group"
                       >
-                        <span>Logout</span>
+                        <span>{t('navigation.logout')}</span>
                         <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
                           →
                         </span>

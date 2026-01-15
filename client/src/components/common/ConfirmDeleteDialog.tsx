@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangleIcon, Trash2Icon, XIcon } from 'lucide-react';
 
 interface ConfirmDeleteDialogProps {
@@ -15,11 +16,13 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Confirm Delete',
+  title,
   message,
   itemName,
   isLoading = false,
 }) => {
+  const { t } = useTranslation('common');
+
   if (!isOpen) return null;
 
   return (
@@ -36,7 +39,9 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
               <AlertTriangleIcon className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {title || t('messages.deleteConfirm')}
+              </h3>
               {itemName && <p className="text-sm text-red-600 font-medium">"{itemName}"</p>}
             </div>
             <button
@@ -55,10 +60,7 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-sm text-amber-800 flex items-start gap-2">
               <AlertTriangleIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                This action cannot be undone. The item will be permanently removed from the
-                database.
-              </span>
+              <span>{t('messages.deleteWarning')}</span>
             </p>
           </div>
         </div>
@@ -70,7 +72,7 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
             disabled={isLoading}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {t('buttons.cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -80,12 +82,12 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Deleting...
+                {t('actions.deleting')}
               </>
             ) : (
               <>
                 <Trash2Icon className="w-4 h-4" />
-                Delete
+                {t('buttons.delete')}
               </>
             )}
           </button>

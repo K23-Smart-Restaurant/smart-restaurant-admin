@@ -1,0 +1,32 @@
+{
+  "title": "Staff Management",
+  "list": {
+    "name": "Name",
+    "role": "Role",
+    "email": "Email",
+    "phone": "Phone",
+    "status": "Status"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "waiter": "Waiter",
+    "kitchen": "Kitchen Staff",
+    "cashier": "Cashier"
+  },
+  "actions": {
+    "addStaff": "Add Staff",
+    "editStaff": "Edit Staff",
+    "deactivate": "Deactivate",
+    "activate": "Activate"
+  },
+  "form": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "password": "Password",
+    "confirmPassword": "Confirm Password"
+  }
+}

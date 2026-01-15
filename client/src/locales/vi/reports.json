@@ -1,0 +1,23 @@
+{
+  "title": "Báo cáo & Phân tích",
+  "tabs": {
+    "overview": "Tổng quan",
+    "revenue": "Doanh thu",
+    "orders": "Đơn hàng",
+    "items": "Món bán chạy"
+  },
+  "filters": {
+    "dateRange": "Khoảng thời gian",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "last7days": "7 ngày qua",
+    "last30days": "30 ngày qua",
+    "custom": "Tùy chỉnh"
+  },
+  "metrics": {
+    "totalRevenue": "Tổng doanh thu",
+    "totalOrders": "Tổng đơn hàng",
+    "averageOrderValue": "Giá trị đơn hàng TB",
+    "topSellingItem": "Món bán chạy nhất"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Dashboard",
+  "welcomeMessage": "Welcome back, {{name}}!",
+  "stats": {
+    "totalOrders": "Total Orders",
+    "revenue": "Revenue",
+    "activeOrders": "Active Orders",
+    "tablesOccupied": "Tables Occupied",
+    "todayOrders": "Today's Orders",
+    "todayRevenue": "Today's Revenue"
+  },
+  "charts": {
+    "orderTrends": "Order Trends",
+    "revenueOverview": "Revenue Overview",
+    "popularItems": "Popular Items"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "newOrder": "New Order",
+    "viewMenu": "View Menu",
+    "manageStaff": "Manage Staff"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "title": "Order Management",
+  "list": {
+    "orderNumber": "Order #{{number}}",
+    "table": "Table",
+    "items": "Items",
+    "total": "Total",
+    "time": "Time",
+    "status": "Status"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "details": {
+    "orderDetails": "Order Details",
+    "customer": "Customer",
+    "waiter": "Waiter",
+    "orderTime": "Order Time",
+    "itemName": "Item",
+    "quantity": "Qty",
+    "price": "Price",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "specialInstructions": "Special Instructions"
+  },
+  "actions": {
+    "confirmOrder": "Confirm Order",
+    "cancelOrder": "Cancel Order",
+    "printBill": "Print Bill",
+    "viewDetails": "View Details"
+  }
+}

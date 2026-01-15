@@ -1,0 +1,68 @@
+{
+  "appName": "Smart Restaurant Admin",
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear"
+  },
+  "actions": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "processing": "Processing..."
+  },
+  "messages": {
+    "success": "Operation completed successfully",
+    "error": "An error occurred",
+    "deleteConfirm": "Are you sure you want to delete this item?",
+    "deleteWarning": "This action cannot be undone. The item will be permanently removed from the database.",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+    "noData": "No data available",
+    "searchPlaceholder": "Search..."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed",
+    "mustBePositive": "Must be a positive number"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "menu": "Menu Management",
+    "orders": "Orders",
+    "kitchen": "Kitchen Display",
+    "tables": "Tables",
+    "staff": "Staff",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "pagination": {
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}}"
+  }
+}

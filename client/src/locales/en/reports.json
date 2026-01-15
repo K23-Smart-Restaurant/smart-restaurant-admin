@@ -1,0 +1,23 @@
+{
+  "title": "Reports & Analytics",
+  "tabs": {
+    "overview": "Overview",
+    "revenue": "Revenue",
+    "orders": "Orders",
+    "items": "Top Items"
+  },
+  "filters": {
+    "dateRange": "Date Range",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "last7days": "Last 7 Days",
+    "last30days": "Last 30 Days",
+    "custom": "Custom Range"
+  },
+  "metrics": {
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "averageOrderValue": "Avg Order Value",
+    "topSellingItem": "Top Selling Item"
+  }
+}

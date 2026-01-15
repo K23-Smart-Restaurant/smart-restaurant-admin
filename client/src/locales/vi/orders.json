@@ -1,0 +1,39 @@
+{
+  "title": "Quản lý đơn hàng",
+  "list": {
+    "orderNumber": "Đơn hàng #{{number}}",
+    "table": "Bàn",
+    "items": "Món",
+    "total": "Tổng cộng",
+    "time": "Thời gian",
+    "status": "Trạng thái"
+  },
+  "status": {
+    "pending": "Chờ xử lý",
+    "confirmed": "Đã xác nhận",
+    "preparing": "Đang chuẩn bị",
+    "ready": "Sẵn sàng",
+    "served": "Đã phục vụ",
+    "completed": "Hoàn thành",
+    "cancelled": "Đã hủy"
+  },
+  "details": {
+    "orderDetails": "Chi tiết đơn hàng",
+    "customer": "Khách hàng",
+    "waiter": "Nhân viên phục vụ",
+    "orderTime": "Thời gian đặt",
+    "itemName": "Món",
+    "quantity": "SL",
+    "price": "Giá",
+    "subtotal": "Tạm tính",
+    "tax": "Thuế",
+    "total": "Tổng cộng",
+    "specialInstructions": "Yêu cầu đặc biệt"
+  },
+  "actions": {
+    "confirmOrder": "Xác nhận đơn hàng",
+    "cancelOrder": "Hủy đơn hàng",
+    "printBill": "In hóa đơn",
+    "viewDetails": "Xem chi tiết"
+  }
+}
