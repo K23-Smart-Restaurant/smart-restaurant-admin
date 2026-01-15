@@ -135,36 +135,83 @@ class KitchenService {
       },
     });
 
-    // If status is PREPARING, update all order items to COOKING
+    // If status is PREPARING, emit event but do NOT auto-update all item statuses
+    // Item statuses should only change when explicitly updated per-item
     if (newStatus === 'PREPARING') {
-      await prisma.orderItem.updateMany({
-        where: { orderId },
-        data: { itemStatus: 'COOKING' },
+      // Re-fetch order to get current item statuses (they should remain as they are)
+      const orderWithCurrentItems = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          table: {
+            select: {
+              id: true,
+              tableNumber: true,
+              location: true,
+            },
+          },
+          customer: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          orderItems: {
+            include: {
+              menuItem: true,
+            },
+          },
+        },
       });
       // T411: Emit socket event for order preparing
-      socketService.emitOrderPreparing(updatedOrder);
+      socketService.emitOrderPreparing(orderWithCurrentItems);
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
-        order: updatedOrder,
-        orderId,
+        order: orderWithCurrentItems,
+        orderId: orderId,
         newStatus: 'PREPARING',
       });
+      return orderWithCurrentItems;
     }
 
-    // If status is READY, update all order items to READY
+    // If status is READY, update all order items to READY (this is valid - order is complete)
     if (newStatus === 'READY') {
       await prisma.orderItem.updateMany({
         where: { orderId },
         data: { itemStatus: 'READY' },
       });
+      // Re-fetch to get updated items
+      const orderWithReadyItems = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          table: {
+            select: {
+              id: true,
+              tableNumber: true,
+              location: true,
+            },
+          },
+          customer: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          orderItems: {
+            include: {
+              menuItem: true,
+            },
+          },
+        },
+      });
       // T412: Emit socket event for order ready (notify waiters)
-      socketService.emitOrderReady(updatedOrder);
+      socketService.emitOrderReady(orderWithReadyItems);
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
-        order: updatedOrder,
-        orderId,
+        order: orderWithReadyItems,
+        orderId: orderId,
         newStatus: 'READY',
       });
+      return orderWithReadyItems;
     }
 
     return updatedOrder;
@@ -175,7 +222,7 @@ class KitchenService {
    * @param {string} orderId - Order ID
    * @param {string} itemId - Order item ID
    * @param {string} itemStatus - New item status (QUEUED, COOKING, READY)
-   * @returns {Promise<Object>} Updated order item
+   * @returns {Promise<Object>} Updated order with all items
    */
   async updateOrderItemStatus(orderId, itemId, itemStatus) {
     // Validate order item exists and belongs to order
@@ -204,14 +251,11 @@ class KitchenService {
       throw new Error(`Invalid item status: ${itemStatus}`);
     }
 
-    // Update item status
-    const updatedItem = await prisma.orderItem.update({
+    // Update item status - target only this specific item by its unique ID
+    await prisma.orderItem.update({
       where: { id: itemId },
       data: {
         itemStatus,
-      },
-      include: {
-        menuItem: true,
       },
     });
 
@@ -232,29 +276,48 @@ class KitchenService {
 
     const allReady = allItems.every((item) => item.itemStatus === 'READY');
     if (allReady) {
-      const updatedOrder = await prisma.order.update({
+      await prisma.order.update({
         where: { id: orderId },
         data: { status: 'READY' },
-        include: {
-          table: true,
-          orderItems: {
-            include: {
-              menuItem: true,
-            },
+      });
+    }
+
+    // Fetch and return the complete updated order with all items
+    const updatedOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        table: {
+          select: {
+            id: true,
+            tableNumber: true,
+            location: true,
           },
         },
-      });
+        customer: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        orderItems: {
+          include: {
+            menuItem: true,
+          },
+        },
+      },
+    });
 
-      // Emit order:ready to waiter room and publish to Redis
+    // If all items ready, emit order:ready event
+    if (allReady) {
       socketService.emitOrderReady(updatedOrder);
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: updatedOrder,
-        orderId,
+        orderId: orderId,
         newStatus: 'READY',
       });
     }
 
-    return updatedItem;
+    return updatedOrder;
   }
 
   /**

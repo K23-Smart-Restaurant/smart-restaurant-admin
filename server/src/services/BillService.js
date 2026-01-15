@@ -1,4 +1,6 @@
 import prisma from '../lib/prisma.js';
+import { publishEvent, REDIS_CHANNELS } from '../config/redis.config.js';
+import socketService from './SocketService.js';
 
 /**
  * BillService - Handles bill generation and payment processing
@@ -132,6 +134,15 @@ class BillService {
     // Validate order exists
     const order = await prisma.order.findUnique({
       where: { id: orderId },
+      include: {
+        table: {
+          select: {
+            id: true,
+            tableNumber: true,
+            location: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -164,12 +175,31 @@ class BillService {
     }
 
     // Update order status to COMPLETED and payment status to PAID
-    await prisma.order.update({
+    const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: {
         status: 'COMPLETED',
         paymentStatus: 'PAID',
         paidAt: new Date(),
+      },
+      include: {
+        table: {
+          select: {
+            id: true,
+            tableNumber: true,
+            location: true,
+          },
+        },
+        orderItems: {
+          include: {
+            menuItem: {
+              select: {
+                name: true,
+                price: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -179,6 +209,17 @@ class BillService {
       data: {
         status: 'AVAILABLE',
       },
+    });
+
+    // Emit socket event for payment completed (notify admin clients)
+    socketService.emitPaymentCompleted(updatedOrder);
+
+    // Publish to Redis for customer app real-time update
+    publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
+      order: updatedOrder,
+      orderId,
+      newStatus: 'COMPLETED',
+      paymentStatus: 'PAID',
     });
 
     return {

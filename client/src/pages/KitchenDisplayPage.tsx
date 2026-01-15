@@ -16,7 +16,6 @@ const KitchenDisplayPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isOneItemCooking, setIsOneItemCooking] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const { showToast } = useToast();
@@ -131,6 +130,11 @@ const KitchenDisplayPage: React.FC = () => {
     let previousOrders: Order[] = [];
 
     try {
+      // Find the current order to check its status
+      const currentOrder = orders.find((o) => o.id === orderId);
+      const shouldUpdateOrderStatus =
+        currentOrder?.status === 'CONFIRMED' && itemStatus === 'COOKING';
+
       // Optimistically update the UI first
       setOrders((prevOrders) => {
         previousOrders = prevOrders; // Store for rollback
@@ -138,6 +142,8 @@ const KitchenDisplayPage: React.FC = () => {
           if (o.id === orderId) {
             return {
               ...o,
+              // Also update order status optimistically if needed
+              status: shouldUpdateOrderStatus ? 'PREPARING' : o.status,
               orderItems: o.orderItems?.map((item) =>
                 item.id === itemId ? { ...item, itemStatus } : item
               ),
@@ -150,9 +156,8 @@ const KitchenDisplayPage: React.FC = () => {
       // Then update on the backend
       let updatedOrder = await kitchenService.updateItemStatus(orderId, itemId, itemStatus);
 
-      // If this is the first item being marked as cooking, also update order status
-      if (!isOneItemCooking && itemStatus === 'COOKING') {
-        setIsOneItemCooking(true);
+      // If the order was CONFIRMED and first item is being marked as cooking, update order status
+      if (shouldUpdateOrderStatus) {
         // Update orderStatus to 'PREPARING' if at least one item is cooking
         updatedOrder = await kitchenService.updateOrderStatus(orderId, 'PREPARING');
       }
