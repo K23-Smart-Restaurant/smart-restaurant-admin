@@ -1,5 +1,6 @@
 import MenuItemService from '../services/MenuItemService.js';
 import StorageService from '../services/StorageService.js';
+import MenuItemPhotoService from '../services/MenuItemPhotoService.js';
 
 const menuItemService = new MenuItemService();
 
@@ -158,6 +159,23 @@ class MenuItemController {
               imageUrl = photo.url;
             }
           });
+        }
+      }
+
+      // Handle photo deletions (removedPhotoIds from frontend)
+      const removedPhotoIds = req.body.removedPhotoIds;
+      if (removedPhotoIds) {
+        // removedPhotoIds can be a string (single ID) or array (multiple IDs)
+        const idsToDelete = Array.isArray(removedPhotoIds) ? removedPhotoIds : [removedPhotoIds];
+        for (const photoId of idsToDelete) {
+          if (photoId && typeof photoId === 'string' && photoId.length > 0) {
+            try {
+              await MenuItemPhotoService.deletePhoto(req.params.id, photoId);
+            } catch (err) {
+              console.warn(`Failed to delete photo ${photoId}:`, err.message);
+              // Continue with other deletions even if one fails
+            }
+          }
         }
       }
 
