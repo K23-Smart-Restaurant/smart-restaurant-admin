@@ -35,10 +35,22 @@ const KitchenDisplayPage: React.FC = () => {
     }
   }, [showToast]);
 
+  // Fetch order history (last 10 completed orders)
+  const fetchOrderHistory = useCallback(async () => {
+    try {
+      const data = await kitchenService.getOrderHistory();
+      setCompletedOrders(data);
+    } catch (error) {
+      console.error('Failed to fetch order history:', error);
+      // Don't show error toast, as this is background data
+    }
+  }, []);
+
   // Initial fetch
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchOrderHistory(); // Fetch order history on load
+  }, [fetchOrders, fetchOrderHistory]);
 
   // Handle new order confirmed (sent to kitchen)
   const handleOrderConfirmed = useCallback(
@@ -236,9 +248,13 @@ const KitchenDisplayPage: React.FC = () => {
             )}
           </button>
 
+
           {/* History Button */}
           <button
-            onClick={() => setIsHistoryOpen(true)}
+            onClick={() => {
+              fetchOrderHistory();
+              setIsHistoryOpen(true);
+            }}
             className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 rounded-lg transition-all duration-200 text-charcoal flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm"
           >
             <History className="w-4 h-4 sm:w-5 sm:h-5" />
