@@ -65,9 +65,9 @@ const ReportsPage: React.FC = () => {
 
   // Transform peakHours to match chart expected format
   const peakHoursArray = Array.isArray(analyticsData?.peakHours) ? analyticsData.peakHours : [];
-  const peakHours = peakHoursArray.map((item: any) => ({
-    hour: item.hour,
-    orders: item.orderCount || item.orders || 0,
+  const peakHours = peakHoursArray.map((item: { hour: number; orderCount: number }) => ({
+    hour: String(item.hour),
+    orders: item.orderCount || 0,
   }));
 
   // Show loading state AFTER all hooks have been called
@@ -112,9 +112,7 @@ const ReportsPage: React.FC = () => {
       {/* Print-only Header */}
       <div className="hidden print:block print-header mb-6">
         <div className="text-center border-b-2 border-charcoal pb-4 mb-6">
-          <h1 className="text-4xl font-bold text-charcoal mb-2">
-            Restaurant Performance Report
-          </h1>
+          <h1 className="text-4xl font-bold text-charcoal mb-2">Restaurant Performance Report</h1>
           <p className="text-lg text-gray-600">
             {dateRange === '7days'
               ? 'Last 7 Days'
@@ -123,12 +121,13 @@ const ReportsPage: React.FC = () => {
                 : 'Last 3 Months'}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Generated on {new Date().toLocaleDateString('en-US', {
+            Generated on{' '}
+            {new Date().toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
               hour: '2-digit',
-              minute: '2-digit'
+              minute: '2-digit',
             })}
           </p>
         </div>
@@ -241,7 +240,9 @@ const ReportsPage: React.FC = () => {
                 {mostPopularItem?.menuItemName || 'N/A'}
               </p>
               {mostPopularItem && (
-                <p className="text-xs text-gray-600 mt-1 print:text-[10px]">{mostPopularItem.orderCount} orders</p>
+                <p className="text-xs text-gray-600 mt-1 print:text-[10px]">
+                  {mostPopularItem.orderCount} orders
+                </p>
               )}
             </div>
             <div className="bg-yellow-100 p-3 rounded-full print:hidden">

@@ -35,7 +35,7 @@ const corsOptions = {
 
     // Allow file:// protocol for local development (opening HTML files directly)
     if (origin.startsWith('file://')) {
-      console.log(`[CORS] Allowing file:// origin: ${origin}`);
+      console.info(`[CORS] Allowing file:// origin: ${origin}`);
       return callback(null, true);
     }
 

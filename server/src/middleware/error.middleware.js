@@ -3,7 +3,7 @@ import { logger } from '../config/winston.config.js';
 /**
  * Global error handler middleware
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // Log error
   logger.error('Error occurred:', {
     error: err.message,

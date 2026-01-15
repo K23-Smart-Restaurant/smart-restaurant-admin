@@ -80,7 +80,11 @@ const StaffLayout: React.FC = () => {
               }`}
               title={isConnected ? 'Connected' : 'Disconnected'}
             >
-              {isConnected ? <WifiIcon className="w-4 h-4 sm:w-5 sm:h-5" /> : <WifiOffIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
+              {isConnected ? (
+                <WifiIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <WifiOffIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
               <span className="text-xs font-semibold hidden md:inline">
                 {isConnected ? 'Online' : 'Offline'}
               </span>

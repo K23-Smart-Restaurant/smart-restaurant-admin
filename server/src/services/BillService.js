@@ -206,7 +206,7 @@ class BillService {
       throw new Error('Bill has not been generated for this order');
     }
 
-    return await this.calculateBill(orderId);
+    return this.calculateBill(orderId);
   }
 }
 

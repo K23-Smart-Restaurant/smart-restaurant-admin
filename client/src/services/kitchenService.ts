@@ -40,7 +40,9 @@ export const kitchenService = {
 
   // Get order history (last 10 completed orders)
   getOrderHistory: async (): Promise<Order[]> => {
-    const response = await apiClient.get<{ success: boolean; data: Order[] }>('/kitchen/orders/history');
+    const response = await apiClient.get<{ success: boolean; data: Order[] }>(
+      '/kitchen/orders/history'
+    );
     return response.data.data;
   },
 };

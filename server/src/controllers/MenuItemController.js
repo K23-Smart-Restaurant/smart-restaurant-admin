@@ -57,7 +57,6 @@ class MenuItemController {
 
         // Add 'photos' field files
         if (req.files.photos) {
-          const startIndex = filesToUpload.length;
           filesToUpload.push(...req.files.photos);
           // If no image was set, first photo becomes primary
           if (filesToUpload.length > 0 && !req.files.image) {
@@ -109,7 +108,7 @@ class MenuItemController {
       const uploadedPhotos = [];
 
       // Determine if an existing photo is being set as primary
-      const primaryPhotoId = req.body.primaryPhotoId;
+      const { primaryPhotoId } = req.body;
       const hasExistingPrimaryPhoto =
         primaryPhotoId && typeof primaryPhotoId === 'string' && primaryPhotoId.length > 0;
 

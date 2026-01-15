@@ -164,7 +164,8 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     staleTime: 30 * 1000,
   });
 
-  const rawMenuItems = data?.items ?? [];
+  // Stabilize rawMenuItems to prevent unnecessary re-renders in downstream hooks
+  const rawMenuItems = useMemo(() => data?.items ?? [], [data?.items]);
   const apiTotal = data?.total ?? rawMenuItems.length;
 
   // ===========================================
@@ -207,11 +208,10 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
 
     // Fuzzy search enabled
     if (fuzzyEnabled && fuseInstance) {
-      const result = searchWithHighlights(
-        fuseInstance,
-        trimmedQuery,
-        { limit: MAX_SEARCH_RESULTS, minRelevance: MIN_RELEVANCE_THRESHOLD }
-      );
+      const result = searchWithHighlights(fuseInstance, trimmedQuery, {
+        limit: MAX_SEARCH_RESULTS,
+        minRelevance: MIN_RELEVANCE_THRESHOLD,
+      });
 
       return {
         filteredItems: result.items,
@@ -421,12 +421,12 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
 
     // Legacy properties for compatibility
     searchQuery,
-    setSearchQuery: () => { }, // Deprecated - use options instead
+    setSearchQuery: () => {}, // Deprecated - use options instead
     selectedCategory,
-    setSelectedCategory: () => { }, // Deprecated - use options instead
+    setSelectedCategory: () => {}, // Deprecated - use options instead
     sortBy,
-    setSortBy: () => { }, // Deprecated - use options instead
+    setSortBy: () => {}, // Deprecated - use options instead
     sortOrder,
-    setSortOrder: () => { }, // Deprecated - use options instead
+    setSortOrder: () => {}, // Deprecated - use options instead
   };
 };

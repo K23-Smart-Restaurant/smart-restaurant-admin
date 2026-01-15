@@ -310,4 +310,3 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
     </div>
   );
 };
-

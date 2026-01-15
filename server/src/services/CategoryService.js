@@ -2,7 +2,7 @@ import prisma from '../lib/prisma.js';
 
 class CategoryService {
   async createCategory(data) {
-    return await prisma.category.create({
+    return prisma.category.create({
       data: {
         name: data.name,
         description: data.description,
@@ -18,7 +18,7 @@ class CategoryService {
   }
 
   async getCategories() {
-    return await prisma.category.findMany({
+    return prisma.category.findMany({
       include: {
         _count: {
           select: { menuItems: true },
@@ -29,7 +29,7 @@ class CategoryService {
   }
 
   async updateCategory(id, data) {
-    return await prisma.category.update({
+    return prisma.category.update({
       where: { id },
       data,
       include: {
@@ -67,7 +67,7 @@ class CategoryService {
     }
 
     // Hard delete - remove from database
-    return await prisma.category.delete({
+    return prisma.category.delete({
       where: { id },
     });
   }

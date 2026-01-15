@@ -11,20 +11,46 @@ import {
 } from 'recharts';
 import type { TopItem } from '../../hooks/useReports';
 
+// Tooltip props type
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: TopItem; value: number }>;
+}
+
+// Format currency
+const formatCurrency = (value: number) => {
+  return `$${value.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
+// Custom tooltip component (defined outside to avoid recreation on each render)
+const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const item = payload[0].payload;
+    return (
+      <div className="p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
+        <p className="mb-2 text-sm font-bold text-charcoal">{item.menuItemName}</p>
+        <p className="text-sm text-gray-700">
+          Orders: <span className="font-bold text-blue-600">{item.orderCount}</span>
+        </p>
+        <p className="text-sm text-gray-700">
+          Revenue:{' '}
+          <span className="font-bold text-green-600">{formatCurrency(item.totalRevenue)}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 interface TopItemsChartProps {
   data: TopItem[];
 }
 
 export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
   const [selectedItem, setSelectedItem] = useState<TopItem | null>(null);
-
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return `$${value.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
 
   // Generate color gradient (green to blue)
   const getBarColor = (index: number) => {
@@ -43,29 +69,12 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
     return colors[index] || colors[colors.length - 1];
   };
 
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const item = payload[0].payload;
-      return (
-        <div className="p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
-          <p className="mb-2 text-sm font-bold text-charcoal">{item.name}</p>
-          <p className="text-sm text-gray-700">
-            Orders: <span className="font-bold text-blue-600">{item.orderCount}</span>
-          </p>
-          <p className="text-sm text-gray-700">
-            Revenue:{' '}
-            <span className="font-bold text-green-600">{formatCurrency(item.revenue)}</span>
-          </p>
-        </div>
-      );
+  // Handle bar click - fix type by using unknown and type guard
+  const handleBarClick = (data: unknown) => {
+    // Type guard to check if data has the expected structure
+    if (data && typeof data === 'object' && 'menuItemId' in data) {
+      setSelectedItem(data as TopItem);
     }
-    return null;
-  };
-
-  // Handle bar click
-  const handleBarClick = (data: any) => {
-    setSelectedItem(data);
   };
 
   return (
@@ -98,7 +107,7 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
             <XAxis type="number" stroke="#666" style={{ fontSize: '12px' }} />
             <YAxis
               type="category"
-              dataKey="name"
+              dataKey="menuItemName"
               stroke="#666"
               style={{ fontSize: '12px' }}
               width={110}

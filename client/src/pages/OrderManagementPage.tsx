@@ -26,24 +26,35 @@ const OrderManagementPage: React.FC = () => {
     ? orders.filter((order) => ['PENDING', 'CONFIRMED'].includes(order.status))
     : [];
 
-  // Calculate overdue orders (mock - orders older than 30 minutes that aren't completed)
-  const overdueOrders = Array.isArray(orders)
-    ? orders.filter((order) => {
-        const orderAge = Date.now() - new Date(order.createdAt).getTime();
-        const thirtyMinutes = 30 * 60 * 1000;
-        return orderAge > thirtyMinutes && !['PAID', 'CANCELLED'].includes(order.status);
-      })
-    : [];
+  // Calculate overdue orders and avgPrepTime (moved to state to satisfy purity rules)
+  const [overdueOrders, setOverdueOrders] = useState<Order[]>([]);
+  const [avgPrepTime, setAvgPrepTime] = useState(0);
 
-  const avgPrepTime =
-    orders.length > 0
-      ? Math.round(
-          orders.reduce((sum, order) => {
-            const elapsed = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
-            return sum + elapsed;
-          }, 0) / orders.length
-        )
-      : 0;
+  // Calculate metrics when orders change
+  useEffect(() => {
+    if (!Array.isArray(orders) || orders.length === 0) {
+      setOverdueOrders([]);
+      setAvgPrepTime(0);
+      return;
+    }
+
+    const now = Date.now();
+    const thirtyMinutes = 30 * 60 * 1000;
+
+    // Calculate overdue orders
+    const overdue = orders.filter((order) => {
+      const orderAge = now - new Date(order.createdAt).getTime();
+      return orderAge > thirtyMinutes && !['PAID', 'CANCELLED'].includes(order.status);
+    });
+    setOverdueOrders(overdue);
+
+    // Calculate average prep time
+    const totalElapsed = orders.reduce((sum, order) => {
+      const elapsed = Math.floor((now - new Date(order.createdAt).getTime()) / 60000);
+      return sum + elapsed;
+    }, 0);
+    setAvgPrepTime(Math.round(totalElapsed / orders.length));
+  }, [orders]);
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);

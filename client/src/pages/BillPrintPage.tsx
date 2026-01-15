@@ -169,7 +169,10 @@ const BillPrintPage: React.FC = () => {
 
       {/* Printable Bill */}
       <div className="min-h-screen bg-gray-50 print:bg-white p-8 print:p-0">
-        <div id="printable-bill" className="max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-12 print:p-8">
+        <div
+          id="printable-bill"
+          className="max-w-4xl mx-auto bg-white shadow-lg print:shadow-none p-12 print:p-8"
+        >
           {/* Header */}
           <div className="text-center border-b-2 border-gray-300 pb-6 mb-6">
             <h1 className="text-4xl font-bold text-charcoal mb-2">Smart Restaurant</h1>
@@ -208,7 +211,9 @@ const BillPrintPage: React.FC = () => {
                   <th className="text-left py-3 px-2 font-semibold text-charcoal">Item</th>
                   <th className="text-center py-3 px-2 font-semibold text-charcoal w-20">Qty</th>
                   <th className="text-right py-3 px-2 font-semibold text-charcoal w-24">Price</th>
-                  <th className="text-right py-3 px-2 font-semibold text-charcoal w-28">Subtotal</th>
+                  <th className="text-right py-3 px-2 font-semibold text-charcoal w-28">
+                    Subtotal
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -254,7 +259,9 @@ const BillPrintPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-gray-700">Service Charge ({billData.serviceChargeRate}%):</span>
+                  <span className="text-gray-700">
+                    Service Charge ({billData.serviceChargeRate}%):
+                  </span>
                   <span className="text-gray-800 font-medium">
                     {formatCurrency(billData.serviceCharge)}
                   </span>

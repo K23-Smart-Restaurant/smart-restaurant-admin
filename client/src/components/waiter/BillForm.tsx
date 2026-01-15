@@ -84,7 +84,9 @@ const BillForm: React.FC<BillFormProps> = ({
           <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
             {/* Order Items */}
             <div className="mb-4 sm:mb-6">
-              <h3 className="font-semibold text-charcoal mb-2 sm:mb-3 text-sm sm:text-base">Order Items:</h3>
+              <h3 className="font-semibold text-charcoal mb-2 sm:mb-3 text-sm sm:text-base">
+                Order Items:
+              </h3>
               <div className="space-y-2">
                 {order.orderItems?.map((item) => (
                   <div
@@ -96,11 +98,15 @@ const BillForm: React.FC<BillFormProps> = ({
                         {item.quantity}x
                       </span>
                       <div>
-                        <p className="font-medium text-charcoal text-sm sm:text-base">{item.menuItem?.name || 'Item'}</p>
+                        <p className="font-medium text-charcoal text-sm sm:text-base">
+                          {item.menuItem?.name || 'Item'}
+                        </p>
                         <p className="text-xs text-gray-600">${item.unitPrice.toFixed(2)} each</p>
                       </div>
                     </div>
-                    <p className="font-semibold text-charcoal text-sm sm:text-base">${item.subtotal.toFixed(2)}</p>
+                    <p className="font-semibold text-charcoal text-sm sm:text-base">
+                      ${item.subtotal.toFixed(2)}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -108,7 +114,9 @@ const BillForm: React.FC<BillFormProps> = ({
 
             {/* Discount Input */}
             <div className="mb-4 sm:mb-6">
-              <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2">Discount (%)</label>
+              <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2">
+                Discount (%)
+              </label>
               <input
                 type="number"
                 min="0"
@@ -140,7 +148,9 @@ const BillForm: React.FC<BillFormProps> = ({
                 <div className="border-t-2 border-gray-300 pt-2 mt-2">
                   <div className="flex justify-between text-charcoal">
                     <span className="text-base sm:text-lg font-bold">Total:</span>
-                    <span className="text-xl sm:text-2xl font-bold text-naples">${total.toFixed(2)}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-naples">
+                      ${total.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
