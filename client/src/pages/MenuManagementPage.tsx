@@ -34,6 +34,12 @@ const MenuManagementPage: React.FC = () => {
     deleteMenuItem,
     toggleAvailability,
     toggleSoldOut,
+
+    // Fuzzy Search helpers (always enabled)
+    getItemHighlights,
+    getItemRelevance,
+    suggestions,
+    isSearchActive,
   } = useMenuItems({
     searchQuery,
     selectedCategory,
@@ -213,6 +219,11 @@ const MenuManagementPage: React.FC = () => {
         onDelete={handleDeleteMenuItem}
         onToggleAvailability={toggleAvailability}
         onToggleSoldOut={toggleSoldOut}
+        // Fuzzy search props (always enabled)
+        getItemHighlights={getItemHighlights}
+        getItemRelevance={getItemRelevance}
+        suggestions={suggestions}
+        isSearchActive={isSearchActive}
       />
 
       {/* Create/Edit Menu Item Modal */}
