@@ -9,7 +9,7 @@ import {
   LayoutGridIcon,
   ShoppingCartIcon,
   BarChart3Icon,
-  BellIcon,
+  // BellIcon,
   MenuIcon,
   XIcon,
   ChevronDownIcon,
@@ -138,10 +138,10 @@ const DashboardLayout: React.FC = () => {
             {/* Right side: Notifications & Profile */}
             <div className="flex items-center space-x-4 ml-auto">
               {/* Notifications */}
-              <button className="relative p-2.5 text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-110 group">
+              {/* <button className="relative p-2.5 text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-110 group">
                 <BellIcon className="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" />
                 <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse-glow"></span>
-              </button>
+              </button> */}
 
               {/* User profile dropdown */}
               <div className="relative">
