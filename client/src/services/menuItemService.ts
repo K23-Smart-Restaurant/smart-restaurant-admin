@@ -150,10 +150,8 @@ const appendPhotos = (formData: FormData, photos?: PhotoInput[], removedPhotoIds
   photos.forEach((photo) => {
     if (photo.file) {
       formData.append('photos', photo.file);
-      // Backward compatibility: still provide single image field
-      if (photo === primary) {
-        formData.append('image', photo.file);
-      }
+      // Note: We no longer send duplicate 'image' field for backward compatibility
+      // The primaryPhotoIndex field correctly indicates which photo is primary
     }
     if (photo.id) {
       formData.append('existingPhotoIds', photo.id);
