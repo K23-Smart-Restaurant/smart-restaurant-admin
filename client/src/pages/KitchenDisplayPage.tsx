@@ -16,7 +16,6 @@ const KitchenDisplayPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isOneItemCooking, setIsOneItemCooking] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const { showToast } = useToast();
@@ -131,6 +130,11 @@ const KitchenDisplayPage: React.FC = () => {
     let previousOrders: Order[] = [];
 
     try {
+      // Find the current order to check its status
+      const currentOrder = orders.find((o) => o.id === orderId);
+      const shouldUpdateOrderStatus =
+        currentOrder?.status === 'CONFIRMED' && itemStatus === 'COOKING';
+
       // Optimistically update the UI first
       setOrders((prevOrders) => {
         previousOrders = prevOrders; // Store for rollback
@@ -138,6 +142,8 @@ const KitchenDisplayPage: React.FC = () => {
           if (o.id === orderId) {
             return {
               ...o,
+              // Also update order status optimistically if needed
+              status: shouldUpdateOrderStatus ? 'PREPARING' : o.status,
               orderItems: o.orderItems?.map((item) =>
                 item.id === itemId ? { ...item, itemStatus } : item
               ),
@@ -150,9 +156,8 @@ const KitchenDisplayPage: React.FC = () => {
       // Then update on the backend
       let updatedOrder = await kitchenService.updateItemStatus(orderId, itemId, itemStatus);
 
-      // If this is the first item being marked as cooking, also update order status
-      if (!isOneItemCooking && itemStatus === 'COOKING') {
-        setIsOneItemCooking(true);
+      // If the order was CONFIRMED and first item is being marked as cooking, update order status
+      if (shouldUpdateOrderStatus) {
         // Update orderStatus to 'PREPARING' if at least one item is cooking
         updatedOrder = await kitchenService.updateOrderStatus(orderId, 'PREPARING');
       }
@@ -202,7 +207,9 @@ const KitchenDisplayPage: React.FC = () => {
       {/* Header Bar */}
       <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shadow-sm rounded-t-lg">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">Kitchen Display System</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
+            Kitchen Display System
+          </h1>
           <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">
             {orders.length} active order{orders.length !== 1 ? 's' : ''}
           </p>
@@ -247,7 +254,6 @@ const KitchenDisplayPage: React.FC = () => {
               </>
             )}
           </button>
-
 
           {/* History Button */}
           <button
@@ -303,8 +309,12 @@ const KitchenDisplayPage: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">No Active Orders</h2>
-              <p className="text-sm sm:text-base text-gray-600">New orders will appear here automatically</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">
+                No Active Orders
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600">
+                New orders will appear here automatically
+              </p>
             </div>
           </div>
         )}

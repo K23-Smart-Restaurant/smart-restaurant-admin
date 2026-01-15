@@ -23,6 +23,7 @@ model User {
   passwordResetExpires DateTime?
   passwordResetToken   String?        @db.VarChar(500)
   verificationToken    String?        @db.VarChar(500)
+  verificationTokenExpiry DateTime?
   ordersAsCustomer     Order[]        @relation("CustomerOrders")
   ordersAsWaiter       Order[]        @relation("WaiterOrders")
   refreshTokens        RefreshToken[]
