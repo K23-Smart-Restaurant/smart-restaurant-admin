@@ -6,7 +6,8 @@ export type OrderStatus =
   | 'PREPARING'
   | 'READY'
   | 'SERVED'
-  | 'PAID'
+  | 'COMPLETED'
+  | 'BILL_REQUESTED'
   | 'CANCELLED';
 export type PaymentStatus = 'UNPAID' | 'PENDING' | 'PAID' | 'FAILED';
 export type OrderItemStatus = 'QUEUED' | 'COOKING' | 'READY';

@@ -1,32 +1,31 @@
 {
   "title": "Staff Management",
-  "list": {
-    "name": "Name",
-    "role": "Role",
-    "email": "Email",
-    "phone": "Phone",
-    "status": "Status"
-  },
-  "roles": {
-    "admin": "Admin",
-    "manager": "Manager",
-    "waiter": "Waiter",
-    "kitchen": "Kitchen Staff",
-    "cashier": "Cashier"
-  },
-  "actions": {
-    "addStaff": "Add Staff",
-    "editStaff": "Edit Staff",
-    "deactivate": "Deactivate",
-    "activate": "Activate"
-  },
-  "form": {
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "email": "Email",
-    "phone": "Phone",
-    "role": "Role",
-    "password": "Password",
-    "confirmPassword": "Confirm Password"
-  }
+	"manageMessage": "Manage your restaurant staff members",
+	"tabs": {
+		"waiters": "Waiters",
+		"kitchenStaff": "Kitchen Staff"
+	},
+	"actions": {
+		"addWaiter": "Add Waiter",
+		"addKitchenStaff": "Add Kitchen Staff",
+		"editStaff": "Edit Staff",
+		"deleteStaff": "Delete Staff"
+	},
+	"table": {
+		"filter": {
+			"filterName": "Filter by Status",
+			"all": "All",
+			"active": "Active",
+			"inactive": "Inactive"
+		},
+		"noStaff": "No staff members found.",
+		"columns": {
+			"name": "Name",
+			"email": "Email",
+			"phone": "Phone",
+			"status": "Status",
+			"joinedDate": "Joined Date",
+			"actions": "Actions"
+		}
+	}
 }

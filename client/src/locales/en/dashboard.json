@@ -1,23 +1,38 @@
 {
   "title": "Dashboard",
-  "welcomeMessage": "Welcome back, {{name}}!",
+  "welcomeMessage": "Welcome back! Here's what's happening today.",
   "stats": {
     "totalOrders": "Total Orders",
     "revenue": "Revenue",
+    "activeTables": "Active Tables",
     "activeOrders": "Active Orders",
     "tablesOccupied": "Tables Occupied",
-    "todayOrders": "Today's Orders",
-    "todayRevenue": "Today's Revenue"
-  },
-  "charts": {
-    "orderTrends": "Order Trends",
-    "revenueOverview": "Revenue Overview",
-    "popularItems": "Popular Items"
+    "staffOnline": "Staff Online"
   },
   "quickActions": {
-    "title": "Quick Actions",
-    "newOrder": "New Order",
-    "viewMenu": "View Menu",
-    "manageStaff": "Manage Staff"
+    "addMenuItem": "Add Menu Item",
+    "viewOrders": "View Orders"
+  },
+  "table": {
+    "title": "Recent Orders",
+    "noOrders": "No recent orders available.",
+    "columns": {
+      "orderId": "Order ID",
+      "table": "Table",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "time": "Time"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "served": "Served",
+      "completed": "Completed",
+      "billRequested": "Bill Requested",
+      "cancelled": "Cancelled"
+    }
   }
 }

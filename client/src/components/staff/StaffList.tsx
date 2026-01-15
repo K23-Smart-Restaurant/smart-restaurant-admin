@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { PencilIcon, TrashIcon, CheckCircleIcon } from 'lucide-react';
 import type { Staff, StaffRole } from '../../hooks/useStaff';
+import { useTranslation } from 'react-i18next';
 
 type FilterType = 'ALL' | 'ACTIVE' | 'INACTIVE';
 
@@ -13,6 +14,7 @@ interface StaffListProps {
 }
 
 export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onToggleActive }) => {
+  const { t } = useTranslation('staff');
   const [filter, setFilter] = useState<FilterType>('ALL');
 
   // Ensure staff is an array
@@ -52,9 +54,9 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
             onChange={(e) => setFilter(e.target.value as FilterType)}
             className="px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
           >
-            <option value="ALL">All</option>
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
+            <option value="ALL">{t('table.filter.all')}</option>
+            <option value="ACTIVE">{t('table.filter.active')}</option>
+            <option value="INACTIVE">{t('table.filter.inactive')}</option>
           </select>
         </div>
         <div className="text-sm text-gray-600">
@@ -65,7 +67,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
       {/* Staff table */}
       {filteredStaff.length === 0 ? (
         <div className="bg-white rounded-lg shadow-md border border-antiflash p-12 text-center">
-          <p className="text-gray-600">No staff members found</p>
+          <p className="text-gray-600">{t('table.noStaff')}</p>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md border border-antiflash overflow-hidden">
@@ -77,22 +79,22 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                     Avatar
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Name
+                    {t('table.columns.name')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Email
+                    {t('table.columns.email')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Phone
+                    {t('table.columns.phone')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Status
+                    {t('table.columns.status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Joined Date
+                    {t('table.columns.joinedDate')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Actions
+                    {t('table.columns.actions')}
                   </th>
                 </tr>
               </thead>

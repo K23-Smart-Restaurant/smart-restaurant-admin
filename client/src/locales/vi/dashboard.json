@@ -1,23 +1,38 @@
 {
   "title": "Bảng điều khiển",
-  "welcomeMessage": "Chào mừng trở lại, {{name}}!",
+  "welcomeMessage": "Chào mừng trở lại, đây là những gì xảy ra hôm nay",
   "stats": {
     "totalOrders": "Tổng đơn hàng",
     "revenue": "Doanh thu",
+    "activeTables": "Bàn đang hoạt động",
     "activeOrders": "Đơn hàng đang xử lý",
     "tablesOccupied": "Bàn đang sử dụng",
-    "todayOrders": "Đơn hàng hôm nay",
-    "todayRevenue": "Doanh thu hôm nay"
-  },
-  "charts": {
-    "orderTrends": "xu hướng đơn hàng",
-    "revenueOverview": "Tổng quan doanh thu",
-    "popularItems": "Món ăn phổ biến"
+    "staffOnline": "Nhân viên trực tuyến"
   },
   "quickActions": {
-    "title": "Thao tác nhanh",
-    "newOrder": "Đơn hàng mới",
-    "viewMenu": "Xem thực đơn",
-    "manageStaff": "Quản lý nhân viên"
+    "addMenuItem": "Thêm món vào thực đơn",
+    "viewOrders": "Xem đơn hàng"
+  },
+"table": {
+    "title": "Đơn hàng gần đây",
+    "noOrders": "Không có đơn hàng gần đây.",
+    "columns": {
+      "orderNumber": "Đơn hàng #",
+      "table": "Bàn",
+      "items": "Món",
+      "total": "Tổng cộng",
+      "time": "Thời gian",
+      "status": "Trạng thái"
+    }
+  },
+  "statuses": {
+    "pending": "Chờ xử lý",
+    "confirmed": "Đã xác nhận",
+    "preparing": "Đang chuẩn bị",
+    "ready": "Sẵn sàng",
+    "served": "Đã phục vụ",
+    "completed": "Hoàn thành",
+    "billRequested": "Yêu cầu thanh toán",
+    "cancelled": "Đã hủy"
   }
 }
