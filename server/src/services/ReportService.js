@@ -125,7 +125,7 @@ class ReportService {
     const ordersPerDayArray = Object.entries(ordersByDate)
       .map(([date, orders]) => ({
         date,
-        orders: orders,
+        orders,
       }))
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 

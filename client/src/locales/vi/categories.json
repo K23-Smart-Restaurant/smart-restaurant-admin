@@ -49,6 +49,9 @@
   },
   "form": {
     "name": "Tên",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "saving": "Đang lưu...",
     "namePlaceholder": "Nhập tên danh mục",
     "description": "Mô tả",
     "descriptionPlaceholder": "Nhập mô tả ngắn (tùy chọn)",

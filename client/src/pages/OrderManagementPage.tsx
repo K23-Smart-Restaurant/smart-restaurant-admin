@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ShoppingCart, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOrders } from '../hooks/useOrders';
@@ -15,11 +15,21 @@ const OrderManagementPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(9);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   const { orders, total, isLoading, isError, updateStatus } = useOrders({
     page,
     pageSize,
   });
+
+  // Update current time every minute for accurate calculations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Calculate summary stats
   const todayOrders = Array.isArray(orders)
@@ -35,23 +45,42 @@ const OrderManagementPage: React.FC = () => {
     : [];
 
   // Calculate metrics directly from current page (Note: These are based on current page only, not all orders)
-  const now = Date.now();
-  const thirtyMinutes = 30 * 60 * 1000;
+  const { overdueOrders } = useMemo(() => {
+    const now = currentTime;
+    const thirtyMinutes = 30 * 60 * 1000;
 
-  const overdueOrders = Array.isArray(orders)
-    ? orders.filter((order) => {
-        const isFinished =
-          order.paymentStatus === 'PAID' ||
-          order.status === 'COMPLETED' ||
-          order.status === 'SERVED' ||
-          order.status === 'CANCELLED';
+    const overdue = Array.isArray(orders)
+      ? orders.filter((order) => {
+          const isFinished =
+            order.paymentStatus === 'PAID' ||
+            order.status === 'COMPLETED' ||
+            order.status === 'SERVED' ||
+            order.status === 'CANCELLED';
 
-        if (isFinished) return false;
+          if (isFinished) return false;
 
-        const orderAge = now - new Date(order.createdAt).getTime();
-        return orderAge > thirtyMinutes;
-      })
-    : [];
+          const orderAge = now - new Date(order.createdAt).getTime();
+          return orderAge > thirtyMinutes;
+        })
+      : [];
+
+    const urgent = Array.isArray(orders)
+      ? orders.filter((order) => {
+          const isFinished =
+            order.paymentStatus === 'PAID' ||
+            order.status === 'COMPLETED' ||
+            order.status === 'SERVED' ||
+            order.status === 'CANCELLED';
+
+          if (isFinished) return false;
+
+          const orderAge = now - new Date(order.createdAt).getTime();
+          return orderAge > 15 * 60 * 1000 && orderAge <= thirtyMinutes;
+        })
+      : [];
+
+    return { overdueOrders: overdue, urgentOrders: urgent };
+  }, [orders, currentTime]);
 
   const avgPrepTime =
     Array.isArray(orders) && orders.length > 0
@@ -62,7 +91,8 @@ const OrderManagementPage: React.FC = () => {
               order.paymentStatus === 'PAID' ||
               order.status === 'COMPLETED' ||
               order.status === 'SERVED';
-            const endTime = isFinished && order.paidAt ? new Date(order.paidAt).getTime() : now;
+            const endTime =
+              isFinished && order.paidAt ? new Date(order.paidAt).getTime() : currentTime;
             const elapsed = Math.floor((endTime - startTime) / 60000);
             return sum + elapsed;
           }, 0) / orders.length
@@ -169,7 +199,9 @@ const OrderManagementPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">{t('orders:stats.avgPrepTime')}</p>
-              <p className="text-3xl font-bold text-charcoal mt-2">{avgPrepTime} {t('orders:stats.minutes')}</p>
+              <p className="text-3xl font-bold text-charcoal mt-2">
+                {avgPrepTime} {t('orders:stats.minutes')}
+              </p>
             </div>
             <div className="bg-green-100 p-3 rounded-full">
               <TrendingUp className="w-8 h-8 text-green-600" />

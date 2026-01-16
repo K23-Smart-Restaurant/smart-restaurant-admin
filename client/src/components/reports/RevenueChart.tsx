@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -18,7 +18,7 @@ type RevenueDataPoint = { date: string; revenue: number; orders: number };
 // Tooltip props type
 interface TooltipProps {
   active?: boolean;
-  payload?: Array<{ payload: RevenueDataPoint; value: number }>;
+  payload?: ReadonlyArray<{ payload: RevenueDataPoint; value: number }>;
 }
 
 // Format date for display
@@ -49,25 +49,29 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   const { t } = useTranslation(['reports']);
 
   // Custom tooltip component that uses translations
-  const CustomTooltipWithTranslation: React.FC<TooltipProps> = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
-          <p className="text-sm text-gray-700">
-            {t('reports:revenueChart.revenue')}{' '}
-            <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
-          </p>
-          <p className="text-sm text-gray-700">
-            {t('reports:revenueChart.ordersLabel')}{' '}
-            <span className="font-bold text-blue-600">{data.orders}</span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const CustomTooltipWithTranslation = useMemo(
+    () =>
+      function CustomTooltip({ active, payload }: TooltipProps) {
+        if (active && payload && payload.length) {
+          const data = payload[0].payload;
+          return (
+            <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+              <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
+              <p className="text-sm text-gray-700">
+                {t('reports:revenueChart.revenue')}{' '}
+                <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
+              </p>
+              <p className="text-sm text-gray-700">
+                {t('reports:revenueChart.ordersLabel')}{' '}
+                <span className="font-bold text-blue-600">{data.orders}</span>
+              </p>
+            </div>
+          );
+        }
+        return null;
+      },
+    [t]
+  );
 
   // Calculate total revenue for selected period
   const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
@@ -135,7 +139,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               style={{ fontSize: '12px' }}
             />
             <YAxis tickFormatter={formatCurrency} stroke="#666" style={{ fontSize: '12px' }} />
-            <Tooltip content={<CustomTooltipWithTranslation />} />
+            <Tooltip content={CustomTooltipWithTranslation} />
             <Legend />
             <Line
               type="monotone"

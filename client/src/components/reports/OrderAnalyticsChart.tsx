@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { Tab } from '@headlessui/react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,7 +21,7 @@ type PeakHourData = { hour: string; orders: number };
 // Tooltip prop types for Recharts
 interface TooltipProps {
   active?: boolean;
-  payload?: Array<{ payload: OrdersPerDayData | PeakHourData; value: number }>;
+  payload?: ReadonlyArray<{ payload: OrdersPerDayData | PeakHourData; value: number }>;
 }
 
 // Format date for display
@@ -43,50 +43,58 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
   const [selectedTab, setSelectedTab] = useState(0);
 
   // Custom tooltip for orders per day with translations
-  const OrdersTooltipWithTranslation: React.FC<TooltipProps> = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload as OrdersPerDayData;
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
-          <p className="text-sm text-gray-700">
-            {t('reports:orderAnalyticsChart.ordersPerDay.orders')}{' '}
-            <span className="font-bold text-blue-600">{payload[0].value}</span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const OrdersTooltipWithTranslation = useMemo(
+    () =>
+      function OrdersTooltip({ active, payload }: TooltipProps) {
+        if (active && payload && payload.length) {
+          const data = payload[0].payload as OrdersPerDayData;
+          return (
+            <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+              <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
+              <p className="text-sm text-gray-700">
+                {t('reports:orderAnalyticsChart.ordersPerDay.orders')}{' '}
+                <span className="font-bold text-blue-600">{payload[0].value}</span>
+              </p>
+            </div>
+          );
+        }
+        return null;
+      },
+    [t]
+  );
 
   // Custom tooltip for peak hours with translations
-  const PeakHoursTooltipWithTranslation: React.FC<TooltipProps & { avgOrdersPerHour: number }> = ({
-    active,
-    payload,
-    avgOrdersPerHour,
-  }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload as PeakHourData;
-      const isPeak = payload[0].value > avgOrdersPerHour;
-      return (
-        <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-charcoal mb-2">{data.hour}</p>
-          <p className="text-sm text-gray-700">
-            {t('reports:orderAnalyticsChart.peakHours.orders')}{' '}
-            <span className={`font-bold ${isPeak ? 'text-orange-600' : 'text-blue-600'}`}>
-              {payload[0].value}
-            </span>
-          </p>
-          {isPeak && (
-            <p className="text-xs text-orange-600 mt-1">
-              ⭐ {t('reports:orderAnalyticsChart.peakHours.peakHour')}
-            </p>
-          )}
-        </div>
-      );
-    }
-    return null;
-  };
+  const PeakHoursTooltipWithTranslation = useMemo(
+    () =>
+      function PeakHoursTooltip({
+        active,
+        payload,
+        avgOrdersPerHour,
+      }: TooltipProps & { avgOrdersPerHour: number }) {
+        if (active && payload && payload.length) {
+          const data = payload[0].payload as PeakHourData;
+          const isPeak = (payload[0].value as number) > avgOrdersPerHour;
+          return (
+            <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+              <p className="text-sm font-semibold text-charcoal mb-2">{data.hour}</p>
+              <p className="text-sm text-gray-700">
+                {t('reports:orderAnalyticsChart.peakHours.orders')}{' '}
+                <span className={`font-bold ${isPeak ? 'text-orange-600' : 'text-blue-600'}`}>
+                  {payload[0].value}
+                </span>
+              </p>
+              {isPeak && (
+                <p className="text-xs text-orange-600 mt-1">
+                  ⭐ {t('reports:orderAnalyticsChart.peakHours.peakHour')}
+                </p>
+              )}
+            </div>
+          );
+        }
+        return null;
+      },
+    [t]
+  );
 
   // Ensure arrays are valid
   const validOrdersPerDay = Array.isArray(ordersPerDay) ? ordersPerDay : [];
@@ -168,7 +176,7 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                     style={{ fontSize: '12px' }}
                   />
                   <YAxis stroke="#666" style={{ fontSize: '12px' }} />
-                  <Tooltip content={<OrdersTooltipWithTranslation />} />
+                  <Tooltip content={OrdersTooltipWithTranslation} />
                   <ReferenceLine
                     y={avgOrdersPerDay}
                     stroke="#ff9800"
@@ -218,9 +226,12 @@ export const OrderAnalyticsChart: React.FC<OrderAnalyticsChartProps> = ({
                   />
                   <YAxis stroke="#666" style={{ fontSize: '12px' }} />
                   <Tooltip
-                    content={
-                      <PeakHoursTooltipWithTranslation avgOrdersPerHour={avgOrdersPerHour} />
-                    }
+                    content={(props) => (
+                      <PeakHoursTooltipWithTranslation
+                        {...props}
+                        avgOrdersPerHour={avgOrdersPerHour}
+                      />
+                    )}
                   />
                   <ReferenceLine
                     y={avgOrdersPerHour}

@@ -89,5 +89,23 @@
   "loading": {
     "default": "Loading...",
     "text": "Loading"
+  },
+  "login": {
+    "title": "Smart Restaurant",
+    "subtitle": "Admin Dashboard Login",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me for 7 days",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "emailPlaceholder": "admin@restaurant.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "footer": "Secure admin access • Powered by Smart Restaurant",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "unexpectedError": "An unexpected error occurred"
+    }
   }
 }

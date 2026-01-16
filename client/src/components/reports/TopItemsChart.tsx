@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -15,7 +15,7 @@ import type { TopItem } from '../../hooks/useReports';
 // Tooltip props type
 interface TooltipProps {
   active?: boolean;
-  payload?: Array<{ payload: TopItem; value: number }>;
+  payload?: ReadonlyArray<{ payload: TopItem; value: number }>;
 }
 
 // Format currency
@@ -38,25 +38,31 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
   const [selectedItem, setSelectedItem] = useState<TopItem | null>(null);
 
   // Custom tooltip component that uses translations
-  const CustomTooltipWithTranslation: React.FC<TooltipProps> = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const item = payload[0].payload;
-      return (
-        <div className="p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
-          <p className="mb-2 text-sm font-bold text-charcoal">{item.menuItemName}</p>
-          <p className="text-sm text-gray-700">
-            {t('reports:topItemsChart.ordersLabel')}{' '}
-            <span className="font-bold text-blue-600">{item.orderCount}</span>
-          </p>
-          <p className="text-sm text-gray-700">
-            {t('reports:topItemsChart.revenueLabel')}{' '}
-            <span className="font-bold text-green-600">{formatCurrency(item.totalRevenue)}</span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const CustomTooltipWithTranslation = useMemo(
+    () =>
+      function CustomTooltip({ active, payload }: TooltipProps) {
+        if (active && payload && payload.length) {
+          const item = payload[0].payload;
+          return (
+            <div className="p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <p className="mb-2 text-sm font-bold text-charcoal">{item.menuItemName}</p>
+              <p className="text-sm text-gray-700">
+                {t('reports:topItemsChart.ordersLabel')}{' '}
+                <span className="font-bold text-blue-600">{item.orderCount}</span>
+              </p>
+              <p className="text-sm text-gray-700">
+                {t('reports:topItemsChart.revenueLabel')}{' '}
+                <span className="font-bold text-green-600">
+                  {formatCurrency(item.totalRevenue)}
+                </span>
+              </p>
+            </div>
+          );
+        }
+        return null;
+      },
+    [t]
+  );
 
   // Generate color gradient (green to blue)
   const getBarColor = (index: number) => {
@@ -124,7 +130,7 @@ export const TopItemsChart: React.FC<TopItemsChartProps> = ({ data }) => {
               style={{ fontSize: '12px' }}
               width={110}
             />
-            <Tooltip content={<CustomTooltipWithTranslation />} />
+            <Tooltip content={CustomTooltipWithTranslation} />
             <Bar
               dataKey="orderCount"
               onClick={handleBarClick}

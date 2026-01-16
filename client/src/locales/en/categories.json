@@ -49,6 +49,9 @@
   },
   "form": {
     "name": "Name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
     "namePlaceholder": "Enter category name",
     "description": "Description",
     "descriptionPlaceholder": "Enter a brief description (optional)",

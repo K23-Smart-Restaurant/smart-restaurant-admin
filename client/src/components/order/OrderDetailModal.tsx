@@ -127,7 +127,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   };
 
   // Get translated item status
-  const getItemStatusLabel = (status: OrderItemStatus) => {
+  const _getItemStatusLabel = (status: OrderItemStatus) => {
     const itemStatusMap: Record<OrderItemStatus, string> = {
       QUEUED: t('orders:itemStatus.queued'),
       COOKING: t('orders:itemStatus.cooking'),

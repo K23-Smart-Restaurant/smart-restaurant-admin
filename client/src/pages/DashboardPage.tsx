@@ -77,13 +77,15 @@ const DashboardPage: React.FC = () => {
       .slice(0, 5)
       .map((order) => ({
         id: order.id.substring(0, 8).toUpperCase(),
-        table: order.table?.tableNumber ? `${t('table.columns.table')} ${order.table.tableNumber}` : 'N/A',
+        table: order.table?.tableNumber
+          ? `${t('table.columns.table')} ${order.table.tableNumber}`
+          : 'N/A',
         items: order.orderItems?.length || 0,
         amount: Number(order.totalAmount || 0),
         status: t(`table.statuses.${order.status.toLowerCase()}`),
         time: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }),
       }));
-  }, [orders]);
+  }, [orders, t]);
 
   const activeTablePercentage =
     dashboardData.totalTables > 0
@@ -130,7 +132,7 @@ const DashboardPage: React.FC = () => {
       {/* Page title */}
       <div className="mb-8 animate-fade-in-down">
         <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
-            {t('title')}
+          {t('title')}
         </h1>
         <p className="font-medium text-gray-600">{t('welcomeMessage')}</p>
       </div>

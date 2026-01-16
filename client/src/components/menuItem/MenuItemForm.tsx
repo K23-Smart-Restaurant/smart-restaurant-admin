@@ -11,7 +11,7 @@ import { Button } from '../common/Button';
 type PhotoState = PhotoInput & { previewUrl: string };
 
 export interface MenuItemFormSubmitPayload {
-  data: any;
+  data: Record<string, unknown>;
   photos: PhotoInput[];
   removedPhotoIds: string[];
 }

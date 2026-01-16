@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { UtensilsIcon, Eye, EyeOff } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation('common');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -25,9 +27,9 @@ const LoginPage: React.FC = () => {
       navigate('/dashboard');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Invalid email or password');
+        setError(err.response?.data?.message || t('login.errors.invalidCredentials'));
       } else {
-        setError('An unexpected error occurred');
+        setError(t('login.errors.unexpectedError'));
       }
     } finally {
       setIsLoading(false);
@@ -55,7 +57,7 @@ const LoginPage: React.FC = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text text-transparent">
               Smart Restaurant
             </h1>
-            <p className="text-gray-600 mt-2 font-medium">Admin Dashboard Login</p>
+            <p className="text-gray-600 mt-2 font-medium">{t('login.subtitle')}</p>
           </div>
 
           {error && (
@@ -68,7 +70,7 @@ const LoginPage: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-1">
-                  Email <span className="text-red-600">*</span>
+                  {t('login.email')} <span className="text-red-600">*</span>
                 </label>
                 <input
                   id="email"
@@ -77,13 +79,13 @@ const LoginPage: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none border-antiflash"
-                  placeholder="admin@restaurant.com"
+                  placeholder={t('login.emailPlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-charcoal mb-1">
-                  Password <span className="text-red-600">*</span>
+                  {t('login.password')} <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -93,13 +95,13 @@ const LoginPage: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="w-full bg-gray-200 text-black px-4 py-2 pr-12 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none border-antiflash"
-                    placeholder="••••••••"
+                    placeholder={t('login.passwordPlaceholder')}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-charcoal transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-naples focus:ring-offset-1"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -120,7 +122,7 @@ const LoginPage: React.FC = () => {
                 htmlFor="remember-me"
                 className="ml-2 text-sm text-charcoal cursor-pointer select-none hover:text-gray-900 transition-colors"
               >
-                Remember me for 7 days
+                {t('login.rememberMe')}
               </label>
             </div>
 
@@ -147,18 +149,16 @@ const LoginPage: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Logging in...
+                  {t('login.loggingIn')}
                 </span>
               ) : (
-                'Login'
+                t('login.loginButton')
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center animate-fade-in" style={{ animationDelay: '400ms' }}>
-            <p className="text-xs text-gray-500">
-              Secure admin access • Powered by Smart Restaurant
-            </p>
+            <p className="text-xs text-gray-500">{t('login.footer')}</p>
           </div>
         </div>
       </div>

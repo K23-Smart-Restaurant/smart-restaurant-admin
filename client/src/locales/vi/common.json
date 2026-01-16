@@ -89,5 +89,23 @@
   "loading": {
     "default": "Đang tải...",
     "text": "Đang tải"
+  },
+  "login": {
+    "title": "Nhà Hàng Thông Minh",
+    "subtitle": "Đăng Nhập Quản Trị",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "rememberMe": "Ghi nhớ đăng nhập trong 7 ngày",
+    "loginButton": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập...",
+    "emailPlaceholder": "admin@nhahang.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "footer": "Truy cập quản trị an toàn • Được cung cấp bởi Smart Restaurant",
+    "errors": {
+      "invalidCredentials": "Email hoặc mật khẩu không đúng",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    }
   }
 }
