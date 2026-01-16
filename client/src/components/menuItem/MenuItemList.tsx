@@ -1,5 +1,6 @@
 import React from 'react';
 import { SearchIcon, FilterIcon, ArrowUpDownIcon, SparklesIcon, XCircleIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
 import type { FieldHighlight } from '../../types/search.types';
 import { MenuItemCard } from './MenuItemCard';
@@ -69,20 +70,22 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
   suggestions = [],
   isSearchActive = false,
 }) => {
+  const { t } = useTranslation('menu');
+
   const categoryOptions: Array<{ value: MenuCategory | 'ALL'; label: string }> = [
-    { value: 'ALL', label: 'All Categories' },
-    { value: 'APPETIZER', label: 'Appetizers' },
-    { value: 'MAIN_COURSE', label: 'Main Courses' },
-    { value: 'DESSERT', label: 'Desserts' },
-    { value: 'BEVERAGE', label: 'Beverages' },
+    { value: 'ALL', label: t('categories.all') },
+    { value: 'APPETIZER', label: t('categories.APPETIZER') },
+    { value: 'MAIN_COURSE', label: t('categories.MAIN_COURSE') },
+    { value: 'DESSERT', label: t('categories.DESSERT') },
+    { value: 'BEVERAGE', label: t('categories.BEVERAGE') },
   ];
 
   const sortOptions: Array<{ value: typeof sortBy; label: string }> = [
-    { value: 'name', label: 'Name' },
-    { value: 'price', label: 'Price' },
-    { value: 'category', label: 'Category' },
-    { value: 'createdAt', label: 'Date Added' },
-    { value: 'popularity', label: 'Popularity' },
+    { value: 'name', label: t('sort.name') },
+    { value: 'price', label: t('sort.price') },
+    { value: 'category', label: t('sort.category') },
+    { value: 'createdAt', label: t('sort.createdAt') },
+    { value: 'popularity', label: t('sort.popularity') },
   ];
 
   const handleClearSearch = () => {
@@ -98,7 +101,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
           <div className="lg:col-span-1">
             <label htmlFor="search" className="block text-sm font-medium text-charcoal mb-2">
               <SearchIcon className="w-4 h-4 inline mr-1" />
-              Search
+              {t('search.label')}
             </label>
             <div className="relative flex-1">
               <input
@@ -106,14 +109,14 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search by name or description..."
+                placeholder={t('search.placeholder')}
                 className="w-full bg-gray-200 text-black px-4 py-2 pr-10 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
               />
               {searchQuery && (
                 <button
                   onClick={handleClearSearch}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Clear search"
+                  title={t('search.clear')}
                 >
                   <XCircleIcon className="w-5 h-5" />
                 </button>
@@ -125,7 +128,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-charcoal mb-2">
               <FilterIcon className="w-4 h-4 inline mr-1" />
-              Category
+              {t('filters.category')}
             </label>
             <select
               id="category"
@@ -145,7 +148,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
           <div>
             <label htmlFor="sort" className="block text-sm font-medium text-charcoal mb-2">
               <ArrowUpDownIcon className="w-4 h-4 inline mr-1" />
-              Sort By
+              {t('filters.sortBy')}
             </label>
             <div className="flex gap-2">
               <select
@@ -163,7 +166,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               <button
                 onClick={onSortOrderToggle}
                 className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-charcoal border border-antiflash rounded-md transition-colors"
-                title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                title={sortOrder === 'asc' ? t('sort.descendingTitle') : t('sort.ascendingTitle')}
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </button>
@@ -173,27 +176,31 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
 
         {/* Active Filters Display */}
         <div className="mt-3 flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-600">Active filters:</span>
+          <span className="text-xs text-gray-600">{t('filters.activeFilters')}</span>
           {searchQuery && (
             <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
-              Search: "{searchQuery}"
+              {t('filters.searchFilter', { query: searchQuery })}
             </span>
           )}
           {selectedCategory !== 'ALL' && (
             <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
-              Category: {categoryOptions.find((c) => c.value === selectedCategory)?.label}
+              {t('filters.categoryFilter', {
+                category: categoryOptions.find((c) => c.value === selectedCategory)?.label,
+              })}
             </span>
           )}
           {/* Smart Search Indicator - shown when search is active */}
           {isSearchActive && (
             <span className="px-2 py-1 bg-gradient-to-r from-naples/10 to-arylide/10 border border-naples/20 text-charcoal text-xs rounded-full flex items-center gap-1">
               <SparklesIcon className="w-3 h-3 text-naples" />
-              Smart search
+              {t('search.smartSearch')}
             </span>
           )}
           <span className="px-2 py-1 bg-gray-200 text-charcoal text-xs rounded-full">
-            Sort: {sortOptions.find((s) => s.value === sortBy)?.label} (
-            {sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
+            {t('filters.sortFilter', {
+              sort: sortOptions.find((s) => s.value === sortBy)?.label,
+              order: sortOrder === 'asc' ? t('sort.ascending') : t('sort.descending'),
+            })}
           </span>
         </div>
       </div>
@@ -201,13 +208,14 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-charcoal">{menuItems.length}</span> of{' '}
-          <span className="font-semibold text-charcoal">{total}</span> menu items
+          {t('results.showing')}{' '}
+          <span className="font-semibold text-charcoal">{menuItems.length}</span> {t('results.of')}{' '}
+          <span className="font-semibold text-charcoal">{total}</span> {t('results.items')}
           {/* Relevance sorting indicator - shown when search is active */}
           {isSearchActive && menuItems.length > 0 && (
             <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-naples/10 border border-naples/20 text-charcoal">
               <SparklesIcon className="w-3 h-3 text-naples" />
-              sorted by relevance
+              {t('search.sortedByRelevance')}
             </span>
           )}
         </p>
@@ -241,18 +249,18 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
 
             {/* Message */}
             <h3 className="text-lg font-semibold text-charcoal mb-2">
-              {searchQuery ? `No menu items match "${searchQuery}"` : 'No menu items found'}
+              {searchQuery ? t('search.noResults', { query: searchQuery }) : t('search.noItems')}
             </h3>
             <p className="text-sm text-gray-500 mb-6">
               {searchQuery || selectedCategory !== 'ALL'
-                ? 'Try adjusting your filters or search terms'
-                : 'Create your first menu item to get started!'}
+                ? t('search.noResultsDescription')
+                : t('search.noItemsDescription')}
             </p>
 
             {/* Suggestions (Task 4.4) */}
             {suggestions.length > 0 && (
               <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-3">Did you mean:</p>
+                <p className="text-sm text-gray-600 mb-3">{t('search.didYouMean')}</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {suggestions.map((item) => (
                     <button
@@ -275,7 +283,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
                     onClick={handleClearSearch}
                     className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-charcoal text-sm font-medium rounded-md transition-colors"
                   >
-                    Clear Search
+                    {t('actions.clearSearch')}
                   </button>
                 )}
                 {(searchQuery || selectedCategory !== 'ALL') && (
@@ -286,7 +294,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
                     }}
                     className="px-4 py-2 bg-naples hover:bg-arylide text-charcoal text-sm font-medium rounded-md transition-colors"
                   >
-                    Browse All
+                    {t('actions.browseAll')}
                   </button>
                 )}
               </div>

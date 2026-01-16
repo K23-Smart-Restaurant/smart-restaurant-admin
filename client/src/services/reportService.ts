@@ -22,14 +22,13 @@ export interface TopRevenueItem {
 }
 
 export interface OrderAnalytics {
-  totalOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
-  pendingOrders: number;
-  averagePreparationTime: number;
+  ordersPerDay: {
+    date: string;
+    orders: number;
+  }[];
   peakHours: {
-    hour: number;
-    orderCount: number;
+    hour: string;
+    orders: number;
   }[];
 }
 

@@ -1,0 +1,111 @@
+{
+  "appName": "Smart Restaurant Admin",
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear"
+  },
+  "actions": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "processing": "Processing..."
+  },
+  "messages": {
+    "success": "Operation completed successfully",
+    "error": "An error occurred",
+    "deleteConfirm": "Are you sure you want to delete this item?",
+    "deleteWarning": "This action cannot be undone. The item will be permanently removed from the database.",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+    "noData": "No data available",
+    "searchPlaceholder": "Search..."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed",
+    "mustBePositive": "Must be a positive number"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "menu": "Menu Management",
+    "orders": "Orders",
+    "kitchen": "Kitchen Display",
+    "tables": "Tables",
+    "staff": "Staff",
+    "categories": "Categories",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "pagination": {
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}}",
+    "rowsPerPage": "Rows per page:",
+    "pageOf": "Page {{page}} of {{totalPages}}"
+  },
+  "activeOrders": {
+    "title": "Active Orders Warning",
+    "table": "Table {{number}}",
+    "foundPlural": "{{count}} active orders found",
+    "foundSingular": "{{count}} active order found",
+    "description": "This table has unpaid orders. Deactivating will prevent new orders from being placed but will not affect existing orders.",
+    "orderNumber": "Order #{{number}}",
+    "items": "{{count}} item(s)",
+    "created": "Created: {{date}}",
+    "confirmMessage": "Are you sure you want to deactivate this table? Consider completing or canceling active orders first.",
+    "deactivateAnyway": "Deactivate Anyway",
+    "deactivating": "Deactivating..."
+  },
+  "timer": {
+    "onTime": "On Time",
+    "urgent": "Urgent",
+    "critical": "Critical"
+  },
+  "loading": {
+    "default": "Loading...",
+    "text": "Loading"
+  },
+  "login": {
+    "title": "Smart Restaurant",
+    "subtitle": "Admin Dashboard Login",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me for 7 days",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "emailPlaceholder": "admin@restaurant.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "footer": "Secure admin access • Powered by Smart Restaurant",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  }
+}

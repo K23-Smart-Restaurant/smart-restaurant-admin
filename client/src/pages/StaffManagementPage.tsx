@@ -11,11 +11,13 @@ import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
 import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 // Type for staff data from forms (matches what forms actually send)
 type StaffFormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>;
 
 const StaffManagementPage: React.FC = () => {
+  const { t } = useTranslation('staff');
   const { showSuccess, showError } = useToastContext();
 
   const { staff, isLoading, isError, createWaiter, createKitchenStaff, updateStaff, deleteStaff } =
@@ -40,8 +42,8 @@ const StaffManagementPage: React.FC = () => {
         };
         await updateStaff(editingStaff.id, updateData);
         showSuccess(
-          'Waiter Updated',
-          `${staffData.name || staffData.email} has been successfully updated.`
+          t('messages.waiterUpdated'),
+          t('messages.waiterUpdatedDesc', { name: staffData.name || staffData.email })
         );
       } else {
         // For creation, extract only the fields needed for CreateWaiterDto
@@ -53,15 +55,15 @@ const StaffManagementPage: React.FC = () => {
         };
         await createWaiter(createData);
         showSuccess(
-          'Waiter Created',
-          `${staffData.name || staffData.email} has been successfully added to the team.`
+          t('messages.waiterCreated'),
+          t('messages.waiterCreatedDesc', { name: staffData.name || staffData.email })
         );
       }
       closeWaiterModal();
     } catch (error) {
       console.error('Error saving waiter:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Save Waiter', errorMessage);
+      showError(t('messages.failedToSaveWaiter'), errorMessage);
     }
   };
 
@@ -76,8 +78,8 @@ const StaffManagementPage: React.FC = () => {
         };
         await updateStaff(editingStaff.id, updateData);
         showSuccess(
-          'Kitchen Staff Updated',
-          `${staffData.name || staffData.email} has been successfully updated.`
+          t('messages.kitchenStaffUpdated'),
+          t('messages.kitchenStaffUpdatedDesc', { name: staffData.name || staffData.email })
         );
       } else {
         // For creation, extract only the fields needed for CreateKitchenStaffDto
@@ -89,15 +91,15 @@ const StaffManagementPage: React.FC = () => {
         };
         await createKitchenStaff(createData);
         showSuccess(
-          'Kitchen Staff Created',
-          `${staffData.name || staffData.email} has been successfully added to the team.`
+          t('messages.kitchenStaffCreated'),
+          t('messages.kitchenStaffCreatedDesc', { name: staffData.name || staffData.email })
         );
       }
       closeKitchenStaffModal();
     } catch (error) {
       console.error('Error saving kitchen staff:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Save Kitchen Staff', errorMessage);
+      showError(t('messages.failedToSaveKitchenStaff'), errorMessage);
     }
   };
 
@@ -127,14 +129,16 @@ const StaffManagementPage: React.FC = () => {
     try {
       await deleteStaff(staffToToggle.id); // This actually toggles active status
       showSuccess(
-        `Staff ${action === 'activate' ? 'Activated' : 'Deactivated'}`,
-        `${staffToToggle.name || staffToToggle.email} has been successfully ${action}d.`
+        action === 'activate' ? t('messages.staffActivated') : t('messages.staffDeactivated'),
+        t(action === 'activate' ? 'messages.staffActivatedDesc' : 'messages.staffDeactivatedDesc', {
+          name: staffToToggle.name || staffToToggle.email,
+        })
       );
       setStaffToToggle(null);
     } catch (error) {
       console.error('Error toggling staff status:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Update Status', errorMessage);
+      showError(t('messages.failedToUpdateStatus'), errorMessage);
     } finally {
       setIsTogglingActive(false);
     }
@@ -156,7 +160,7 @@ const StaffManagementPage: React.FC = () => {
 
   // Loading state
   if (isLoading) {
-    return <PageLoading message="Loading staff members..." />;
+    return <PageLoading message={t('messages.loadingStaff')} />;
   }
 
   // Error state
@@ -164,8 +168,8 @@ const StaffManagementPage: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load staff members</p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
+          <p className="text-red-600 mb-4">{t('messages.failedToLoadStaff')}</p>
+          <Button onClick={() => window.location.reload()}>{t('messages.retry')}</Button>
         </div>
       </div>
     );
@@ -175,8 +179,8 @@ const StaffManagementPage: React.FC = () => {
     <div>
       {/* Page title */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-charcoal">Staff Management</h1>
-        <p className="text-gray-600 mt-1">Manage your restaurant staff members</p>
+        <h1 className="text-3xl font-bold text-charcoal">{t('title')}</h1>
+        <p className="text-gray-600 mt-1">{t('manageMessage')}</p>
       </div>
 
       {/* Tabs */}
@@ -191,7 +195,7 @@ const StaffManagementPage: React.FC = () => {
                     : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                 }`}
               >
-                Waiters
+                {t('tabs.waiters')}
               </button>
             )}
           </Tab>
@@ -204,7 +208,7 @@ const StaffManagementPage: React.FC = () => {
                     : 'text-gray-600 hover:bg-antiflash/80 hover:text-charcoal'
                 }`}
               >
-                Kitchen Staff
+                {t('tabs.kitchenStaff')}
               </button>
             )}
           </Tab>
@@ -217,7 +221,7 @@ const StaffManagementPage: React.FC = () => {
               {/* Add Waiter button */}
               <div className="flex justify-end">
                 <Button onClick={() => setIsWaiterModalOpen(true)} icon={PlusIcon}>
-                  Add Waiter
+                  {t('actions.addWaiter')}
                 </Button>
               </div>
 
@@ -237,7 +241,7 @@ const StaffManagementPage: React.FC = () => {
               {/* Add Kitchen Staff button */}
               <div className="flex justify-end">
                 <Button onClick={() => setIsKitchenStaffModalOpen(true)} icon={PlusIcon}>
-                  Add Kitchen Staff
+                  {t('actions.addKitchenStaff')}
                 </Button>
               </div>
 
@@ -257,7 +261,7 @@ const StaffManagementPage: React.FC = () => {
       <Modal
         isOpen={isWaiterModalOpen}
         onClose={closeWaiterModal}
-        title={editingStaff ? 'Edit Waiter' : 'Create Waiter Account'}
+        title={editingStaff ? t('modals.editWaiter') : t('modals.createWaiter')}
       >
         <CreateWaiterForm
           staff={editingStaff || undefined}
@@ -270,7 +274,7 @@ const StaffManagementPage: React.FC = () => {
       <Modal
         isOpen={isKitchenStaffModalOpen}
         onClose={closeKitchenStaffModal}
-        title={editingStaff ? 'Edit Kitchen Staff' : 'Create Kitchen Staff Account'}
+        title={editingStaff ? t('modals.editKitchenStaff') : t('modals.createKitchenStaff')}
       >
         <CreateKitchenStaffForm
           staff={editingStaff || undefined}
@@ -284,12 +288,10 @@ const StaffManagementPage: React.FC = () => {
         isOpen={staffToToggle !== null}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={staffToToggle?.isActive ? 'Deactivate Staff Member' : 'Activate Staff Member'}
+        title={staffToToggle?.isActive ? t('modals.deactivateStaff') : t('modals.activateStaff')}
         itemName={staffToToggle?.name || staffToToggle?.email}
         message={
-          staffToToggle?.isActive
-            ? 'Are you sure you want to deactivate this staff member? They will no longer be able to access the system.'
-            : 'Are you sure you want to activate this staff member? They will be able to access the system again.'
+          staffToToggle?.isActive ? t('messages.deactivateConfirm') : t('messages.activateConfirm')
         }
         isLoading={isTogglingActive}
       />

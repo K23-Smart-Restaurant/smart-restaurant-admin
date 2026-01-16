@@ -1,5 +1,6 @@
 import React from 'react';
 import { PencilIcon, TrashIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Category } from '../../hooks/useCategories';
 
 interface CategoryListProps {
@@ -9,6 +10,7 @@ interface CategoryListProps {
 }
 
 export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, onDelete }) => {
+  const { t } = useTranslation('categories');
   const handleDelete = (category: Category) => {
     // Parent page handles confirmation dialog
     onDelete(category);
@@ -27,13 +29,15 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
             <h3 className="text-xl font-bold text-charcoal mb-2">{category.name}</h3>
 
             {/* Description */}
-            <p className="text-gray-600 text-sm mb-3">{category.description || 'No description'}</p>
+            <p className="text-gray-600 text-sm mb-3">
+              {category.description || t('list.noDescription')}
+            </p>
 
             {/* Badges */}
             <div className="flex items-center space-x-2">
               {/* Item count badge */}
               <span className="px-3 py-1 bg-naples/20 text-charcoal text-xs font-semibold rounded-full">
-                {category.itemCount} {category.itemCount === 1 ? 'item' : 'items'}
+                {t('list.itemCount', { count: category.itemCount })}
               </span>
 
               {/* Active/Inactive badge */}
@@ -42,7 +46,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
                   category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {category.isActive ? 'Active' : 'Inactive'}
+                {category.isActive ? t('status.active') : t('status.inactive')}
               </span>
             </div>
           </div>
@@ -53,7 +57,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
             <button
               onClick={() => onEdit(category)}
               className="p-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-600 rounded-md transition-colors"
-              title="Edit category"
+              title={t('actions.edit')}
             >
               <PencilIcon className="w-4 h-4" />
             </button>
@@ -62,7 +66,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
             <button
               onClick={() => handleDelete(category)}
               className="p-2 bg-red-600/20 hover:bg-red-600/30 text-red-600 rounded-md transition-colors"
-              title="Delete category"
+              title={t('actions.delete')}
             >
               <TrashIcon className="w-4 h-4" />
             </button>
@@ -71,7 +75,8 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
           {/* Display order indicator */}
           <div className="mt-4 pt-3 border-t border-antiflash">
             <p className="text-xs text-gray-500">
-              Display Order: <span className="font-semibold">{category.displayOrder}</span>
+              {t('list.displayOrder')}{' '}
+              <span className="font-semibold">{category.displayOrder}</span>
             </p>
           </div>
         </div>
@@ -80,9 +85,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
       {/* Empty state */}
       {categories.length === 0 && (
         <div className="col-span-full bg-white rounded-lg shadow-md border border-antiflash p-12 text-center">
-          <p className="text-gray-600">
-            No categories found. Create your first category to get started!
-          </p>
+          <p className="text-gray-600">{t('list.noCategories')}</p>
         </div>
       )}
     </div>

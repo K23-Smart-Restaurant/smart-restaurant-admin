@@ -5,17 +5,18 @@ import {
   type OrderStatus,
   type OrderItemStatus,
   type OrderFilters,
+  type PaginatedOrders,
 } from '../services/orderService';
 
 // Re-export types
-export type { Order, OrderStatus, OrderItemStatus, OrderFilters };
+export type { Order, OrderStatus, OrderItemStatus, OrderFilters, PaginatedOrders };
 
 export const useOrders = (filters?: OrderFilters) => {
   const queryClient = useQueryClient();
 
   // Fetch all orders
   const {
-    data: orders = [],
+    data: paginatedData,
     isLoading,
     isError,
     error,
@@ -24,6 +25,12 @@ export const useOrders = (filters?: OrderFilters) => {
     queryKey: ['orders', filters],
     queryFn: () => orderService.getAll(filters),
   });
+
+  const orders = paginatedData?.data || [];
+  const total = paginatedData?.total || 0;
+  const page = paginatedData?.page || 1;
+  const pageSize = paginatedData?.pageSize || 10;
+  const totalPages = paginatedData?.totalPages || 0;
 
   // Fetch single order by ID
   const useOrderById = (id: string) => {
@@ -54,6 +61,10 @@ export const useOrders = (filters?: OrderFilters) => {
 
   return {
     orders,
+    total,
+    page,
+    pageSize,
+    totalPages,
     isLoading,
     isError,
     error,

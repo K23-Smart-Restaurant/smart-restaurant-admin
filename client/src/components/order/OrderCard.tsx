@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Clock, AlertTriangle, User, Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../../hooks/useOrders';
 
 interface OrderCardProps {
@@ -9,21 +10,41 @@ interface OrderCardProps {
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onClick }) => {
+  const { t } = useTranslation(['orders', 'common']);
   const [elapsedMinutes, setElapsedMinutes] = useState<number>(0);
 
   // Calculate elapsed time and update every minute
   useEffect(() => {
     const calculateElapsed = () => {
-      const now = Date.now();
-      const elapsed = Math.floor((now - new Date(order.createdAt).getTime()) / 60000);
+      const startTime = new Date(order.createdAt).getTime();
+
+      // If order is cancelled, set elapsed to 0
+      if (order.status === 'CANCELLED') {
+        setElapsedMinutes(0);
+        return;
+      }
+
+      // If order is completed/paid, use the completion time instead of current time
+      const isFinished =
+        order.paymentStatus === 'PAID' || order.status === 'COMPLETED' || order.status === 'SERVED';
+
+      const endTime = isFinished && order.paidAt ? new Date(order.paidAt).getTime() : Date.now();
+
+      const elapsed = Math.floor((endTime - startTime) / 60000);
       setElapsedMinutes(elapsed);
     };
 
     calculateElapsed();
-    const interval = setInterval(calculateElapsed, 60000); // Update every minute
 
-    return () => clearInterval(interval);
-  }, [order.createdAt]);
+    // Only set up interval if order is not finished
+    const isFinished =
+      order.paymentStatus === 'PAID' || order.status === 'COMPLETED' || order.status === 'SERVED';
+
+    if (!isFinished) {
+      const interval = setInterval(calculateElapsed, 60000); // Update every minute
+      return () => clearInterval(interval);
+    }
+  }, [order.createdAt, order.paymentStatus, order.status, order.paidAt]);
 
   // Check if order is overdue
   const isOverdue =
@@ -65,8 +86,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
         return 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md animate-pulse-glow';
       case 'SERVED':
         return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-sm';
-      case 'PAID':
-        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md';
+      case 'COMPLETED':
+        return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm';
+      case 'BILL_REQUESTED':
+        return 'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 shadow-sm';
       case 'CANCELLED':
         return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm';
       default:
@@ -104,6 +127,42 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
     }
   };
 
+  // Get translated status
+  const getStatusLabel = (status: OrderStatus) => {
+    const statusMap: Record<OrderStatus, string> = {
+      PENDING: t('orders:status.pending'),
+      CONFIRMED: t('orders:status.confirmed'),
+      PREPARING: t('orders:status.preparing'),
+      READY: t('orders:status.ready'),
+      SERVED: t('orders:status.served'),
+      COMPLETED: t('orders:status.completed'),
+      BILL_REQUESTED: t('orders:status.billRequested'),
+      CANCELLED: t('orders:status.cancelled'),
+    };
+    return statusMap[status] || status;
+  };
+
+  // Get translated payment status
+  const getPaymentLabel = (status: string) => {
+    const paymentMap: Record<string, string> = {
+      PAID: t('orders:payment.paid'),
+      PENDING: t('orders:payment.pending'),
+      UNPAID: t('orders:payment.unpaid'),
+      FAILED: t('orders:payment.failed'),
+    };
+    return paymentMap[status] || status;
+  };
+
+  // Get translated item status
+  const getItemStatusLabel = (status: string) => {
+    const itemStatusMap: Record<string, string> = {
+      QUEUED: t('orders:itemStatus.queued'),
+      COOKING: t('orders:itemStatus.cooking'),
+      READY: t('orders:itemStatus.ready'),
+    };
+    return itemStatusMap[status] || status;
+  };
+
   const handleMarkAsReady = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (order.status === 'PREPARING') {
@@ -123,17 +182,17 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
         <div>
           <h2 className="text-3xl font-bold text-charcoal">#{order.orderNumber}</h2>
           <p className="text-xl text-gray-600 mt-1">
-            {order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}
+            {order.tableName || `${t('orders:list.table')} ${order.table?.tableNumber || 'N/A'}`}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusBadgeColor()}`}>
-            {order.status}
+            {getStatusLabel(order.status)}
           </span>
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${getPaymentBadgeColor()}`}
           >
-            {order.paymentStatus}
+            {getPaymentLabel(order.paymentStatus)}
           </span>
         </div>
       </div>
@@ -155,7 +214,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
         {order.userId && !order.guestName && (
           <div className="flex items-center text-gray-700">
             <User className="w-4 h-4 mr-2" />
-            <span className="text-lg">Registered Customer</span>
+            <span className="text-lg">{t('orders:card.registeredCustomer')}</span>
           </div>
         )}
       </div>
@@ -168,12 +227,14 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
           }`}
         >
           <Clock className="w-5 h-5 mr-2" />
-          <span className="font-semibold text-lg">{elapsedMinutes} min</span>
+          <span className="font-semibold text-md">
+            {elapsedMinutes} {t('orders:stats.minutes')}
+          </span>
           {isOverdue && (
             <>
               <AlertTriangle className="w-5 h-5 ml-3 mr-1" />
               <span className="font-bold">
-                OVERDUE by {elapsedMinutes - (order.prepTime || 0)} min
+                {t('orders:card.overdueBy', { minutes: elapsedMinutes - (order.prepTime || 0) })}
               </span>
             </>
           )}
@@ -182,17 +243,19 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
 
       {/* Order Items */}
       <div className="mb-4 space-y-3">
-        <h3 className="text-lg font-semibold text-charcoal border-b pb-2">Order Items:</h3>
+        <h3 className="text-lg font-semibold text-charcoal border-b pb-2">
+          {t('orders:card.orderItems')}
+        </h3>
         {order.orderItems?.map((item) => (
           <div key={item.id} className="ml-2">
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <p className="text-xl font-medium text-charcoal">
-                  {item.quantity}x {item.menuItem?.name || 'Unknown Item'}
+                <p className="text-md font-medium text-charcoal">
+                  {item.quantity}x {item.menuItem?.name || t('orders:details.unknownItem')}
                 </p>
                 {item.specialInstructions && (
                   <p className="text-sm text-gray-600 italic ml-4 mt-1">
-                    Note: {item.specialInstructions}
+                    {t('orders:card.note')} {item.specialInstructions}
                   </p>
                 )}
               </div>
@@ -201,7 +264,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
                   item.itemStatus
                 )}`}
               >
-                {item.itemStatus}
+                {getItemStatusLabel(item.itemStatus)}
               </span>
             </div>
           </div>
@@ -211,7 +274,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
       {/* Order Notes (if any) */}
       {order.notes && (
         <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-          <p className="text-sm font-semibold text-yellow-800">⚠️ Special Note:</p>
+          <p className="text-sm font-semibold text-yellow-800">{t('orders:card.specialNote')}</p>
           <p className="text-sm text-yellow-700 mt-1">{order.notes}</p>
         </div>
       )}
@@ -222,7 +285,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
           onClick={handleMarkAsReady}
           className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg"
         >
-          Mark as Ready
+          {t('orders:card.markAsReady')}
         </button>
       )}
     </div>

@@ -14,6 +14,14 @@ class OrderService {
     const orderBy = {};
     orderBy[filters.sortBy || 'createdAt'] = filters.sortOrder || 'desc';
 
+    // Pagination
+    const page = filters.page || 1;
+    const pageSize = filters.pageSize || 10;
+    const skip = (page - 1) * pageSize;
+
+    // Get total count for pagination
+    const total = await prisma.order.count({ where });
+
     const orders = await prisma.order.findMany({
       where,
       include: {
@@ -25,13 +33,15 @@ class OrderService {
         },
       },
       orderBy,
+      skip,
+      take: pageSize,
     });
 
     // Add prep time tracking and alerts
     const prepTimeThreshold = parseInt(process.env.PREP_TIME_THRESHOLD_MINUTES) || 30; // Default 30 minutes
     const now = new Date();
 
-    return orders.map((order) => {
+    const data = orders.map((order) => {
       const elapsedMinutes = Math.floor((now - order.createdAt) / (1000 * 60));
       const isDelayed =
         ['CONFIRMED', 'PREPARING'].includes(order.status) && elapsedMinutes > prepTimeThreshold;
@@ -43,6 +53,14 @@ class OrderService {
         prepTimeThreshold,
       };
     });
+
+    return {
+      data,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async getOrderById(id) {

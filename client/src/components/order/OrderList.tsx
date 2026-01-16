@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { Tab } from '@headlessui/react';
+import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../../hooks/useOrders';
 import { OrderCard } from './OrderCard';
 
@@ -13,6 +14,7 @@ interface OrderListProps {
 }
 
 export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, onOrderClick }) => {
+  const { t } = useTranslation(['orders', 'common']);
   const [activeTab, setActiveTab] = useState<TabStatus>('ALL');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
@@ -49,11 +51,11 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
   };
 
   const tabs: { label: string; value: TabStatus }[] = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Pending', value: 'PENDING' },
-    { label: 'Preparing', value: 'PREPARING' },
-    { label: 'Ready', value: 'READY' },
-    { label: 'Served', value: 'SERVED' },
+    { label: t('orders:tabs.all'), value: 'ALL' },
+    { label: t('orders:tabs.pending'), value: 'PENDING' },
+    { label: t('orders:tabs.preparing'), value: 'PREPARING' },
+    { label: t('orders:tabs.ready'), value: 'READY' },
+    { label: t('orders:tabs.served'), value: 'SERVED' },
   ];
 
   const filteredOrders = getFilteredOrders();
@@ -86,7 +88,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
         {/* Sort Dropdown */}
         <div className="flex items-center gap-2">
           <label htmlFor="sort" className="text-sm font-medium text-charcoal whitespace-nowrap">
-            Sort by:
+            {t('orders:list.sortBy')}
           </label>
           <select
             id="sort"
@@ -94,9 +96,9 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
             onChange={(e) => setSortBy(e.target.value as SortOption)}
             className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-naples focus:border-naples text-sm"
           >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="table">Table Number</option>
+            <option value="newest">{t('orders:list.newest')}</option>
+            <option value="oldest">{t('orders:list.oldest')}</option>
+            <option value="table">{t('orders:list.tableNumber')}</option>
           </select>
         </div>
       </div>
@@ -104,8 +106,8 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
       {/* Result Count */}
       <div className="mb-4">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold">{filteredOrders.length}</span> order
-          {filteredOrders.length !== 1 ? 's' : ''}
+          {t('orders:list.showing')} <span className="font-semibold">{filteredOrders.length}</span>{' '}
+          {filteredOrders.length === 1 ? t('orders:list.order') : t('orders:list.orders')}
         </p>
       </div>
 
@@ -123,11 +125,11 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-500 text-lg">No orders found</p>
+          <p className="text-gray-500 text-lg">{t('orders:list.noOrders')}</p>
           <p className="text-gray-400 text-sm mt-2">
             {activeTab === 'ALL'
-              ? 'There are no orders yet'
-              : `There are no orders with status "${activeTab}"`}
+              ? t('orders:list.noOrdersYet')
+              : t('orders:list.noOrdersWithStatus', { status: activeTab })}
           </p>
         </div>
       )}

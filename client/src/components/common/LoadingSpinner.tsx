@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 
 type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -45,10 +46,13 @@ interface PageLoadingProps {
 }
 
 export const PageLoading: React.FC<PageLoadingProps> = ({
-  message = 'Loading...',
+  message,
   size = 'xl',
   fullScreen = false,
 }) => {
+  const { t } = useTranslation('common');
+  const defaultMessage = message || t('loading.default');
+
   const containerClass = fullScreen
     ? 'fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-50'
     : 'flex items-center justify-center h-64';
@@ -67,7 +71,9 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
             <LoadingSpinner size={size} />
           </div>
         </div>
-        {message && <p className="mt-4 text-gray-600 font-medium animate-pulse">{message}</p>}
+        {defaultMessage && (
+          <p className="mt-4 text-gray-600 font-medium animate-pulse">{defaultMessage}</p>
+        )}
       </div>
     </div>
   );
@@ -172,11 +178,14 @@ interface InlineLoadingProps {
   size?: SpinnerSize;
 }
 
-export const InlineLoading: React.FC<InlineLoadingProps> = ({ text = 'Loading', size = 'sm' }) => {
+export const InlineLoading: React.FC<InlineLoadingProps> = ({ text, size = 'sm' }) => {
+  const { t } = useTranslation('common');
+  const displayText = text || t('loading.text');
+
   return (
     <span className="inline-flex items-center gap-2 text-gray-600">
       <LoadingSpinner size={size} />
-      {text && <span>{text}</span>}
+      {displayText && <span>{displayText}</span>}
     </span>
   );
 };

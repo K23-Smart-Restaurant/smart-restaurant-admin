@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
   page: number;
@@ -17,6 +18,8 @@ export const Pagination: React.FC<PaginationProps> = ({
   onPageSizeChange,
   pageSizeOptions = [6, 9, 12, 18],
 }) => {
+  const { t } = useTranslation('common');
+
   const totalPages = Math.max(1, Math.ceil(total / Math.max(pageSize, 1)));
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(total, page * pageSize);
@@ -29,15 +32,13 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div className="text-sm text-gray-600">
-        Showing <span className="font-semibold text-charcoal">{start === 0 ? 0 : start}</span> -{' '}
-        <span className="font-semibold text-charcoal">{end}</span> of{' '}
-        <span className="font-semibold text-charcoal">{total}</span>
+        {t('pagination.showing', { from: start === 0 ? 0 : start, to: end, total })}
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
         {onPageSizeChange && (
           <label className="flex items-center text-sm text-gray-700 gap-2">
-            <span>Rows per page:</span>
+            <span>{t('pagination.rowsPerPage')}</span>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -59,11 +60,10 @@ export const Pagination: React.FC<PaginationProps> = ({
             disabled={page <= 1}
             className="px-3 py-2 bg-gray-200 text-charcoal border border-antiflash rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
           >
-            Prev
+            {t('pagination.previous')}
           </button>
           <div className="text-sm text-gray-700">
-            Page <span className="font-semibold text-charcoal">{page}</span> of{' '}
-            <span className="font-semibold text-charcoal">{totalPages}</span>
+            {t('pagination.pageOf', { page, totalPages })}
           </div>
           <button
             type="button"
@@ -71,7 +71,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             disabled={page >= totalPages}
             className="px-3 py-2 bg-gray-200 text-charcoal border border-antiflash rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
           >
-            Next
+            {t('pagination.next')}
           </button>
         </div>
       </div>

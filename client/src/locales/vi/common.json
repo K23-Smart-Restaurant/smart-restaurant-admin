@@ -1,0 +1,111 @@
+{
+  "appName": "Quản Lý Nhà Hàng Thông Minh",
+  "buttons": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "add": "Thêm",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "export": "Xuất",
+    "import": "Nhập",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "submit": "Gửi",
+    "reset": "Đặt lại",
+    "clear": "Xóa"
+  },
+  "actions": {
+    "loading": "Đang tải...",
+    "saving": "Đang lưu...",
+    "deleting": "Đang xóa...",
+    "processing": "Đang xử lý..."
+  },
+  "messages": {
+    "success": "Thao tác thành công",
+    "error": "Đã xảy ra lỗi",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa mục này?",
+    "deleteWarning": "Hành động này không thể hoàn tác. Mục sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.",
+    "unsavedChanges": "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời khỏi?",
+    "noData": "Không có dữ liệu",
+    "searchPlaceholder": "Tìm kiếm..."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Địa chỉ email không hợp lệ",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "minLength": "Yêu cầu tối thiểu {{count}} ký tự",
+    "maxLength": "Tối đa {{count}} ký tự",
+    "mustBePositive": "Phải là số dương"
+  },
+  "navigation": {
+    "dashboard": "Bảng điều khiển",
+    "menu": "Quản lý thực đơn",
+    "orders": "Đơn hàng",
+    "kitchen": "Màn hình bếp",
+    "tables": "Bàn ăn",
+    "staff": "Nhân viên",
+    "categories": "Danh mục",
+    "reports": "Báo cáo",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "pending": "Chờ xử lý",
+    "completed": "Hoàn thành",
+    "cancelled": "Đã hủy"
+  },
+  "pagination": {
+    "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} mục",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "page": "Trang {{page}}",
+    "rowsPerPage": "Số hàng mỗi trang:",
+    "pageOf": "Trang {{page}} / {{totalPages}}"
+  },
+  "activeOrders": {
+    "title": "Cảnh Báo Đơn Hàng Đang Hoạt Động",
+    "table": "Bàn {{number}}",
+    "foundPlural": "Tìm thấy {{count}} đơn hàng đang hoạt động",
+    "foundSingular": "Tìm thấy {{count}} đơn hàng đang hoạt động",
+    "description": "Bàn này có đơn hàng chưa thanh toán. Vô hiệu hóa sẽ ngăn đặt hàng mới nhưng không ảnh hưởng đến đơn hàng hiện có.",
+    "orderNumber": "Đơn hàng #{{number}}",
+    "items": "{{count}} món",
+    "created": "Tạo lúc: {{date}}",
+    "confirmMessage": "Bạn có chắc chắn muốn vô hiệu hóa bàn này? Hãy xem xét hoàn thành hoặc hủy các đơn hàng đang hoạt động trước.",
+    "deactivateAnyway": "Vẫn Vô Hiệu Hóa",
+    "deactivating": "Đang vô hiệu hóa..."
+  },
+  "timer": {
+    "onTime": "Đúng Giờ",
+    "urgent": "Khẩn Cấp",
+    "critical": "Rất Khẩn Cấp"
+  },
+  "loading": {
+    "default": "Đang tải...",
+    "text": "Đang tải"
+  },
+  "login": {
+    "title": "Nhà Hàng Thông Minh",
+    "subtitle": "Đăng Nhập Quản Trị",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "rememberMe": "Ghi nhớ đăng nhập trong 7 ngày",
+    "loginButton": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập...",
+    "emailPlaceholder": "admin@nhahang.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "footer": "Truy cập quản trị an toàn • Được cung cấp bởi Smart Restaurant",
+    "errors": {
+      "invalidCredentials": "Email hoặc mật khẩu không đúng",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    }
+  }
+}

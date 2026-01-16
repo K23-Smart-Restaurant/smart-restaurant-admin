@@ -16,8 +16,11 @@ import { useOrders } from '../hooks/useOrders';
 import { useTables } from '../hooks/useTables';
 import { useStaff } from '../hooks/useStaff';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation('dashboard');
+
   // Fetch real data
   const { orders, isLoading: ordersLoading } = useOrders();
   const { tables, statistics: tableStats, isLoading: tablesLoading } = useTables();
@@ -74,13 +77,15 @@ const DashboardPage: React.FC = () => {
       .slice(0, 5)
       .map((order) => ({
         id: order.id.substring(0, 8).toUpperCase(),
-        table: order.table?.tableNumber ? `Table ${order.table.tableNumber}` : 'N/A',
+        table: order.table?.tableNumber
+          ? `${t('table.columns.table')} ${order.table.tableNumber}`
+          : 'N/A',
         items: order.orderItems?.length || 0,
         amount: Number(order.totalAmount || 0),
-        status: order.status,
+        status: t(`table.statuses.${order.status.toLowerCase()}`),
         time: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }),
       }));
-  }, [orders]);
+  }, [orders, t]);
 
   const activeTablePercentage =
     dashboardData.totalTables > 0
@@ -112,9 +117,9 @@ const DashboardPage: React.FC = () => {
       <div>
         <div className="mb-8 animate-fade-in-down">
           <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
-            Dashboard
+            {t('title')}
           </h1>
-          <p className="font-medium text-gray-600">Welcome back! Here's what's happening today.</p>
+          <p className="font-medium text-gray-600">{t('welcomeMessage')}</p>
         </div>
         <StatsSkeleton count={4} />
         <PageLoading message="Loading dashboard data..." />
@@ -127,9 +132,9 @@ const DashboardPage: React.FC = () => {
       {/* Page title */}
       <div className="mb-8 animate-fade-in-down">
         <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
-          Dashboard
+          {t('title')}
         </h1>
-        <p className="font-medium text-gray-600">Welcome back! Here's what's happening today.</p>
+        <p className="font-medium text-gray-600">{t('welcomeMessage')}</p>
       </div>
 
       {/* Summary cards grid */}
@@ -151,7 +156,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
-              Total Orders
+              {t('stats.totalOrders')}
             </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">{dashboardData.totalOrders}</p>
           </div>
@@ -170,7 +175,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
-              Today's Revenue
+              {t('stats.revenue')}
             </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
               $
@@ -195,7 +200,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
-              Active Tables
+              {t('stats.activeTables')}
             </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
               {dashboardData.activeTables}/{dashboardData.totalTables}
@@ -209,7 +214,7 @@ const DashboardPage: React.FC = () => {
                 ></div>
               </div>
               <p className="mt-2 text-xs font-semibold text-charcoal/80">
-                {activeTablePercentage.toFixed(0)}% occupied
+                {activeTablePercentage.toFixed(0)}% {t('stats.tablesOccupied')}
               </p>
             </div>
           </div>
@@ -228,7 +233,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <h3 className="text-sm font-semibold tracking-wide uppercase text-charcoal/80">
-              Staff Online
+              {t('stats.staffOnline')}
             </h3>
             <p className="mt-2 text-4xl font-bold text-charcoal">
               {dashboardData.staffOnline}/{dashboardData.totalStaff}
@@ -261,12 +266,12 @@ const DashboardPage: React.FC = () => {
         <div className="flex flex-wrap gap-4">
           <Link to="/menu">
             <Button variant="primary" icon={PlusIcon}>
-              Add Menu Item
+              {t('quickActions.addMenuItem')}
             </Button>
           </Link>
           <Link to="/orders">
             <Button variant="secondary" icon={EyeIcon}>
-              View Orders
+              {t('quickActions.viewOrders')}
             </Button>
           </Link>
         </div>
@@ -274,10 +279,10 @@ const DashboardPage: React.FC = () => {
 
       {/* Recent Orders */}
       <div className="animate-fade-in-up" style={{ animationDelay: '500ms' }}>
-        <h2 className="mb-4 text-2xl font-bold text-charcoal">Recent Orders</h2>
+        <h2 className="mb-4 text-2xl font-bold text-charcoal">{t('table.title')}</h2>
         {recentOrders.length === 0 ? (
           <div className="p-12 text-center bg-white border border-gray-100 rounded-2xl shadow-elevation-2">
-            <p className="text-gray-500">No orders yet</p>
+            <p className="text-gray-500">{t('table.noOrders')}</p>
           </div>
         ) : (
           <div className="overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-elevation-2 card-hover">
@@ -286,22 +291,22 @@ const DashboardPage: React.FC = () => {
                 <thead className="bg-gradient-to-r from-naples via-naples to-arylide">
                   <tr>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Order ID
+                      {t('table.columns.orderId')}
                     </th>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Table
+                      {t('table.columns.table')}
                     </th>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Items
+                      {t('table.columns.items')}
                     </th>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Amount
+                      {t('table.columns.total')}
                     </th>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Status
+                      {t('table.columns.status')}
                     </th>
                     <th className="px-6 py-4 text-xs font-bold tracking-wider text-left uppercase text-charcoal">
-                      Time
+                      {t('table.columns.time')}
                     </th>
                   </tr>
                 </thead>
@@ -319,7 +324,7 @@ const DashboardPage: React.FC = () => {
                         {order.table}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                        {order.items} items
+                        {order.items} {t('table.columns.items').toLowerCase()}
                       </td>
                       <td className="px-6 py-4 text-sm font-bold whitespace-nowrap text-gradient-primary">
                         ${order.amount.toFixed(2)}

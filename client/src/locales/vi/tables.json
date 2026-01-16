@@ -1,0 +1,275 @@
+{
+  "title": "Bàn ăn",
+  "subtitle": "Quản lý bàn ăn và mã QR",
+
+  "statistics": {
+    "total": "Tổng số bàn",
+    "available": "Sẵn sàng",
+    "occupied": "Đã đặt",
+    "reserved": "Đã đặt trước"
+  },
+
+  "search": {
+    "label": "Tìm kiếm",
+    "placeholder": "Số bàn..."
+  },
+
+  "filters": {
+    "status": "Trạng thái",
+    "location": "Vị trí",
+    "sortBy": "Sắp xếp theo",
+    "sortAsc": "Sắp xếp tăng dần",
+    "sortDesc": "Sắp xếp giảm dần"
+  },
+
+  "status": {
+    "all": "Tất cả trạng thái",
+    "available": "Sẵn sàng",
+    "occupied": "Đã đặt",
+    "reserved": "Đã đặt trước",
+    "maintenance": "Bảo trì"
+  },
+
+  "sort": {
+    "tableNumber": "Số bàn",
+    "capacity": "Sức chứa",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo"
+  },
+
+  "locations": {
+    "all": "Tất cả vị trí",
+    "mainFloor": "Tầng chính",
+    "patio": "Sân thượng",
+    "privateRoomA": "Phòng riêng A",
+    "privateRoomB": "Phòng riêng B",
+    "bar": "Khu vực quầy bar",
+    "terrace": "Sân hiên",
+    "vip": "Khu vực VIP"
+  },
+
+  "actions": {
+    "addTable": "Thêm bàn",
+    "editTable": "Sửa bàn",
+    "delete": "Xóa",
+    "qrCode": "Mã QR",
+    "edit": "Sửa",
+    "regenQR": "Tạo lại QR",
+    "activate": "Kích hoạt",
+    "deactivate": "Vô hiệu hóa"
+  },
+
+  "card": {
+    "inactive": "Không hoạt động",
+    "seats": "chỗ ngồi",
+    "quickStatus": "Trạng thái nhanh:",
+    "avail": "Sẵn sàng",
+    "occup": "Đã đặt",
+    "reserv": "Đặt trước",
+    "tooltipQR": "Xem mã QR",
+    "tooltipEdit": "Chỉnh sửa bàn",
+    "tooltipRegen": "Tạo lại mã QR",
+    "tooltipActivate": "Kích hoạt bàn",
+    "tooltipDeactivate": "Vô hiệu hóa bàn",
+    "tooltipDelete": "Xóa bàn",
+    "updated": "Cập nhật:"
+  },
+
+  "list": {
+    "table": "Bàn {{number}}",
+    "noTables": "Không tìm thấy bàn nào",
+    "noTablesDescription": "Tạo bàn đầu tiên để bắt đầu hoặc điều chỉnh bộ lọc"
+  },
+
+  "results": {
+    "showing": "Hiển thị",
+    "table": "bàn",
+    "table_plural": "bàn"
+  },
+
+  "form": {
+    "tableNumber": "Số bàn",
+    "tableNumberPlaceholder": "VD: 1",
+    "tableNumberHelp": "Mã định danh bàn duy nhất",
+    "capacity": "Sức chứa",
+    "capacityPlaceholder": "VD: 4",
+    "capacityHelp": "Số lượng khách tối đa",
+    "location": "Vị trí",
+    "locationPlaceholder": "VD: Tầng chính, Sân thượng, Phòng riêng",
+    "locationHelp": "Vị trí vật lý trong nhà hàng (bắt đầu nhập để xem gợi ý)",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Ghi chú bổ sung về bàn này (VD: 'Tầm nhìn cửa sổ', 'Gần bếp', 'Góc yên tĩnh')...",
+    "status": "Trạng thái",
+    "statusHelp": "Sẵn sàng: Sẵn sàng cho khách | Đã đặt: Đang sử dụng | Đặt trước: Đã đặt chỗ",
+    "quickCapacity": "Chọn nhanh sức chứa:",
+    "seatsPreset": "{{count}} chỗ ngồi",
+    "newTableNote": "Lưu ý:",
+    "newTableInfo": "Mã QR sẽ được tự động tạo cho bàn này sau khi tạo. Khách hàng có thể quét mã này để truy cập thực đơn và đặt món.",
+    "cancel": "Hủy",
+    "saving": "Đang lưu...",
+    "updateTable": "Cập nhật bàn",
+    "createTable": "Tạo bàn",
+    "required": "*",
+
+    "validation": {
+      "tableNumberRequired": "Số bàn là bắt buộc",
+      "tableNumberMin": "Số bàn phải ít nhất là 1",
+      "capacityRequired": "Sức chứa là bắt buộc",
+      "capacityMin": "Sức chứa phải ít nhất là 1",
+      "capacityMax": "Sức chứa không được vượt quá 50 người",
+      "locationRequired": "Vị trí là bắt buộc",
+      "locationMax": "Vị trí không được vượt quá 100 ký tự",
+      "descriptionMax": "Mô tả không được vượt quá 500 ký tự",
+      "statusRequired": "Trạng thái là bắt buộc"
+    }
+  },
+
+  "qr": {
+    "title": "Mã QR - Bàn {{number}}",
+    "noCode": "Chưa có mã QR",
+    "noCodeDescription": "Bàn này chưa có mã QR. Tạo mã để cho phép khách hàng quét và đặt món.",
+    "generating": "Đang tạo...",
+    "generateCode": "Tạo mã QR",
+
+    "status": {
+      "active": "Hoạt động",
+      "invalid": "Không hợp lệ",
+      "noQR": "Không có mã QR",
+      "expiresIn": "Hết hạn trong {{days}} ngày"
+    },
+
+    "info": {
+      "capacity": "Sức chứa: {{capacity}} khách",
+      "created": "Đã tạo:",
+      "enlarge": "Phóng to mã QR"
+    },
+
+    "download": {
+      "format": "Định dạng tải xuống",
+      "png": "PNG",
+      "pngDescription": "(Hình ảnh)",
+      "pdf": "PDF",
+      "pdfDescription": "(Sẵn sàng in)",
+      "downloading": "Đang tải xuống...",
+      "button": "Tải xuống {{format}}"
+    },
+
+    "actions": {
+      "print": "In",
+      "regenerate": "Tạo lại",
+      "regenerating": "Đang tạo lại..."
+    },
+
+    "howItWorks": {
+      "title": "Cách hoạt động",
+      "point1": "Đặt mã QR này trên bàn để khách quét",
+      "point2": "Khách hàng có thể xem thực đơn và đặt món trực tiếp",
+      "point3": "Tạo lại sẽ vô hiệu hóa mã QR trước đó",
+      "point4": "Tải xuống PDF để in chất lượng cao"
+    },
+
+    "enlarged": {
+      "close": "Đóng",
+      "scanToOrder": "Quét để đặt món"
+    }
+  },
+
+  "batch": {
+    "title": "Thao tác QR hàng loạt",
+    "selectedCount": "Đã chọn {{count}} bàn",
+    "selectedCount_plural": "Đã chọn {{count}} bàn",
+    "allTables": "Tất cả {{count}} bàn",
+    "withQR": "({{count}} có mã QR)",
+
+    "actions": {
+      "downloadAll": "Tải xuống tất cả",
+      "printAll": "In tất cả",
+      "regenerateAll": "Tạo lại tất cả"
+    },
+
+    "downloadOptions": {
+      "title": "Tải xuống mã QR",
+      "format": "Định dạng tải xuống",
+      "zip": "Tệp nén ZIP",
+      "zipDescription": "Các tệp PNG riêng lẻ",
+      "pdf": "Tài liệu PDF",
+      "pdfDescription": "Định dạng sẵn sàng in",
+
+      "layout": "Bố cục trang",
+      "singlePerPage": "Một mã mỗi trang",
+      "multiplePerPage": "4 mã mỗi trang",
+
+      "restaurantName": "Tên nhà hàng",
+      "restaurantPlaceholder": "Nhà hàng thông minh",
+
+      "wifi": "Bao gồm thông tin WiFi",
+      "wifiName": "Tên mạng WiFi",
+      "wifiPassword": "Mật khẩu WiFi (tùy chọn)",
+
+      "summary": "{{count}} mã QR sẽ được tải xuống dưới dạng {{format}}",
+      "summaryLayout": " với {{layout}} mã QR mỗi trang",
+      "layout1": "1",
+      "layout4": "4",
+
+      "cancel": "Hủy",
+      "download": "Tải xuống",
+      "downloading": "Đang tải xuống..."
+    },
+
+    "regenerate": {
+      "title": "Xác nhận tạo lại hàng loạt",
+      "warning": "Cảnh báo: Hành động này không thể hoàn tác",
+      "warningDescription": "Tạo lại mã QR sẽ vô hiệu hóa tất cả mã hiện tại. Khách hàng có mã QR đã in hoặc đã lưu sẽ cần mã mới để truy cập thực đơn.",
+      "count": "{{count}} bàn sẽ có mã QR được tạo lại:",
+      "andMore": "... và {{count}} bàn nữa",
+      "cancel": "Hủy",
+      "confirm": "Tạo lại tất cả",
+      "regenerating": "Đang tạo lại..."
+    },
+
+    "results": {
+      "title": "Hoàn tất tạo lại",
+      "message": "Đã tạo lại thành công {{count}} mã QR",
+      "success": "Tạo lại thành công ({{count}})",
+      "failed": "Thất bại ({{count}})",
+      "close": "Đóng"
+    }
+  },
+
+  "messages": {
+    "created": "Bàn {{number}} đã được tạo thành công.",
+    "updated": "Bàn {{number}} đã được cập nhật thành công.",
+    "deleted": "Bàn {{number}} đã bị xóa vĩnh viễn.",
+    "qrRegenerated": "Mã QR đã được tạo lại thành công",
+    "statusUpdated": "Trạng thái bàn đã được cập nhật",
+    "activated": "Bàn {{number}} đã được kích hoạt",
+    "deactivated": "Bàn {{number}} đã bị vô hiệu hóa"
+  },
+
+  "modals": {
+    "create": "Tạo bàn",
+    "edit": "Chỉnh sửa bàn",
+    "delete": "Xóa bàn",
+    "deleteMessage": "Bạn có chắc chắn muốn xóa bàn này không? Điều này sẽ xóa vĩnh viễn khỏi hệ thống, bao gồm tất cả mã QR liên quan."
+  },
+
+  "activeOrders": {
+    "title": "Cảnh báo đơn hàng đang hoạt động",
+    "message": "Bàn này có {{count}} đơn hàng đang hoạt động. Vô hiệu hóa sẽ ngăn đơn hàng mới nhưng đơn hàng hiện tại vẫn hoạt động.",
+    "cancel": "Hủy",
+    "confirm": "Vẫn vô hiệu hóa",
+    "deactivating": "Đang vô hiệu hóa..."
+  },
+
+  "loading": {
+    "tables": "Đang tải bàn...",
+    "retry": "Thử lại"
+  },
+
+  "errors": {
+    "loadFailed": "Không thể tải bàn",
+    "saveFailed": "Không thể lưu bàn",
+    "deleteFailed": "Xóa thất bại",
+    "unexpected": "Đã xảy ra lỗi không mong muốn"
+  }
+}

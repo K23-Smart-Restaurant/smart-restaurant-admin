@@ -1,0 +1,119 @@
+{
+  "title": "Order Management",
+  "subtitle": "Monitor and manage all restaurant orders",
+
+  "stats": {
+    "totalToday": "Total Orders Today",
+    "pending": "Pending Orders",
+    "avgPrepTime": "Avg Prep Time",
+    "overdue": "Overdue Orders",
+    "minutes": "min",
+    "attentionRequired": "⚠️ Immediate attention required!"
+  },
+
+  "list": {
+    "orderNumber": "Order #{{number}}",
+    "table": "Table",
+    "items": "Items",
+    "total": "Total",
+    "time": "Time",
+    "status": "Status",
+    "sortBy": "Sort by:",
+    "newest": "Newest First",
+    "oldest": "Oldest First",
+    "tableNumber": "Table Number",
+    "showing": "Showing",
+    "order": "order",
+    "orders": "orders",
+    "noOrders": "No orders found",
+    "noOrdersYet": "There are no orders yet",
+    "noOrdersWithStatus": "There are no orders with status \"{{status}}\""
+  },
+
+  "tabs": {
+    "all": "All",
+    "pending": "Pending",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served"
+  },
+
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served",
+    "completed": "Completed",
+    "billRequested": "Bill Requested",
+    "cancelled": "Cancelled",
+    "all": "ALL"
+  },
+
+  "payment": {
+    "paid": "Paid",
+    "pending": "Pending",
+    "unpaid": "Unpaid",
+    "failed": "Failed"
+  },
+
+  "itemStatus": {
+    "queued": "Queued",
+    "cooking": "Cooking",
+    "ready": "Ready"
+  },
+
+  "card": {
+    "orderItems": "Order Items:",
+    "note": "Note:",
+    "specialNote": "⚠️ Special Note:",
+    "overdueBy": "OVERDUE by {{minutes}} min",
+    "registeredCustomer": "Registered Customer",
+    "markAsReady": "Mark as Ready"
+  },
+
+  "details": {
+    "orderDetails": "Order Details",
+    "customer": "Customer",
+    "customerInfo": "Customer Information",
+    "registeredCustomerId": "Registered Customer (ID: {{id}})",
+    "waiter": "Waiter",
+    "waiterId": "Waiter ID: {{id}}",
+    "orderTime": "Order Time",
+    "orderTiming": "Order Timing",
+    "itemName": "Item",
+    "quantity": "Qty",
+    "price": "Price",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "orderTotal": "Order Total:",
+    "specialInstructions": "Special Instructions",
+    "orderNotes": "Order Notes:",
+    "orderProgress": "Order Progress",
+    "updateOrderStatus": "Update Order Status:",
+    "close": "Close",
+    "placed": "Placed:",
+    "elapsed": "Elapsed:",
+    "expected": "Expected:",
+    "paidAt": "Paid:",
+    "minutes": "minutes",
+    "unknownItem": "Unknown Item"
+  },
+
+  "actions": {
+    "confirmOrder": "Confirm Order",
+    "cancelOrder": "Cancel Order",
+    "printBill": "Print Bill",
+    "viewDetails": "View Details",
+    "retry": "Retry"
+  },
+
+  "errors": {
+    "failedToLoad": "Failed to load orders"
+  },
+
+  "loading": {
+    "loadingOrders": "Loading orders..."
+  }
+}

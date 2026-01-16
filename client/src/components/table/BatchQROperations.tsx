@@ -11,6 +11,7 @@ import {
   LayoutGridIcon,
   LayoutIcon,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import type { Table } from '../../hooks/useTables';
@@ -32,6 +33,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
   selectedTableIds,
   onBulkRegenerateComplete,
 }) => {
+  const { t } = useTranslation(['tables', 'common']);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
@@ -231,12 +233,13 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
     <div className="bg-white rounded-lg shadow-md border border-antiflash p-4 mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-charcoal">Batch QR Operations</h3>
+          <h3 className="text-lg font-semibold text-charcoal">{t('tables:batch.title')}</h3>
           <p className="text-sm text-gray-600">
             {hasSelection
-              ? `${selectedTableIds.length} table${selectedTableIds.length > 1 ? 's' : ''} selected`
-              : `All ${tables.length} tables`}
-            {tablesWithQR.length > 0 && ` (${tablesWithQR.length} with QR codes)`}
+              ? t('tables:batch.selectedCount', { count: selectedTableIds.length })
+              : t('tables:batch.allTables', { count: tables.length })}
+            {tablesWithQR.length > 0 &&
+              ` ${t('tables:batch.withQR', { count: tablesWithQR.length })}`}
           </p>
         </div>
 
@@ -247,7 +250,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
             onClick={() => setShowDownloadOptions(true)}
             disabled={tablesWithQR.length === 0}
           >
-            Download All
+            {t('tables:batch.actions.downloadAll')}
           </Button>
           <Button
             variant="secondary"
@@ -255,7 +258,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
             onClick={handlePrintAll}
             disabled={tablesWithQR.length === 0}
           >
-            Print All
+            {t('tables:batch.actions.printAll')}
           </Button>
           <Button
             variant="secondary"
@@ -264,7 +267,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
             disabled={tables.length === 0}
             className="text-orange-600 hover:bg-orange-50"
           >
-            Regenerate All
+            {t('tables:batch.actions.regenerateAll')}
           </Button>
         </div>
       </div>
@@ -273,13 +276,15 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
       <Modal
         isOpen={showDownloadOptions}
         onClose={() => setShowDownloadOptions(false)}
-        title="Download QR Codes"
-        size="md"
+        title={t('tables:batch.download.title')}
+        size="lg"
       >
         <div className="space-y-6">
           {/* Format Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Download Format</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              {t('tables:batch.download.formatLabel')}
+            </label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setDownloadOptions({ ...downloadOptions, format: 'zip' })}
@@ -290,8 +295,10 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                 }`}
               >
                 <FileArchiveIcon className="w-8 h-8 text-charcoal" />
-                <span className="font-medium">ZIP Archive</span>
-                <span className="text-xs text-gray-500">Individual PNG files</span>
+                <span className="font-medium">{t('tables:batch.download.zipFormat')}</span>
+                <span className="text-xs text-gray-500">
+                  {t('tables:batch.download.zipDescription')}
+                </span>
               </button>
               <button
                 onClick={() => setDownloadOptions({ ...downloadOptions, format: 'pdf' })}
@@ -302,8 +309,10 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                 }`}
               >
                 <FileTextIcon className="w-8 h-8 text-charcoal" />
-                <span className="font-medium">PDF Document</span>
-                <span className="text-xs text-gray-500">Print-ready format</span>
+                <span className="font-medium">{t('tables:batch.download.pdfFormat')}</span>
+                <span className="text-xs text-gray-500">
+                  {t('tables:batch.download.pdfDescription')}
+                </span>
               </button>
             </div>
           </div>
@@ -311,7 +320,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
           {/* PDF Layout Options */}
           {downloadOptions.format === 'pdf' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Page Layout</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                {t('tables:batch.download.layoutLabel')}
+              </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setDownloadOptions({ ...downloadOptions, layout: 'single' })}
@@ -322,7 +333,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                   }`}
                 >
                   <LayoutIcon className="w-6 h-6" />
-                  <span className="text-sm font-medium">Single per Page</span>
+                  <span className="text-sm font-medium">
+                    {t('tables:batch.download.singleLayout')}
+                  </span>
                 </button>
                 <button
                   onClick={() =>
@@ -338,7 +351,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                   }`}
                 >
                   <LayoutGridIcon className="w-6 h-6" />
-                  <span className="text-sm font-medium">4 per Page</span>
+                  <span className="text-sm font-medium">
+                    {t('tables:batch.download.multipleLayout')}
+                  </span>
                 </button>
               </div>
             </div>
@@ -346,7 +361,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
 
           {/* Restaurant Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Restaurant Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('tables:batch.download.restaurantName')}
+            </label>
             <input
               type="text"
               value={downloadOptions.restaurantName}
@@ -375,7 +392,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                 }
                 className="w-4 h-4 text-naples rounded focus:ring-naples"
               />
-              <span className="text-sm font-medium text-gray-700">Include WiFi Information</span>
+              <span className="text-sm font-medium text-gray-700">
+                {t('tables:batch.download.includeWifi')}
+              </span>
             </label>
             {downloadOptions.includeWifi && (
               <div className="mt-3 space-y-3 pl-6">
@@ -389,7 +408,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-naples focus:border-naples"
-                  placeholder="WiFi Network Name"
+                  placeholder={t('tables:batch.download.wifiNamePlaceholder')}
                 />
                 <input
                   type="text"
@@ -401,7 +420,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-naples focus:border-naples"
-                  placeholder="WiFi Password (optional)"
+                  placeholder={t('tables:batch.download.wifiPasswordPlaceholder')}
                 />
               </div>
             )}
@@ -410,25 +429,31 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
           {/* Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">
-              <strong>{tablesWithQR.length}</strong> QR codes will be downloaded as{' '}
-              <strong>{downloadOptions.format === 'zip' ? 'ZIP archive' : 'PDF document'}</strong>
-              {downloadOptions.format === 'pdf' && (
-                <span>
-                  {' '}
-                  with <strong>{downloadOptions.layout === 'single' ? '1' : '4'}</strong> QR code(s)
-                  per page
-                </span>
-              )}
+              {t('tables:batch.download.summary', {
+                count: tablesWithQR.length,
+                format:
+                  downloadOptions.format === 'zip'
+                    ? t('tables:batch.download.zipFormat')
+                    : t('tables:batch.download.pdfFormat'),
+                layout:
+                  downloadOptions.format === 'pdf'
+                    ? downloadOptions.layout === 'single'
+                      ? '1'
+                      : '4'
+                    : undefined,
+              })}
             </p>
           </div>
 
           {/* Actions */}
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={() => setShowDownloadOptions(false)}>
-              Cancel
+              {t('common:cancel')}
             </Button>
             <Button onClick={handleBatchDownload} disabled={isDownloading} icon={DownloadIcon}>
-              {isDownloading ? 'Downloading...' : 'Download'}
+              {isDownloading
+                ? t('tables:batch.download.downloading')
+                : t('tables:batch.download.button')}
             </Button>
           </div>
         </div>
@@ -438,38 +463,43 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
       <Modal
         isOpen={showRegenerateConfirm}
         onClose={() => setShowRegenerateConfirm(false)}
-        title="Confirm Bulk Regeneration"
-        size="md"
+        title={t('tables:batch.regenerate.confirmTitle')}
+        size="lg"
       >
         <div className="space-y-6">
           <div className="flex items-start gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <AlertTriangleIcon className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-semibold text-yellow-800">
-                Warning: This action cannot be undone
+                {t('tables:batch.regenerate.warningTitle')}
               </h4>
               <p className="text-sm text-yellow-700 mt-1">
-                Regenerating QR codes will invalidate all existing codes. Customers with printed or
-                saved QR codes will need new ones to access the menu.
+                {t('tables:batch.regenerate.warningMessage')}
               </p>
             </div>
           </div>
 
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">
-              <strong>{hasSelection ? selectedTableIds.length : tables.length}</strong> table(s)
-              will have their QR codes regenerated:
+              {t('tables:batch.regenerate.summary', {
+                count: hasSelection ? selectedTableIds.length : tables.length,
+              })}
             </p>
             <ul className="mt-2 text-sm text-gray-600 max-h-32 overflow-y-auto">
               {(hasSelection ? selectedTables : tables).slice(0, 10).map((table) => (
                 <li key={table.id} className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                  Table {table.tableNumber} - {table.location}
+                  {t('tables:batch.regenerate.tableItem', {
+                    number: table.tableNumber,
+                    location: table.location,
+                  })}
                 </li>
               ))}
               {(hasSelection ? selectedTableIds.length : tables.length) > 10 && (
                 <li className="text-gray-500">
-                  ... and {(hasSelection ? selectedTableIds.length : tables.length) - 10} more
+                  {t('tables:batch.regenerate.moreItems', {
+                    count: (hasSelection ? selectedTableIds.length : tables.length) - 10,
+                  })}
                 </li>
               )}
             </ul>
@@ -477,7 +507,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
 
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={() => setShowRegenerateConfirm(false)}>
-              Cancel
+              {t('common:cancel')}
             </Button>
             <Button
               onClick={handleBulkRegenerate}
@@ -485,7 +515,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
               className="bg-orange-600 hover:bg-orange-700"
               icon={RefreshCwIcon}
             >
-              {isRegenerating ? 'Regenerating...' : 'Regenerate All'}
+              {isRegenerating
+                ? t('tables:batch.regenerate.regenerating')
+                : t('tables:batch.regenerate.button')}
             </Button>
           </div>
         </div>
@@ -495,8 +527,8 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
       <Modal
         isOpen={!!regenerateResult}
         onClose={() => setRegenerateResult(null)}
-        title="Regeneration Complete"
-        size="md"
+        title={t('tables:batch.results.title')}
+        size="lg"
       >
         {regenerateResult && (
           <div className="space-y-6">
@@ -511,11 +543,15 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
               <div>
                 <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                  Successfully Regenerated ({regenerateResult.results.success.length})
+                  {t('tables:batch.results.success', {
+                    count: regenerateResult.results.success.length,
+                  })}
                 </h5>
                 <ul className="text-sm text-gray-600 max-h-24 overflow-y-auto bg-gray-50 rounded-lg p-3">
                   {regenerateResult.results.success.map((item) => (
-                    <li key={item.tableId}>Table {item.tableNumber}</li>
+                    <li key={item.tableId}>
+                      {t('tables:list.table', { number: item.tableNumber })}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -525,7 +561,9 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
               <div>
                 <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <XCircleIcon className="w-4 h-4 text-red-600" />
-                  Failed ({regenerateResult.results.failed.length})
+                  {t('tables:batch.results.failed', {
+                    count: regenerateResult.results.failed.length,
+                  })}
                 </h5>
                 <ul className="text-sm text-red-600 max-h-24 overflow-y-auto bg-red-50 rounded-lg p-3">
                   {regenerateResult.results.failed.map((item) => (
@@ -538,7 +576,7 @@ export const BatchQROperations: React.FC<BatchQROperationsProps> = ({
             )}
 
             <div className="flex justify-end">
-              <Button onClick={() => setRegenerateResult(null)}>Close</Button>
+              <Button onClick={() => setRegenerateResult(null)}>{t('common:close')}</Button>
             </div>
           </div>
         )}

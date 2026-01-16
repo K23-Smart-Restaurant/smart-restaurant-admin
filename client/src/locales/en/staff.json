@@ -1,0 +1,93 @@
+{
+  "title": "Staff Management",
+  "manageMessage": "Manage your restaurant staff members",
+  "tabs": {
+    "waiters": "Waiters",
+    "kitchenStaff": "Kitchen Staff"
+  },
+  "actions": {
+    "addWaiter": "Add Waiter",
+    "addKitchenStaff": "Add Kitchen Staff",
+    "editStaff": "Edit Staff",
+    "deleteStaff": "Delete Staff",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
+  },
+  "table": {
+    "filter": {
+      "filterLabel": "Filter:",
+      "filterName": "Filter by Status",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "noStaff": "No staff members found.",
+    "avatar": "Avatar",
+    "memberCount": "{{count}} member",
+    "memberCount_plural": "{{count}} members",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "status": "Status",
+      "joinedDate": "Joined Date",
+      "actions": "Actions"
+    }
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "modals": {
+    "createWaiter": "Create Waiter Account",
+    "editWaiter": "Edit Waiter",
+    "createKitchenStaff": "Create Kitchen Staff Account",
+    "editKitchenStaff": "Edit Kitchen Staff",
+    "activateStaff": "Activate Staff Member",
+    "deactivateStaff": "Deactivate Staff Member"
+  },
+  "messages": {
+    "waiterCreated": "Waiter Created",
+    "waiterCreatedDesc": "{{name}} has been successfully added to the team.",
+    "waiterUpdated": "Waiter Updated",
+    "waiterUpdatedDesc": "{{name}} has been successfully updated.",
+    "kitchenStaffCreated": "Kitchen Staff Created",
+    "kitchenStaffCreatedDesc": "{{name}} has been successfully added to the team.",
+    "kitchenStaffUpdated": "Kitchen Staff Updated",
+    "kitchenStaffUpdatedDesc": "{{name}} has been successfully updated.",
+    "staffActivated": "Staff Activated",
+    "staffActivatedDesc": "{{name}} has been successfully activated.",
+    "staffDeactivated": "Staff Deactivated",
+    "staffDeactivatedDesc": "{{name}} has been successfully deactivated.",
+    "failedToSaveWaiter": "Failed to Save Waiter",
+    "failedToSaveKitchenStaff": "Failed to Save Kitchen Staff",
+    "failedToUpdateStatus": "Failed to Update Status",
+    "loadingStaff": "Loading staff members...",
+    "failedToLoadStaff": "Failed to load staff members",
+    "retry": "Retry",
+    "deactivateConfirm": "Are you sure you want to deactivate this staff member? They will no longer be able to access the system.",
+    "activateConfirm": "Are you sure you want to activate this staff member? They will be able to access the system again."
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Enter full name",
+    "email": "Email",
+    "emailPlaceholder": "Enter email address",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Enter phone number (optional)",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "required": "required",
+    "optional": "Optional",
+    "passwordNote": "Leave blank to keep current password",
+    "validation": {
+      "nameMin": "Name must be at least 3 characters",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords don't match"
+    }
+  }
+}

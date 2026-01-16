@@ -1,0 +1,38 @@
+{
+  "title": "Dashboard",
+  "welcomeMessage": "Welcome back! Here's what's happening today.",
+  "stats": {
+    "totalOrders": "Total Orders",
+    "revenue": "Revenue",
+    "activeTables": "Active Tables",
+    "activeOrders": "Active Orders",
+    "tablesOccupied": "Tables Occupied",
+    "staffOnline": "Staff Online"
+  },
+  "quickActions": {
+    "addMenuItem": "Add Menu Item",
+    "viewOrders": "View Orders"
+  },
+  "table": {
+    "title": "Recent Orders",
+    "noOrders": "No recent orders available.",
+    "columns": {
+      "orderId": "Order ID",
+      "table": "Table",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "time": "Time"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "served": "Served",
+      "completed": "Completed",
+      "billRequested": "Bill Requested",
+      "cancelled": "Cancelled"
+    }
+  }
+}

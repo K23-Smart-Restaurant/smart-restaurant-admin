@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PlusIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useMenuItems, type ModifierGroupFormState } from '../hooks/useMenuItems';
 import type { MenuItem, MenuCategory } from '../hooks/useMenuItems';
 import { MenuItemList } from '../components/menuItem/MenuItemList';
@@ -12,6 +13,7 @@ import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 
 const MenuManagementPage: React.FC = () => {
+  const { t } = useTranslation(['menu', 'common']);
   const { showSuccess, showError } = useToastContext();
 
   // Local filter state
@@ -69,7 +71,10 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        showSuccess('Menu Item Updated', `"${data.name}" has been successfully updated.`);
+        showSuccess(
+          t('menu:messages.updated'),
+          t('menu:messages.updatedDesc', { name: data.name })
+        );
       } else {
         await createMenuItem({
           data,
@@ -77,7 +82,10 @@ const MenuManagementPage: React.FC = () => {
           modifierGroups: currentModifiers,
           removedPhotoIds,
         });
-        showSuccess('Menu Item Created', `"${data.name}" has been successfully added to the menu.`);
+        showSuccess(
+          t('menu:messages.created'),
+          t('menu:messages.createdDesc', { name: data.name })
+        );
       }
 
       setCurrentModifiers([]);
@@ -85,7 +93,7 @@ const MenuManagementPage: React.FC = () => {
     } catch (error) {
       console.error('Error saving menu item:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Save Menu Item', errorMessage);
+      showError(t('menu:messages.saveFailed'), errorMessage);
     }
   };
 
@@ -113,15 +121,15 @@ const MenuManagementPage: React.FC = () => {
     try {
       await deleteMenuItem(menuItemToDelete.id);
       showSuccess(
-        'Menu Item Deleted',
-        `"${menuItemToDelete.name}" has been permanently removed from the menu.`
+        t('menu:messages.deleted'),
+        t('menu:messages.deletedDesc', { name: menuItemToDelete.name })
       );
       setMenuItemToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete menu item:', error);
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to delete menu item. Please try again.';
-      showError('Delete Failed', errorMessage);
+        error instanceof Error ? error.message : t('menu:messages.deleteFailedDesc');
+      showError(t('menu:messages.deleteFailed'), errorMessage);
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -166,7 +174,7 @@ const MenuManagementPage: React.FC = () => {
 
   // Loading state
   if (isLoading) {
-    return <PageLoading message="Loading menu items..." />;
+    return <PageLoading message={t('menu:messages.loading')} />;
   }
 
   // Error state
@@ -174,8 +182,8 @@ const MenuManagementPage: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load menu items</p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
+          <p className="text-red-600 mb-4">{t('menu:messages.loadFailed')}</p>
+          <Button onClick={() => window.location.reload()}>{t('menu:messages.retry')}</Button>
         </div>
       </div>
     );
@@ -186,13 +194,13 @@ const MenuManagementPage: React.FC = () => {
       {/* Page header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">Menu Items</h1>
-          <p className="text-gray-600 mt-1">Manage your restaurant menu</p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('menu:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('menu:description')}</p>
         </div>
 
         {/* Add Menu Item button */}
         <Button onClick={openAddMenuItemModal} icon={PlusIcon}>
-          Add Menu Item
+          {t('menu:actions.add')}
         </Button>
       </div>
 
@@ -230,7 +238,7 @@ const MenuManagementPage: React.FC = () => {
       <Modal
         isOpen={isMenuItemModalOpen}
         onClose={closeMenuItemModal}
-        title={editingMenuItem ? 'Edit Menu Item' : 'Create Menu Item'}
+        title={editingMenuItem ? t('menu:modals.edit') : t('menu:modals.create')}
         size="lg"
       >
         <div className="space-y-6">
@@ -245,7 +253,9 @@ const MenuManagementPage: React.FC = () => {
 
           {/* Modifiers Form */}
           <div className="pt-6 border-t border-antiflash">
-            <h3 className="text-lg font-semibold text-charcoal mb-4">Modifiers & Options</h3>
+            <h3 className="text-lg font-semibold text-charcoal mb-4">
+              {t('menu:modifiers.title')}
+            </h3>
             <ModifierGroupForm modifiers={currentModifiers || []} onChange={setCurrentModifiers} />
           </div>
         </div>
@@ -256,13 +266,9 @@ const MenuManagementPage: React.FC = () => {
         isOpen={menuItemToDelete !== null}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Menu Item"
+        title={t('menu:modals.delete')}
         itemName={menuItemToDelete?.name}
-        message={
-          deleteError
-            ? deleteError
-            : `Are you sure you want to delete this menu item? This will permanently remove it from the menu, including all associated photos and modifiers.`
-        }
+        message={deleteError ? deleteError : t('menu:modals.deleteConfirm')}
         isLoading={isDeleting}
       />
     </div>

@@ -1,0 +1,21 @@
+{
+  "title": "Kitchen Display System",
+  "orders": {
+    "newOrder": "New Order",
+    "table": "Table {{number}}",
+    "orderTime": "{{time}} ago",
+    "items": "{{count}} items"
+  },
+  "actions": {
+    "startCooking": "Start Cooking",
+    "markReady": "Mark Ready",
+    "recall": "Recall",
+    "viewHistory": "View History"
+  },
+  "filters": {
+    "all": "All Orders",
+    "pending": "Pending",
+    "cooking": "Cooking",
+    "ready": "Ready"
+  }
+}

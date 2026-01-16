@@ -5,6 +5,7 @@ class ReportService {
     const orders = await prisma.order.findMany({
       where: {
         createdAt: { gte: startDate, lte: endDate },
+        status: 'COMPLETED',
         paymentStatus: 'PAID',
       },
       select: {
@@ -13,12 +14,51 @@ class ReportService {
       },
     });
 
+    // Group orders by date
+    const ordersByDate = orders.reduce((acc, order) => {
+      const date = order.createdAt.toISOString().split('T')[0];
+      if (!acc[date]) {
+        acc[date] = { revenue: 0, orders: 0 };
+      }
+      acc[date].revenue += Number(order.totalAmount);
+      acc[date].orders += 1;
+      return acc;
+    }, {});
+
+    // Convert to array and sort by date
+    const dailyData = Object.entries(ordersByDate)
+      .map(([date, data]) => ({
+        date,
+        revenue: data.revenue,
+        orders: data.orders,
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Fill in missing dates with zero values
+    const filledData = [];
+    const currentDate = new Date(startDate);
+    const end = new Date(endDate);
+
+    while (currentDate <= end) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const existing = dailyData.find((d) => d.date === dateStr);
+
+      filledData.push({
+        date: dateStr,
+        revenue: existing ? existing.revenue : 0,
+        orders: existing ? existing.orders : 0,
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
     const totalRevenue = orders.reduce((sum, order) => sum + Number(order.totalAmount), 0);
 
     return {
       totalRevenue,
       totalOrders: orders.length,
       averageOrderValue: totalRevenue / orders.length || 0,
+      dailyRevenue: filledData,
       startDate,
       endDate,
     };
@@ -48,8 +88,10 @@ class ReportService {
         });
 
         return {
-          ...menuItem,
-          revenue: Number(item._sum.subtotal || 0),
+          menuItemId: menuItem?.id || item.menuItemId,
+          menuItemName: menuItem?.name || 'Unknown',
+          category: menuItem?.category,
+          totalRevenue: Number(item._sum.subtotal || 0),
           orderCount: Number(item._sum.quantity || 0),
         };
       })
@@ -79,6 +121,14 @@ class ReportService {
       return acc;
     }, {});
 
+    // Convert to array and sort by date
+    const ordersPerDayArray = Object.entries(ordersByDate)
+      .map(([date, orders]) => ({
+        date,
+        orders,
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
     // Peak hours
     const ordersByHour = orders.reduce((acc, order) => {
       const hour = order.createdAt.getHours();
@@ -86,9 +136,19 @@ class ReportService {
       return acc;
     }, {});
 
+    // Convert to array with all 24 hours
+    const peakHoursArray = [];
+    for (let i = 0; i < 24; i++) {
+      const hourStr = i < 10 ? `0${i}:00` : `${i}:00`;
+      peakHoursArray.push({
+        hour: hourStr,
+        orders: ordersByHour[i] || 0,
+      });
+    }
+
     return {
-      ordersPerDay: ordersByDate,
-      peakHours: ordersByHour,
+      ordersPerDay: ordersPerDayArray,
+      peakHours: peakHoursArray,
     };
   }
 }

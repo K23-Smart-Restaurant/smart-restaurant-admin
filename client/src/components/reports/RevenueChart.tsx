@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import type { DateRange } from '../../hooks/useReports';
 
 // Type for revenue data point
@@ -17,7 +18,7 @@ type RevenueDataPoint = { date: string; revenue: number; orders: number };
 // Tooltip props type
 interface TooltipProps {
   active?: boolean;
-  payload?: Array<{ payload: RevenueDataPoint; value: number }>;
+  payload?: ReadonlyArray<{ payload: RevenueDataPoint; value: number }>;
 }
 
 // Format date for display
@@ -27,28 +28,11 @@ const formatDate = (dateStr: string) => {
 };
 
 // Format currency
-const formatCurrency = (value: number) => {
-  return `$${value.toLocaleString()}`;
-};
-
-// Custom tooltip component (defined outside to avoid recreation on each render)
-const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    return (
-      <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-        <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
-        <p className="text-sm text-gray-700">
-          Revenue:{' '}
-          <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
-        </p>
-        <p className="text-sm text-gray-700">
-          Orders: <span className="font-bold text-blue-600">{data.orders}</span>
-        </p>
-      </div>
-    );
+const formatCurrency = (value: number | undefined | null) => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return '$0';
   }
-  return null;
+  return `$${value.toLocaleString()}`;
 };
 
 interface RevenueChartProps {
@@ -62,6 +46,33 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   dateRange,
   onDateRangeChange,
 }) => {
+  const { t } = useTranslation(['reports']);
+
+  // Custom tooltip component that uses translations
+  const CustomTooltipWithTranslation = useMemo(
+    () =>
+      function CustomTooltip({ active, payload }: TooltipProps) {
+        if (active && payload && payload.length) {
+          const data = payload[0].payload;
+          return (
+            <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
+              <p className="text-sm font-semibold text-charcoal mb-2">{formatDate(data.date)}</p>
+              <p className="text-sm text-gray-700">
+                {t('reports:revenueChart.revenue')}{' '}
+                <span className="font-bold text-green-600">{formatCurrency(payload[0].value)}</span>
+              </p>
+              <p className="text-sm text-gray-700">
+                {t('reports:revenueChart.ordersLabel')}{' '}
+                <span className="font-bold text-blue-600">{data.orders}</span>
+              </p>
+            </div>
+          );
+        }
+        return null;
+      },
+    [t]
+  );
+
   // Calculate total revenue for selected period
   const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
 
@@ -70,9 +81,11 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       {/* Header with total and date range selector */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 print:mb-3">
         <div>
-          <h2 className="text-2xl font-bold text-charcoal print:text-xl">Revenue Over Time</h2>
+          <h2 className="text-2xl font-bold text-charcoal print:text-xl">
+            {t('reports:revenueChart.title')}
+          </h2>
           <p className="text-sm text-gray-600 mt-1 print:text-xs">
-            Total Revenue:{' '}
+            {t('reports:revenueChart.totalRevenue')}{' '}
             <span className="text-2xl font-bold text-green-600 print:text-lg">
               {formatCurrency(totalRevenue)}
             </span>
@@ -89,7 +102,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
-            7 Days
+            {t('reports:revenueChart.dateRangeButtons.7days')}
           </button>
           <button
             onClick={() => onDateRangeChange('30days')}
@@ -99,7 +112,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
-            30 Days
+            {t('reports:revenueChart.dateRangeButtons.30days')}
           </button>
           <button
             onClick={() => onDateRangeChange('3months')}
@@ -109,7 +122,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-antiflash'
             }`}
           >
-            3 Months
+            {t('reports:revenueChart.dateRangeButtons.3months')}
           </button>
         </div>
       </div>
@@ -126,7 +139,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               style={{ fontSize: '12px' }}
             />
             <YAxis tickFormatter={formatCurrency} stroke="#666" style={{ fontSize: '12px' }} />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={CustomTooltipWithTranslation} />
             <Legend />
             <Line
               type="monotone"
@@ -135,7 +148,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               strokeWidth={2}
               dot={{ fill: '#10b981', r: 4 }}
               activeDot={{ r: 6 }}
-              name="Revenue"
+              name={t('reports:revenueChart.revenue')}
             />
           </LineChart>
         </ResponsiveContainer>

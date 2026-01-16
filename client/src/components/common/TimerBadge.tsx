@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
 
 interface TimerBadgeProps {
@@ -11,6 +12,7 @@ interface TimerBadgeProps {
  * Color-coded: Green (<15min), Yellow (15-30min), Red (>30min)
  */
 const TimerBadge: React.FC<TimerBadgeProps> = ({ startTime, className = '' }) => {
+  const { t } = useTranslation('common');
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -55,11 +57,11 @@ const TimerBadge: React.FC<TimerBadgeProps> = ({ startTime, className = '' }) =>
     const minutes = elapsed / 60;
 
     if (minutes < 15) {
-      return 'On Time';
+      return t('timer.onTime');
     } else if (minutes < 30) {
-      return 'Urgent';
+      return t('timer.urgent');
     } else {
-      return 'Critical';
+      return t('timer.critical');
     }
   };
 
