@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChefHat, CheckCircle, Circle, ChevronDown, X, AlertCircle } from 'lucide-react';
 import TimerBadge from '../common/TimerBadge';
 import type { Order, OrderItem, OrderItemStatus } from '../../services/orderService';
@@ -20,6 +21,15 @@ interface ConfirmationDialogProps {
   newStatus: string;
   onConfirm: () => void;
   onCancel: () => void;
+  translations: {
+    updateStatus: string;
+    confirmChange: string;
+    cancel: string;
+    confirm: string;
+    statusQueued: string;
+    statusCooking: string;
+    statusReady: string;
+  };
 }
 
 /**
@@ -32,6 +42,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   newStatus,
   onConfirm,
   onCancel,
+  translations,
 }) => {
   if (!isOpen) return null;
 
@@ -43,6 +54,17 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         return 'text-green-700';
       default:
         return 'text-gray-700';
+    }
+  };
+
+  const getTranslatedStatus = (status: string) => {
+    switch (status) {
+      case 'COOKING':
+        return translations.statusCooking;
+      case 'READY':
+        return translations.statusReady;
+      default:
+        return translations.statusQueued;
     }
   };
 
@@ -60,7 +82,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-1.5 sm:p-2">
                 <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-charcoal">Update Item Status</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-charcoal">{translations.updateStatus}</h3>
             </div>
             <button
               onClick={onCancel}
@@ -73,7 +95,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           {/* Body */}
           <div className="p-4 sm:p-6">
             <p className="text-gray-700 mb-3 sm:mb-4 text-sm sm:text-base">
-              Are you sure you want to update the status for:
+              {translations.confirmChange}
             </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
               <p className="font-semibold text-charcoal text-base sm:text-lg">{itemName}</p>
@@ -82,11 +104,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               <span
                 className={`font-semibold text-sm sm:text-base ${getStatusColor(currentStatus)}`}
               >
-                {currentStatus}
+                {getTranslatedStatus(currentStatus)}
               </span>
               <span className="text-gray-400">→</span>
               <span className={`font-semibold text-sm sm:text-base ${getStatusColor(newStatus)}`}>
-                {newStatus}
+                {getTranslatedStatus(newStatus)}
               </span>
             </div>
           </div>
@@ -97,13 +119,13 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               onClick={onCancel}
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors duration-200 border border-gray-300 text-sm sm:text-base"
             >
-              Cancel
+              {translations.cancel}
             </button>
             <button
               onClick={onConfirm}
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-naples to-arylide hover:from-naples/90 hover:to-arylide/90 text-charcoal rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
             >
-              Confirm
+              {translations.confirm}
             </button>
           </div>
         </div>
@@ -121,6 +143,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
   onMarkReady,
   onUpdateItemStatus,
 }) => {
+  const { t } = useTranslation(['kitchen', 'common']);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -186,7 +209,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
         return (
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-100 to-yellow-200 border-2 border-yellow-400 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group">
             <ChefHat className="w-5 h-5 text-yellow-700 group-hover:scale-110 transition-transform duration-200" />
-            <span className="font-bold text-yellow-800">Cooking</span>
+            <span className="font-bold text-yellow-800">{t('itemStatus.cooking')}</span>
             <div className="ml-1 flex gap-0.5">
               <div className="w-1 h-1 bg-yellow-600 rounded-full animate-pulse" />
               <div
@@ -204,7 +227,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
         return (
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-green-200 border-2 border-green-400 rounded-xl shadow-md">
             <CheckCircle className="w-5 h-5 text-green-700" />
-            <span className="font-bold text-green-800">Ready</span>
+            <span className="font-bold text-green-800">{t('itemStatus.ready')}</span>
             <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -218,7 +241,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
         return (
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group">
             <Circle className="w-5 h-5 text-gray-600 group-hover:scale-110 transition-transform duration-200" />
-            <span className="font-bold text-gray-700">Queued</span>
+            <span className="font-bold text-gray-700">{t('itemStatus.queued')}</span>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </div>
         );
@@ -230,19 +253,19 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
       case 'CONFIRMED':
         return (
           <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-300">
-            NEW
+            {t('status.new')}
           </span>
         );
       case 'PREPARING':
         return (
           <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-semibold border border-yellow-300">
-            COOKING
+            {t('status.cooking')}
           </span>
         );
       case 'READY':
         return (
           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-semibold border border-green-300">
-            READY
+            {t('status.ready')}
           </span>
         );
       default:
@@ -268,11 +291,11 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-charcoal flex flex-wrap items-center gap-2 sm:gap-3">
-                  Table #{order.table?.tableNumber || 'N/A'}
+                  {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
                   {getStatusBadge()}
                 </h3>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  Order #{order.orderNumber}
+                  {t('orders.orderNumber', { number: order.orderNumber })}
                   {order.guestName && ` • ${order.guestName}`}
                 </p>
               </div>
@@ -310,7 +333,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
                             </h4>
                             {item.specialInstructions && (
                               <p className="text-xs sm:text-sm text-yellow-700 bg-yellow-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg mt-1 sm:mt-2 inline-block border border-yellow-200">
-                                <span className="font-semibold">📝 Note:</span>{' '}
+                                <span className="font-semibold">📝 {t('orders.note')}</span>{' '}
                                 {item.specialInstructions}
                               </p>
                             )}
@@ -329,7 +352,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               </div>
             ) : (
               <p className="text-gray-500 text-center py-3 sm:py-4 text-sm sm:text-base">
-                No items in this order
+                {t('orders.noItems')}
               </p>
             )}
 
@@ -337,7 +360,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
             {order.notes && (
               <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
                 <p className="text-blue-700 text-xs sm:text-sm">
-                  <span className="font-semibold">📋 Order Notes: </span>
+                  <span className="font-semibold">📋 {t('orders.orderNotes')}</span>
                   {order.notes}
                 </p>
               </div>
@@ -348,24 +371,23 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               <button
                 onClick={handleMarkReady}
                 disabled={!canMarkReady || isUpdating}
-                className={`w-full mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ${
-                  canMarkReady && !isUpdating
-                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
-                }`}
+                className={`w-full mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ${canMarkReady && !isUpdating
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
+                  : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
+                  }`}
               >
                 {isUpdating ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
-                    Updating...
+                    {t('actions.updating')}
                   </span>
                 ) : canMarkReady ? (
                   <span className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-                    Mark Order Ready
+                    {t('actions.markOrderReady')}
                   </span>
                 ) : (
-                  'Complete All Items First'
+                  t('actions.completeAllFirst')
                 )}
               </button>
             )}
@@ -374,7 +396,7 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               <div className="mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-300 text-center">
                 <span className="text-green-700 font-bold text-base sm:text-lg flex items-center justify-center gap-2">
                   <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-                  Order Ready for Pickup
+                  {t('readyForPickup')}
                 </span>
               </div>
             )}
@@ -390,6 +412,15 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
         newStatus={confirmDialog.newStatus}
         onConfirm={handleConfirmStatusChange}
         onCancel={handleCancelStatusChange}
+        translations={{
+          updateStatus: t('dialogs.updateStatus'),
+          confirmChange: t('dialogs.confirmChange'),
+          cancel: t('dialogs.cancel'),
+          confirm: t('dialogs.confirm'),
+          statusQueued: t('itemStatus.queued'),
+          statusCooking: t('itemStatus.cooking'),
+          statusReady: t('itemStatus.ready'),
+        }}
       />
     </>
   );

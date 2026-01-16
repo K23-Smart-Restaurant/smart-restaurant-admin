@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle, User, ChevronDown, Utensils, DollarSign } from 'lucide-react';
 import TimerBadge from '../common/TimerBadge';
 import type { Order } from '../../services/orderService';
@@ -17,6 +18,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
   onMarkServed,
   onProcessPayment,
 }) => {
+  const { t } = useTranslation(['waiter', 'common']);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -49,21 +51,21 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-charcoal">
-                Table #{order.table?.tableNumber || 'N/A'}
+                {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
               </h3>
-              <p className="text-gray-600 text-xs sm:text-sm">Order #{order.orderNumber}</p>
+              <p className="text-gray-600 text-xs sm:text-sm">{t('orders.orderNumber', { number: order.orderNumber })}</p>
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             {showPaymentButton && (
               <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-200 text-blue-800 rounded-lg text-xs font-semibold border border-blue-300 animate-pulse">
-                <span className="hidden sm:inline">BILL REQUESTED</span>
+                <span className="hidden sm:inline">{t('tables.billRequested').toUpperCase()}</span>
                 <span className="sm:hidden">BILL</span>
               </span>
             )}
             <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-green-200 text-green-800 rounded-lg text-xs font-semibold border border-green-300">
-              <span className="hidden sm:inline">READY TO SERVE</span>
-              <span className="sm:hidden">READY</span>
+              <span className="hidden sm:inline">{t('status.ready')}</span>
+              <span className="sm:hidden">{t('status.ready')}</span>
             </span>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
@@ -79,7 +81,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
             <User className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="font-medium">{order.guestName || 'Guest'}</span>
+            <span className="font-medium">{order.guestName || t('orders.guest')}</span>
           </div>
           <TimerBadge startTime={order.createdAt} />
         </div>
@@ -89,7 +91,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
       {isExpanded && (
         <div className="p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
           <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">
-            Order Items:
+            {t('orders.orderItems')}
           </h4>
           <div className="space-y-2">
             {order.orderItems?.map((item) => (
@@ -104,7 +106,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
                   <span className="text-gray-700">{item.menuItem?.name || 'Item'}</span>
                 </div>
                 <span className="px-1.5 sm:px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-semibold border border-green-300">
-                  ✓ READY
+                  ✓ {t('status.ready')}
                 </span>
               </div>
             ))}
@@ -112,7 +114,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
           {order.notes && (
             <div className="mt-2 sm:mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-yellow-800 text-xs">
-                <span className="font-semibold">Note: </span>
+                <span className="font-semibold">{t('orders.note')} </span>
                 {order.notes}
               </p>
             </div>
@@ -130,14 +132,14 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
               className="py-2.5 sm:py-3 px-3 sm:px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-              {isProcessing ? 'Processing...' : 'Mark Served'}
+              {isProcessing ? t('status.processing') : t('actions.markServed')}
             </button>
             <button
               onClick={handleProcessPayment}
               className="py-2.5 sm:py-3 px-3 sm:px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-blue-300 hover:border-blue-400 text-sm sm:text-base"
             >
               <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
-              Process Payment
+              {t('actions.processPayment')}
             </button>
           </div>
         ) : (
@@ -147,7 +149,7 @@ const ReadyOrderCard: React.FC<ReadyOrderCardProps> = ({
             className="w-full py-2.5 sm:py-3 px-3 sm:px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-green-300 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-            {isProcessing ? 'Processing...' : 'Mark as Served'}
+            {isProcessing ? t('status.processing') : t('actions.markServed')}
           </button>
         )}
       </div>

@@ -11,6 +11,7 @@
         "fromTable": "Đơn hàng mới từ Bàn #{{tableNumber}}",
         "orderReady": "Đơn hàng sẵn sàng",
         "tableReady": "Đơn hàng Bàn #{{tableNumber}} đã sẵn sàng!",
+        "table": "Bàn #{{number}}",
         "orderNumber": "Đơn #{{number}}",
         "orderItems": "Các món:",
         "note": "Ghi chú:",

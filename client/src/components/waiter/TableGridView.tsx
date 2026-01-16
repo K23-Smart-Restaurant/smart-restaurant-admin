@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, Receipt } from 'lucide-react';
 
 export interface TableStatus {
@@ -24,6 +25,8 @@ interface TableGridViewProps {
  * TableGridView - Grid display of restaurant tables with status indicators (Light Theme)
  */
 const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) => {
+  const { t } = useTranslation(['waiter', 'common']);
+
   const getStatusStyles = (status: string) => {
     switch (status) {
       case 'AVAILABLE':
@@ -72,13 +75,13 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'AVAILABLE':
-        return 'Available';
+        return t('tables.available');
       case 'OCCUPIED':
-        return 'Occupied';
+        return t('tables.occupied');
       case 'RESERVED':
-        return 'Reserved';
+        return t('tables.reserved');
       case 'BILL_REQUESTED':
-        return 'Bill Requested';
+        return t('tables.billRequested');
       default:
         return 'Unknown';
     }
@@ -99,7 +102,7 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div>
                 <h3 className={`text-xl sm:text-2xl font-bold ${styles.text}`}>
-                  Table {table.tableNumber}
+                  {t('orders.table', { number: table.tableNumber })}
                 </h3>
                 <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
                   <Users className={`w-3 h-3 sm:w-4 sm:h-4 ${styles.icon}`} />
@@ -122,10 +125,10 @@ const TableGridView: React.FC<TableGridViewProps> = ({ tables, onTableClick }) =
             {table.currentOrder && table.status !== 'AVAILABLE' && (
               <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-current/20">
                 <p className={`text-xs ${styles.text} font-medium`}>
-                  Order #{table.currentOrder.orderNumber}
+                  {t('orders.orderNumber', { number: table.currentOrder.orderNumber })}
                 </p>
                 <p className={`text-xs ${styles.text} opacity-80 mt-0.5`}>
-                  {table.currentOrder.guestName || 'Guest'}
+                  {table.currentOrder.guestName || t('orders.guest')}
                 </p>
                 <p className={`text-sm ${styles.text} font-bold mt-1`}>
                   ${Number(table.currentOrder.totalAmount).toFixed(2)}

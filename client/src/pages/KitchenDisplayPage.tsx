@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { History, Volume2, VolumeX, WifiOff, RefreshCw } from 'lucide-react';
 import KitchenOrderCard from '../components/kitchen/KitchenOrderCard';
 import RecallHistoryModal from '../components/kitchen/RecallHistoryModal';
@@ -13,6 +14,7 @@ import { useToast } from '../hooks/useToast';
  * Real-time order display for kitchen staff with grid layout
  */
 const KitchenDisplayPage: React.FC = () => {
+  const { t } = useTranslation(['kitchen', 'common']);
   const [orders, setOrders] = useState<Order[]>([]);
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +31,7 @@ const KitchenDisplayPage: React.FC = () => {
       setOrders(data);
     } catch (error) {
       console.error('Failed to fetch kitchen orders:', error);
-      showToast('error', 'Error', 'Failed to load orders');
+      showToast('error', t('messages.error'), t('messages.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +65,7 @@ const KitchenDisplayPage: React.FC = () => {
         }
         return [order, ...prevOrders];
       });
-      showToast('success', 'New Order', `Order for Table #${order.table?.tableNumber}`);
+      showToast('success', t('messages.newOrder'), t('messages.orderForTable', { tableNumber: order.table?.tableNumber }));
     },
     [showToast]
   );
@@ -114,10 +116,10 @@ const KitchenDisplayPage: React.FC = () => {
     try {
       const updatedOrder = await kitchenService.updateOrderStatus(orderId, 'READY');
       setOrders((prevOrders) => prevOrders.map((o) => (o.id === orderId ? updatedOrder : o)));
-      showToast('success', 'Success', 'Order marked as ready!');
+      showToast('success', t('messages.success'), t('messages.orderReady'));
     } catch (error) {
       console.error('Failed to mark order ready:', error);
-      showToast('error', 'Error', 'Failed to update order status');
+      showToast('error', t('messages.error'), t('messages.updateFailed'));
     }
   };
 
@@ -165,7 +167,7 @@ const KitchenDisplayPage: React.FC = () => {
       // Rollback to previous state on error
       setOrders(previousOrders);
 
-      showToast('error', 'Error', 'Failed to update item status');
+      showToast('error', t('messages.error'), t('messages.itemUpdateFailed'));
     }
   };
 
@@ -174,7 +176,7 @@ const KitchenDisplayPage: React.FC = () => {
     const newState = !soundEnabled;
     setSoundEnabled(newState);
     soundManager.setEnabled(newState);
-    showToast('success', 'Settings', newState ? 'Sound enabled' : 'Sound disabled');
+    showToast('success', t('messages.settings'), newState ? t('sound.enabled') : t('sound.disabled'));
   };
 
   // Sort orders by priority (oldest first, then by status)
@@ -203,10 +205,10 @@ const KitchenDisplayPage: React.FC = () => {
       <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shadow-sm rounded-t-lg">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
-            Kitchen Display System
+            {t('title')}
           </h1>
           <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">
-            {orders.length} active order{orders.length !== 1 ? 's' : ''}
+            {t('activeOrders', { count: orders.length })}
           </p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hide">
@@ -214,7 +216,7 @@ const KitchenDisplayPage: React.FC = () => {
           {!isConnected && (
             <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-red-50 border border-red-200 rounded-lg text-red-600 flex-shrink-0">
               <WifiOff className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-              <span className="font-semibold text-xs sm:text-sm">Offline</span>
+              <span className="font-semibold text-xs sm:text-sm">{t('offline')}</span>
             </div>
           )}
 
@@ -225,27 +227,26 @@ const KitchenDisplayPage: React.FC = () => {
             className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 text-charcoal flex items-center gap-1 sm:gap-2 border border-gray-200 flex-shrink-0 text-xs sm:text-sm"
           >
             <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden sm:inline">{t('actions.refresh')}</span>
           </button>
 
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm ${
-              soundEnabled
-                ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
-                : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
-            }`}
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm ${soundEnabled
+              ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
+              : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
+              }`}
           >
             {soundEnabled ? (
               <>
                 <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden md:inline">Sound On</span>
+                <span className="hidden md:inline">{t('sound.on')}</span>
               </>
             ) : (
               <>
                 <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden md:inline">Sound Off</span>
+                <span className="hidden md:inline">{t('sound.off')}</span>
               </>
             )}
           </button>
@@ -259,7 +260,7 @@ const KitchenDisplayPage: React.FC = () => {
             className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 rounded-lg transition-all duration-200 text-charcoal flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm"
           >
             <History className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">History</span>
+            <span className="hidden sm:inline">{t('actions.history')}</span>
             <span className="sm:hidden">({completedOrders.length})</span>
             <span className="hidden sm:inline">({completedOrders.length})</span>
           </button>
@@ -272,7 +273,7 @@ const KitchenDisplayPage: React.FC = () => {
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-naples/30 border-t-naples rounded-full animate-spin mx-auto mb-3 sm:mb-4" />
-              <p className="text-gray-600 text-sm sm:text-lg">Loading orders...</p>
+              <p className="text-gray-600 text-sm sm:text-lg">{t('loading')}</p>
             </div>
           </div>
         ) : sortedOrders.length > 0 ? (
@@ -305,10 +306,10 @@ const KitchenDisplayPage: React.FC = () => {
                 </svg>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">
-                No Active Orders
+                {t('empty.title')}
               </h2>
               <p className="text-sm sm:text-base text-gray-600">
-                New orders will appear here automatically
+                {t('empty.description')}
               </p>
             </div>
           </div>

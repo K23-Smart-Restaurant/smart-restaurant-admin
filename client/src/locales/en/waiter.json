@@ -11,6 +11,7 @@
         "fromTable": "New order from Table #{{tableNumber}}",
         "orderReady": "Order Ready",
         "tableReady": "Table #{{tableNumber}} order is ready!",
+        "table": "Table #{{number}}",
         "orderNumber": "Order #{{number}}",
         "orderItems": "Order Items:",
         "note": "Note:",
