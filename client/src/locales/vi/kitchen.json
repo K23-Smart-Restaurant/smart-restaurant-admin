@@ -1,21 +1,80 @@
 {
   "title": "Màn hình bếp",
+  "activeOrders": "{{count}} đơn hàng đang xử lý",
+  "activeOrders_plural": "{{count}} đơn hàng đang xử lý",
   "orders": {
     "newOrder": "Đơn hàng mới",
-    "table": "Bàn {{number}}",
+    "table": "Bàn #{{number}}",
+    "orderNumber": "Đơn #{{number}}",
     "orderTime": "{{time}} trước",
-    "items": "{{count}} món"
+    "items": "{{count}} món",
+    "noItems": "Không có món trong đơn này",
+    "orderNotes": "Ghi chú đơn hàng:",
+    "note": "Ghi chú:"
+  },
+  "status": {
+    "new": "MỚI",
+    "cooking": "ĐANG NẤU",
+    "ready": "SẴN SÀNG",
+    "queued": "Đang chờ",
+    "preparing": "Đang nấu",
+    "done": "Hoàn tất"
+  },
+  "itemStatus": {
+    "queued": "Đang chờ",
+    "cooking": "Đang nấu",
+    "ready": "Hoàn tất"
   },
   "actions": {
     "startCooking": "Bắt đầu nấu",
     "markReady": "Đánh dấu hoàn thành",
+    "markOrderReady": "Hoàn tất đơn hàng",
+    "completeAllFirst": "Hoàn thành tất cả món trước",
     "recall": "Gọi lại",
-    "viewHistory": "Xem lịch sử"
+    "viewHistory": "Xem lịch sử",
+    "history": "Lịch sử",
+    "refresh": "Làm mới",
+    "updating": "Đang cập nhật..."
+  },
+  "dialogs": {
+    "updateStatus": "Cập nhật trạng thái món",
+    "confirmChange": "Bạn có chắc muốn cập nhật trạng thái cho:",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận"
   },
   "filters": {
     "all": "Tất cả đơn hàng",
     "pending": "Chờ xử lý",
     "cooking": "Đang nấu",
     "ready": "Sẵn sàng"
+  },
+  "sound": {
+    "on": "Bật âm thanh",
+    "off": "Tắt âm thanh",
+    "enabled": "Đã bật âm thanh",
+    "disabled": "Đã tắt âm thanh"
+  },
+  "history": {
+    "title": "Lịch sử đơn hoàn thành",
+    "empty": "Chưa có đơn hàng hoàn thành",
+    "completedOrders": "Đơn hàng hoàn thành gần đây"
+  },
+  "empty": {
+    "title": "Không có đơn hàng",
+    "description": "Đơn hàng mới sẽ tự động xuất hiện ở đây"
+  },
+  "loading": "Đang tải đơn hàng...",
+  "offline": "Ngoại tuyến",
+  "readyForPickup": "Đơn hàng sẵn sàng giao",
+  "messages": {
+    "newOrder": "Đơn hàng mới",
+    "orderForTable": "Đơn hàng cho Bàn #{{tableNumber}}",
+    "orderReady": "Đơn hàng đã sẵn sàng!",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "loadFailed": "Không thể tải đơn hàng",
+    "updateFailed": "Không thể cập nhật trạng thái đơn hàng",
+    "itemUpdateFailed": "Không thể cập nhật trạng thái món",
+    "settings": "Cài đặt"
   }
 }
