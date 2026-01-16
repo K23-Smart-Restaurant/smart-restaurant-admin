@@ -64,5 +64,14 @@
     "previous": "Trước",
     "next": "Tiếp",
     "page": "Trang {{page}}"
+  },
+  "header": {
+    "appName": "Smart Restaurant",
+    "kitchenDisplay": "Màn Hình Bếp",
+    "waiterDashboard": "Bảng Điều Khiển Phục Vụ",
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "connected": "Đã kết nối",
+    "disconnected": "Mất kết nối"
   }
 }

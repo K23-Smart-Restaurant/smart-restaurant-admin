@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon } from 'lucide-react';
@@ -11,10 +12,14 @@ import LanguageSwitcher from '../common/LanguageSwitcher';
  * Features: Clock, WiFi status, Logout button, Maximum screen space
  */
 const StaffLayout: React.FC = () => {
+  const { t, i18n } = useTranslation('common');
   const { user, logout } = useAuth();
   const { isConnected } = useSocket();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+  // Get current locale for date/time formatting
+  const currentLocale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
 
   // Update clock every second
   useEffect(() => {
@@ -26,16 +31,16 @@ const StaffLayout: React.FC = () => {
   }, []);
 
   const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(currentLocale, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: true,
+      hour12: currentLocale === 'en-US',
     });
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(currentLocale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -51,10 +56,10 @@ const StaffLayout: React.FC = () => {
           <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-shrink">
             <div className="min-w-0">
               <h1 className="text-sm sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-gradient-primary to-gradient-secondary bg-clip-text text-transparent truncate">
-                Smart Restaurant
+                {t('header.appName')}
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">
-                {user?.role === 'KITCHEN_STAFF' ? 'Kitchen Display' : 'Waiter Dashboard'}
+                {user?.role === 'KITCHEN_STAFF' ? t('header.kitchenDisplay') : t('header.waiterDashboard')}
               </p>
             </div>
           </div>
@@ -78,10 +83,10 @@ const StaffLayout: React.FC = () => {
             {/* WiFi/Socket Status */}
             <div
               className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${isConnected
-                  ? 'bg-green-50 text-green-600 border border-green-200'
-                  : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
+                ? 'bg-green-50 text-green-600 border border-green-200'
+                : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
                 }`}
-              title={isConnected ? 'Connected' : 'Disconnected'}
+              title={isConnected ? t('header.connected') : t('header.disconnected')}
             >
               {isConnected ? (
                 <WifiIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -89,7 +94,7 @@ const StaffLayout: React.FC = () => {
                 <WifiOffIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
               <span className="text-xs font-semibold hidden md:inline">
-                {isConnected ? 'Online' : 'Offline'}
+                {isConnected ? t('header.online') : t('header.offline')}
               </span>
             </div>
 
@@ -135,7 +140,7 @@ const StaffLayout: React.FC = () => {
                       className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 flex items-center space-x-2 group"
                     >
                       <LogOutIcon className="w-4 h-4" />
-                      <span>Logout</span>
+                      <span>{t('navigation.logout')}</span>
                       <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
                         →
                       </span>

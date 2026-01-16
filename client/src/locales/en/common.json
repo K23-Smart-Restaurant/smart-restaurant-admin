@@ -64,5 +64,14 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page {{page}}"
+  },
+  "header": {
+    "appName": "Smart Restaurant",
+    "kitchenDisplay": "Kitchen Display",
+    "waiterDashboard": "Waiter Dashboard",
+    "online": "Online",
+    "offline": "Offline",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
   }
 }
