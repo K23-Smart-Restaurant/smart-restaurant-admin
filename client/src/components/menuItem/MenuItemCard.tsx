@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, Trash2Icon, ClockIcon, DollarSignIcon, StarIcon, EyeIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MenuItem } from '../../hooks/useMenuItems';
 import type { FieldHighlight } from '../../types/search.types';
 import { HighlightedText } from '../common/HighlightedText';
@@ -33,6 +34,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   highlights,
   relevanceScore,
 }) => {
+  const { t } = useTranslation('menu');
   const navigate = useNavigate();
 
   const handleDelete = () => {
@@ -51,10 +53,10 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      APPETIZER: 'Appetizer',
-      MAIN_COURSE: 'Main Course',
-      DESSERT: 'Dessert',
-      BEVERAGE: 'Beverage',
+      APPETIZER: t('categories.APPETIZER'),
+      MAIN_COURSE: t('categories.MAIN_COURSE'),
+      DESSERT: t('categories.DESSERT'),
+      BEVERAGE: t('categories.BEVERAGE'),
     };
     return labels[category] || category;
   };
@@ -131,7 +133,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
-            <span className="text-sm">No Image</span>
+            <span className="text-sm">{t('form.noPhotos')}</span>
           </div>
         )}
 
@@ -142,14 +144,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         {menuItem.isChefRecommendation && (
           <div className="absolute top-3 left-3 px-3 py-1.5 bg-gradient-to-r from-naples to-arylide text-charcoal text-xs font-bold rounded-full flex items-center shadow-glow-yellow animate-bounce-gentle">
             <StarIcon className="w-3.5 h-3.5 mr-1 fill-current" />
-            Chef's Pick
+            {t('card.chefsPick')}
           </div>
         )}
 
         {/* Relevance Score Badge (Task 4.3) */}
         {relevanceScore !== undefined && relevanceScore > 0 && (
           <div className="absolute top-3 right-3 px-2 py-1 bg-white/90 backdrop-blur-sm text-charcoal text-xs font-semibold rounded-full shadow-sm">
-            {relevanceScore}% match
+            {t('card.matchScore', { score: relevanceScore })}
           </div>
         )}
 
@@ -158,21 +160,21 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <button
             onClick={handleViewDetails}
             className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 text-blue-600 hover:text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-110"
-            title="View details"
+            title={t('card.viewDetails')}
           >
             <EyeIcon className="w-4 h-4" />
           </button>
           <button
             onClick={() => onEdit(menuItem)}
             className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gradient-primary hover:to-gradient-secondary text-gray-600 hover:text-white rounded-xl shadow-md hover:shadow-glow transition-all duration-300 transform hover:scale-110"
-            title="Edit menu item"
+            title={t('card.editItem')}
           >
             <PencilIcon className="w-4 h-4" />
           </button>
           <button
             onClick={handleDelete}
             className="p-2.5 bg-white/95 backdrop-blur-sm hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-110"
-            title="Delete menu item"
+            title={t('card.deleteItem')}
           >
             <Trash2Icon className="w-4 h-4" />
           </button>
@@ -202,7 +204,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <ClockIcon className="w-4 h-4 mr-1" />
-            {menuItem.preparationTime} min
+            {t('card.prepTime', { time: menuItem.preparationTime })}
           </div>
         </div>
 
@@ -210,8 +212,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         {menuItem.modifiers && menuItem.modifiers.length > 0 && (
           <div className="pt-2">
             <span className="text-xs text-gray-600">
-              {menuItem.modifiers.length} modifier{menuItem.modifiers.length !== 1 ? 's' : ''}{' '}
-              available
+              {t('card.modifiersAvailable', { count: menuItem.modifiers.length })}
             </span>
           </div>
         )}
@@ -220,7 +221,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         <div className="pt-3 space-y-2 border-t border-antiflash">
           {/* Available Toggle */}
           <label className="flex items-center justify-between cursor-pointer group/toggle">
-            <span className="text-sm text-charcoal">Available for Ordering</span>
+            <span className="text-sm text-charcoal">{t('form.isAvailable')}</span>
             <div className="relative">
               <input
                 type="checkbox"
@@ -235,7 +236,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
           {/* Sold Out Toggle */}
           <label className="flex items-center justify-between cursor-pointer group/toggle">
-            <span className="text-sm text-charcoal">Sold Out</span>
+            <span className="text-sm text-charcoal">{t('form.isSoldOut')}</span>
             <div className="relative">
               <input
                 type="checkbox"
@@ -253,17 +254,17 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         <div className="flex flex-wrap gap-2 pt-2">
           {!menuItem.isAvailable && (
             <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">
-              Unavailable
+              {t('card.unavailable')}
             </span>
           )}
           {menuItem.isSoldOut && (
             <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded">
-              Sold Out
+              {t('card.soldOut')}
             </span>
           )}
           {menuItem.isAvailable && !menuItem.isSoldOut && (
             <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-              Active
+              {t('card.active')}
             </span>
           )}
         </div>

@@ -2,39 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { XIcon, UploadIcon, ImageIcon, StarIcon } from 'lucide-react';
 import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
 import type { PhotoInput } from '../../services/menuItemService';
 import { Button } from '../common/Button';
 
-// Validation schema
-const menuItemFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(80, 'Name must be at most 80 characters'),
-  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
-  category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE'], {
-    errorMap: () => ({ message: 'Please select a category' }),
-  }),
-  price: z.number().min(0, 'Price must be 0 or greater'),
-  preparationTime: z
-    .number()
-    .min(0, 'Preparation time must be 0 or greater')
-    .max(240, 'Preparation time must be 240 minutes or less')
-    .optional(),
-  isAvailable: z.boolean().default(true),
-  isSoldOut: z.boolean().default(false),
-  isChefRecommendation: z.boolean().default(false),
-  categoryId: z.string().optional(),
-});
-
-type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
-
 type PhotoState = PhotoInput & { previewUrl: string };
 
 export interface MenuItemFormSubmitPayload {
-  data: MenuItemFormData;
+  data: any;
   photos: PhotoInput[];
   removedPhotoIds: string[];
 }
@@ -46,9 +23,31 @@ interface MenuItemFormProps {
 }
 
 export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, onCancel }) => {
+  const { t } = useTranslation('menu');
   const isEditMode = !!menuItem;
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Validation schema - must be inside component to access t()
+  const menuItemFormSchema = z.object({
+    name: z.string().min(2, t('form.validation.nameMin')).max(80, t('form.validation.nameMax')),
+    description: z.string().max(500, t('form.validation.descriptionMax')).optional(),
+    category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE'], {
+      errorMap: () => ({ message: t('form.validation.categoryRequired') }),
+    }),
+    price: z.number().min(0, t('form.validation.priceMin')),
+    preparationTime: z
+      .number()
+      .min(0, t('form.validation.prepTimeMin'))
+      .max(240, t('form.validation.prepTimeMax'))
+      .optional(),
+    isAvailable: z.boolean().default(true),
+    isSoldOut: z.boolean().default(false),
+    isChefRecommendation: z.boolean().default(false),
+    categoryId: z.string().optional(),
+  });
+
+  type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
 
   const initialPhotos = useMemo<PhotoState[]>(() => {
     if (menuItem?.photos?.length) {
@@ -211,10 +210,10 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   };
 
   const categoryOptions: { value: MenuCategory; label: string }[] = [
-    { value: 'APPETIZER', label: 'Appetizer' },
-    { value: 'MAIN_COURSE', label: 'Main Course' },
-    { value: 'DESSERT', label: 'Dessert' },
-    { value: 'BEVERAGE', label: 'Beverage' },
+    { value: 'APPETIZER', label: t('categories.APPETIZER') },
+    { value: 'MAIN_COURSE', label: t('categories.MAIN_COURSE') },
+    { value: 'DESSERT', label: t('categories.DESSERT') },
+    { value: 'BEVERAGE', label: t('categories.BEVERAGE') },
   ];
 
   return (
@@ -225,7 +224,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           <div className="bg-white rounded-lg shadow-2xl p-6 flex flex-col items-center space-y-3">
             <div className="w-12 h-12 border-4 border-naples border-t-transparent rounded-full animate-spin"></div>
             <p className="text-charcoal font-semibold">
-              {isEditMode ? 'Updating menu item...' : 'Creating menu item...'}
+              {isEditMode ? t('form.updating') : t('form.creating')}
             </p>
           </div>
         </div>
@@ -235,7 +234,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         {/* Name field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-1">
-            Name <span className="text-red-600">*</span>
+            {t('form.name')} <span className="text-red-600">*</span>
           </label>
           <input
             id="name"
@@ -244,7 +243,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.name ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Enter menu item name"
+            placeholder={t('form.namePlaceholder')}
             maxLength={80}
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -253,7 +252,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         {/* Description field */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-charcoal mb-1">
-            Description
+            {t('form.description')}
           </label>
           <textarea
             id="description"
@@ -262,7 +261,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
               errors.description ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Enter item description"
+            placeholder={t('form.descriptionPlaceholder')}
             maxLength={500}
           />
           {errors.description && (
@@ -275,7 +274,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           {/* Category field */}
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-charcoal mb-1">
-              Category <span className="text-red-600">*</span>
+              {t('form.category')} <span className="text-red-600">*</span>
             </label>
             <select
               id="category"
@@ -298,7 +297,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           {/* Price field */}
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-charcoal mb-1">
-              Price ($) <span className="text-red-600">*</span>
+              {t('form.price')} <span className="text-red-600">*</span>
             </label>
             <input
               id="price"
@@ -308,7 +307,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
                 errors.price ? 'border-red-500' : 'border-antiflash'
               }`}
-              placeholder="0.00"
+              placeholder={t('form.pricePlaceholder')}
             />
             {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
           </div>
@@ -317,7 +316,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         {/* Preparation Time */}
         <div>
           <label htmlFor="preparationTime" className="block text-sm font-medium text-charcoal mb-1">
-            Preparation Time (minutes)
+            {t('form.preparationTime')}
           </label>
           <input
             id="preparationTime"
@@ -326,7 +325,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.preparationTime ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="15"
+            placeholder={t('form.preparationTimePlaceholder')}
           />
           {errors.preparationTime && (
             <p className="mt-1 text-sm text-red-600">{errors.preparationTime.message}</p>
@@ -337,15 +336,15 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-charcoal">
-              Photos <span className="text-red-600">*</span>
+              {t('form.photos')} <span className="text-red-600">*</span>
             </label>
-            <span className="text-xs text-gray-600">JPG / PNG / WebP · Max 5MB</span>
+            <span className="text-xs text-gray-600">{t('form.photosHelper')}</span>
           </div>
 
           <div className="flex flex-wrap gap-3 mb-4">
             <label className="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-charcoal border border-antiflash rounded-md cursor-pointer transition-colors">
               <UploadIcon className="w-4 h-4 mr-2" />
-              <span>Select photos</span>
+              <span>{t('form.selectPhotos')}</span>
               <input
                 key={fileInputKey}
                 type="file"
@@ -369,7 +368,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
                 }
                 className="text-sm text-naples underline"
               >
-                Ensure primary photo is first
+                {t('form.ensurePrimary')}
               </button>
             )}
           </div>
@@ -399,12 +398,12 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
                         onChange={() => handleSetPrimary(index)}
                         className="mr-1"
                       />
-                      Primary
+                      {t('form.primary')}
                     </label>
                     {photo.isPrimary && (
                       <span className="bg-naples text-charcoal text-xs font-semibold px-2 py-1 rounded-md flex items-center shadow">
                         <StarIcon className="w-3 h-3 mr-1" />
-                        Featured
+                        {t('form.featured')}
                       </span>
                     )}
                   </div>
@@ -413,7 +412,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
                     type="button"
                     onClick={() => handleRemovePhoto(index)}
                     className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove photo"
+                    title={t('form.removePhoto')}
                   >
                     <XIcon className="w-4 h-4" />
                   </button>
@@ -423,10 +422,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           ) : (
             <div className="border-2 border-dashed border-antiflash rounded-lg p-8 text-center">
               <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-              <p className="text-gray-600 text-sm">No photos added yet</p>
-              <p className="text-xs text-gray-500 mt-1">
-                Upload up to 5 photos and choose a primary image
-              </p>
+              <p className="text-gray-600 text-sm">{t('form.noPhotos')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('form.noPhotosHelper')}</p>
             </div>
           )}
         </div>
@@ -441,7 +438,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
             />
             <label htmlFor="isAvailable" className="ml-2 text-sm text-charcoal">
-              Available for ordering
+              {t('form.isAvailable')}
             </label>
           </div>
 
@@ -453,7 +450,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
             />
             <label htmlFor="isSoldOut" className="ml-2 text-sm text-charcoal">
-              Sold out
+              {t('form.isSoldOut')}
             </label>
           </div>
 
@@ -465,7 +462,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
               className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
             />
             <label htmlFor="isChefRecommendation" className="ml-2 text-sm text-charcoal">
-              Chef's recommendation
+              {t('form.isChefRecommendation')}
             </label>
           </div>
         </div>
@@ -474,10 +471,10 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
-          Cancel
+          {t('form.cancel')}
         </Button>
         <Button type="submit" variant="primary" loading={isLoading}>
-          {isEditMode ? 'Update Item' : 'Create Item'}
+          {isEditMode ? t('form.update') : t('form.save')}
         </Button>
       </div>
     </form>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PlusIcon, Trash2Icon, SlidersHorizontalIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../common/Button';
 import type { ModifierGroupFormState, ModifierOptionInput } from '../../hooks/useMenuItems';
 
@@ -11,6 +12,7 @@ interface ModifierGroupFormProps {
 const buildTempId = (prefix: string) => `${prefix}-${Date.now()}`;
 
 export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers, onChange }) => {
+  const { t } = useTranslation('menu');
   const [groupName, setGroupName] = useState('');
   const [selectionType, setSelectionType] = useState<'single' | 'multiple'>('single');
   const [isRequired, setIsRequired] = useState(false);
@@ -121,13 +123,13 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
   return (
     <div className="space-y-4">
       <div className="bg-antiflash/50 p-4 rounded-lg">
-        <h4 className="text-sm font-semibold text-charcoal mb-3">Add Modifier Group & Options</h4>
+        <h4 className="text-sm font-semibold text-charcoal mb-3">{t('modifiers.addGroup')}</h4>
 
         <div className="space-y-3">
           {/* Group Name */}
           <div>
             <label htmlFor="groupName" className="block text-xs font-medium text-charcoal mb-1">
-              Group Name (e.g., Size, Extras, Toppings)
+              {t('modifiers.groupName')}
             </label>
             <input
               id="groupName"
@@ -135,21 +137,23 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               className="w-full bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
-              placeholder="Size"
+              placeholder={t('modifiers.groupNamePlaceholder')}
             />
           </div>
 
           {/* Selection rules */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-charcoal mb-1">Selection Type</label>
+              <label className="block text-xs font-medium text-charcoal mb-1">
+                {t('modifiers.selectionType')}
+              </label>
               <select
                 value={selectionType}
                 onChange={(e) => setSelectionType(e.target.value as 'single' | 'multiple')}
                 className="w-full bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
               >
-                <option value="single">Single select</option>
-                <option value="multiple">Multi select</option>
+                <option value="single">{t('modifiers.singleSelect')}</option>
+                <option value="multiple">{t('modifiers.multiSelect')}</option>
               </select>
             </div>
 
@@ -162,7 +166,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 className="w-4 h-4 text-naples bg-gray-200 border-antiflash rounded focus:ring-naples focus:ring-2"
               />
               <label htmlFor="isRequired" className="text-sm text-charcoal">
-                Required group
+                {t('modifiers.requiredGroup')}
               </label>
             </div>
           </div>
@@ -170,7 +174,9 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
           {/* Min/Max selections */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-charcoal mb-1">Min selections</label>
+              <label className="block text-xs font-medium text-charcoal mb-1">
+                {t('modifiers.minSelections')}
+              </label>
               <input
                 type="number"
                 min={0}
@@ -181,7 +187,9 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-charcoal mb-1">Max selections</label>
+              <label className="block text-xs font-medium text-charcoal mb-1">
+                {t('modifiers.maxSelections')}
+              </label>
               <input
                 type="number"
                 min={1}
@@ -200,7 +208,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 htmlFor="modifierName"
                 className="block text-xs font-medium text-charcoal mb-1"
               >
-                Modifier Name
+                {t('modifiers.modifierName')}
               </label>
               <input
                 id="modifierName"
@@ -209,7 +217,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 onChange={(e) => setModifierName(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="w-full bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
-                placeholder="Large"
+                placeholder={t('modifiers.modifierNamePlaceholder')}
               />
             </div>
 
@@ -218,7 +226,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 htmlFor="modifierPrice"
                 className="block text-xs font-medium text-charcoal mb-1"
               >
-                Additional Price ($)
+                {t('modifiers.additionalPrice')}
               </label>
               <input
                 id="modifierPrice"
@@ -228,19 +236,21 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                 onChange={(e) => setModifierPrice(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="w-full bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
-                placeholder="0.00"
+                placeholder={t('modifiers.additionalPricePlaceholder')}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-charcoal mb-1">Status</label>
+              <label className="block text-xs font-medium text-charcoal mb-1">
+                {t('modifiers.status')}
+              </label>
               <select
                 value={modifierStatus}
                 onChange={(e) => setModifierStatus(e.target.value as 'active' | 'inactive')}
                 className="w-full bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{t('modifiers.active')}</option>
+                <option value="inactive">{t('modifiers.inactive')}</option>
               </select>
             </div>
           </div>
@@ -252,7 +262,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
             icon={PlusIcon}
             className="w-full"
           >
-            Add Modifier Option
+            {t('modifiers.addOption')}
           </Button>
         </div>
       </div>
@@ -260,7 +270,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
       {/* Display grouped modifiers */}
       {modifiers.length > 0 ? (
         <div className="space-y-4">
-          <h4 className="text-sm font-semibold text-charcoal">Current Modifier Groups</h4>
+          <h4 className="text-sm font-semibold text-charcoal">{t('modifiers.currentGroups')}</h4>
 
           {modifiers.map((group) => (
             <div
@@ -273,12 +283,15 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                     <span className="px-2 py-1 bg-naples/20 rounded text-xs">{group.name}</span>
                     <span className="text-xs text-gray-600 flex items-center gap-1">
                       <SlidersHorizontalIcon className="w-3 h-3" />
-                      {group.selectionType === 'single' ? 'Single select' : 'Multi select'}
+                      {group.selectionType === 'single'
+                        ? t('modifiers.singleSelect')
+                        : t('modifiers.multiSelect')}
                     </span>
                   </h5>
                   <p className="text-xs text-gray-600">
-                    {group.isRequired ? 'Required' : 'Optional'} • Min {group.minSelections ?? 0} /
-                    Max {group.maxSelections ?? '∞'}
+                    {group.isRequired ? t('modifiers.required') : t('modifiers.optional')} •{' '}
+                    {t('modifiers.minSelections')} {group.minSelections ?? 0} /
+                    {t('modifiers.maxSelections')} {group.maxSelections ?? '∞'}
                   </p>
                 </div>
 
@@ -291,14 +304,14 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                       onChange(modifiers.filter((g) => g.id !== group.id && g.name !== group.name));
                     }}
                     className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors"
-                    title="Delete entire group"
+                    title={t('modifiers.deleteGroup')}
                   >
                     <Trash2Icon className="w-4 h-4" />
                   </button>
 
                   <div className="flex items-center gap-2 text-xs">
                     <label className="flex items-center gap-1">
-                      <span className="text-gray-600">Required</span>
+                      <span className="text-gray-600">{t('modifiers.required')}</span>
                       <input
                         type="checkbox"
                         checked={group.isRequired}
@@ -327,8 +340,8 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                       }
                       className="bg-gray-200 text-black px-2 py-1 rounded-md text-xs"
                     >
-                      <option value="single">Single</option>
-                      <option value="multiple">Multiple</option>
+                      <option value="single">{t('modifiers.singleSelect')}</option>
+                      <option value="multiple">{t('modifiers.multiSelect')}</option>
                     </select>
                     <input
                       type="number"
@@ -380,10 +393,14 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                     <div className="flex-1">
                       <span className="text-sm text-charcoal font-medium">{modifier.name}</span>
                       <span className="text-xs text-gray-600 ml-2">
-                        {modifier.price > 0 ? `+$${modifier.price.toFixed(2)}` : 'Free'}
+                        {modifier.price > 0
+                          ? `+$${modifier.price.toFixed(2)}`
+                          : t('modifiers.free')}
                       </span>
                       <span className="text-xs ml-2 px-2 py-1 rounded-full border border-antiflash text-gray-700">
-                        {modifier.status === 'inactive' ? 'Inactive' : 'Active'}
+                        {modifier.status === 'inactive'
+                          ? t('modifiers.inactive')
+                          : t('modifiers.active')}
                       </span>
                     </div>
 
@@ -391,7 +408,7 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
                       type="button"
                       onClick={() => removeModifier(group.id || group.name, modifier.id || '')}
                       className="p-1 text-red-600 hover:bg-red-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Remove modifier"
+                      title={t('modifiers.removeModifier')}
                     >
                       <Trash2Icon className="w-4 h-4" />
                     </button>
@@ -403,19 +420,15 @@ export const ModifierGroupForm: React.FC<ModifierGroupFormProps> = ({ modifiers,
         </div>
       ) : (
         <div className="bg-white border-2 border-dashed border-antiflash rounded-lg p-8 text-center">
-          <p className="text-gray-600 text-sm">No modifier groups added yet</p>
-          <p className="text-gray-500 text-xs mt-1">
-            Add groups like Size or Extras, then add options to each
-          </p>
+          <p className="text-gray-600 text-sm">{t('modifiers.noGroups')}</p>
+          <p className="text-gray-500 text-xs mt-1">{t('modifiers.noGroupsHelper')}</p>
         </div>
       )}
 
       {/* Info text */}
       <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
         <p className="text-xs text-blue-900">
-          <strong>Tip:</strong> Use single-select for choices like Size (Small/Medium/Large) and
-          multi-select with min/max rules for add-ons (Toppings, Extras). Required groups ensure
-          guests make a choice before checkout.
+          <strong>{t('modifiers.tip')}</strong> {t('modifiers.tipMessage')}
         </p>
       </div>
     </div>
