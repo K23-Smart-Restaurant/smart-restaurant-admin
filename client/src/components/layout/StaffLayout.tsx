@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon } from 'lucide-react';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 /**
  * T422: StaffLayout Component
@@ -69,15 +70,17 @@ const StaffLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: WiFi Status & Profile Dropdown */}
+          {/* Right: Language Switcher, WiFi Status & Profile Dropdown */}
           <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
             {/* WiFi/Socket Status */}
             <div
-              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
-                isConnected
+              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${isConnected
                   ? 'bg-green-50 text-green-600 border border-green-200'
                   : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
-              }`}
+                }`}
               title={isConnected ? 'Connected' : 'Disconnected'}
             >
               {isConnected ? (
