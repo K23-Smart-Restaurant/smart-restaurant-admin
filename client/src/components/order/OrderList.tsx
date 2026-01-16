@@ -111,7 +111,7 @@ export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus, on
 
       {/* Order Grid */}
       {filteredOrders.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredOrders.map((order) => (
             <OrderCard
               key={order.id}

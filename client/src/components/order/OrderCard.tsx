@@ -14,16 +14,35 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
   // Calculate elapsed time and update every minute
   useEffect(() => {
     const calculateElapsed = () => {
-      const now = Date.now();
-      const elapsed = Math.floor((now - new Date(order.createdAt).getTime()) / 60000);
+      const startTime = new Date(order.createdAt).getTime();
+
+      // If order is cancelled, set elapsed to 0
+      if (order.status === 'CANCELLED') {
+        setElapsedMinutes(0);
+        return;
+      }
+
+      // If order is completed/paid, use the completion time instead of current time
+      const isFinished =
+        order.paymentStatus === 'PAID' || order.status === 'COMPLETED' || order.status === 'SERVED';
+
+      const endTime = isFinished && order.paidAt ? new Date(order.paidAt).getTime() : Date.now();
+
+      const elapsed = Math.floor((endTime - startTime) / 60000);
       setElapsedMinutes(elapsed);
     };
 
     calculateElapsed();
-    const interval = setInterval(calculateElapsed, 60000); // Update every minute
 
-    return () => clearInterval(interval);
-  }, [order.createdAt]);
+    // Only set up interval if order is not finished
+    const isFinished =
+      order.paymentStatus === 'PAID' || order.status === 'COMPLETED' || order.status === 'SERVED';
+
+    if (!isFinished) {
+      const interval = setInterval(calculateElapsed, 60000); // Update every minute
+      return () => clearInterval(interval);
+    }
+  }, [order.createdAt, order.paymentStatus, order.status, order.paidAt]);
 
   // Check if order is overdue
   const isOverdue =
@@ -65,8 +84,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
         return 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md animate-pulse-glow';
       case 'SERVED':
         return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-sm';
-      case 'PAID':
-        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md';
+      case 'COMPLETED':
+        return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm';
+      case 'BILL_REQUESTED':
+        return 'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 shadow-sm';
       case 'CANCELLED':
         return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm';
       default:
@@ -168,7 +189,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
           }`}
         >
           <Clock className="w-5 h-5 mr-2" />
-          <span className="font-semibold text-lg">{elapsedMinutes} min</span>
+          <span className="font-semibold text-md">{elapsedMinutes} min</span>
           {isOverdue && (
             <>
               <AlertTriangle className="w-5 h-5 ml-3 mr-1" />
@@ -187,7 +208,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onUpdateStatus, onC
           <div key={item.id} className="ml-2">
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <p className="text-xl font-medium text-charcoal">
+                <p className="text-md font-medium text-charcoal">
                   {item.quantity}x {item.menuItem?.name || 'Unknown Item'}
                 </p>
                 {item.specialInstructions && (

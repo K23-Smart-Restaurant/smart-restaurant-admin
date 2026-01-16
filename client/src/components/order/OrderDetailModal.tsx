@@ -21,6 +21,18 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   // Track elapsed time in state to avoid calling Date.now() during render
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
 
+  // Preven scroll outside when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    }
+  }, [isOpen]);
+
   // Calculate elapsed time when modal opens or order changes
   useEffect(() => {
     if (!order) {
@@ -29,7 +41,21 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
 
     const updateElapsedTime = () => {
-      const elapsed = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+      const startTime = new Date(order.createdAt).getTime();
+
+      // If order is cancelled, set elapsed to 0
+      if (order.status === 'CANCELLED') {
+        setElapsedMinutes(0);
+        return;
+      }
+
+      // If order is completed/paid, use the completion time instead of current time
+      const isFinished =
+        order.paymentStatus === 'PAID' || order.status === 'COMPLETED' || order.status === 'SERVED';
+
+      const endTime = isFinished && order.paidAt ? new Date(order.paidAt).getTime() : Date.now();
+
+      const elapsed = Math.floor((endTime - startTime) / 60000);
       setElapsedMinutes(elapsed);
     };
 
@@ -43,7 +69,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
+    return `$${Number(amount).toFixed(2)}`;
   };
 
   // Format date
@@ -63,7 +89,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     'PREPARING',
     'READY',
     'SERVED',
-    'PAID',
+    'BILL_REQUESTED',
+    'COMPLETED',
+    // 'CANCELLED'
   ];
   const currentStatusIndex = statusSteps.indexOf(order.status);
 
@@ -88,7 +116,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
       {/* Modal */}
       <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-white rounded-lg overflow-hidden shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           {/* Close Button */}
           <button
             onClick={onClose}

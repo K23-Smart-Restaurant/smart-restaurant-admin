@@ -10,9 +10,11 @@ class OrderController {
         tableId: req.query.tableId,
         sortBy: req.query.sortBy,
         sortOrder: req.query.sortOrder,
+        page: req.query.page ? parseInt(req.query.page, 10) : 1,
+        pageSize: req.query.pageSize ? parseInt(req.query.pageSize, 10) : 10,
       };
-      const orders = await orderService.getOrders(filters);
-      res.json(orders);
+      const result = await orderService.getOrders(filters);
+      res.json(result);
     } catch (error) {
       next(error);
     }

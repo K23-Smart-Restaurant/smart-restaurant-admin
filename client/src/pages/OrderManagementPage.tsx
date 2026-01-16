@@ -6,12 +6,18 @@ import { OrderList } from '../components/order/OrderList';
 import { OrderDetailModal } from '../components/order/OrderDetailModal';
 import { PageLoading, StatsSkeleton } from '../components/common/LoadingSpinner';
 import { Button } from '../components/common/Button';
+import { Pagination } from '../components/common/Pagination';
 
 const OrderManagementPage: React.FC = () => {
-  const { orders, isLoading, isError, updateStatus } = useOrders();
-
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+
+  const { orders, total, isLoading, isError, updateStatus } = useOrders({
+    page,
+    pageSize,
+  });
 
   // Calculate summary stats
   const todayOrders = Array.isArray(orders)
@@ -26,35 +32,40 @@ const OrderManagementPage: React.FC = () => {
     ? orders.filter((order) => ['PENDING', 'CONFIRMED'].includes(order.status))
     : [];
 
-  // Calculate overdue orders and avgPrepTime (moved to state to satisfy purity rules)
-  const [overdueOrders, setOverdueOrders] = useState<Order[]>([]);
-  const [avgPrepTime, setAvgPrepTime] = useState(0);
+  // Calculate metrics directly from current page (Note: These are based on current page only, not all orders)
+  const now = Date.now();
+  const thirtyMinutes = 30 * 60 * 1000;
 
-  // Calculate metrics when orders change
-  useEffect(() => {
-    if (!Array.isArray(orders) || orders.length === 0) {
-      setOverdueOrders([]);
-      setAvgPrepTime(0);
-      return;
-    }
+  const overdueOrders = Array.isArray(orders)
+    ? orders.filter((order) => {
+        const isFinished =
+          order.paymentStatus === 'PAID' ||
+          order.status === 'COMPLETED' ||
+          order.status === 'SERVED' ||
+          order.status === 'CANCELLED';
 
-    const now = Date.now();
-    const thirtyMinutes = 30 * 60 * 1000;
+        if (isFinished) return false;
 
-    // Calculate overdue orders
-    const overdue = orders.filter((order) => {
-      const orderAge = now - new Date(order.createdAt).getTime();
-      return orderAge > thirtyMinutes && !['PAID', 'CANCELLED'].includes(order.status);
-    });
-    setOverdueOrders(overdue);
+        const orderAge = now - new Date(order.createdAt).getTime();
+        return orderAge > thirtyMinutes;
+      })
+    : [];
 
-    // Calculate average prep time
-    const totalElapsed = orders.reduce((sum, order) => {
-      const elapsed = Math.floor((now - new Date(order.createdAt).getTime()) / 60000);
-      return sum + elapsed;
-    }, 0);
-    setAvgPrepTime(Math.round(totalElapsed / orders.length));
-  }, [orders]);
+  const avgPrepTime =
+    Array.isArray(orders) && orders.length > 0
+      ? Math.round(
+          orders.reduce((sum, order) => {
+            const startTime = new Date(order.createdAt).getTime();
+            const isFinished =
+              order.paymentStatus === 'PAID' ||
+              order.status === 'COMPLETED' ||
+              order.status === 'SERVED';
+            const endTime = isFinished && order.paidAt ? new Date(order.paidAt).getTime() : now;
+            const elapsed = Math.floor((endTime - startTime) / 60000);
+            return sum + elapsed;
+          }, 0) / orders.length
+        )
+      : 0;
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
@@ -64,6 +75,16 @@ const OrderManagementPage: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+  };
+
+  // Pagination handlers
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1); // Reset to first page when page size changes
   };
 
   // Real-time simulation: Add new mock order every 30s
@@ -188,6 +209,20 @@ const OrderManagementPage: React.FC = () => {
       {/* Order List */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <OrderList orders={orders} onUpdateStatus={updateStatus} onOrderClick={handleOrderClick} />
+
+        {/* Pagination */}
+        {total > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <Pagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              pageSizeOptions={[6, 9, 12, 18, 24]}
+            />
+          </div>
+        )}
       </div>
 
       {/* Order Detail Modal */}
