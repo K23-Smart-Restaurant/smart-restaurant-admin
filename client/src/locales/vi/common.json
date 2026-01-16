@@ -64,6 +64,30 @@
     "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} mục",
     "previous": "Trước",
     "next": "Tiếp",
-    "page": "Trang {{page}}"
+    "page": "Trang {{page}}",
+    "rowsPerPage": "Số hàng mỗi trang:",
+    "pageOf": "Trang {{page}} / {{totalPages}}"
+  },
+  "activeOrders": {
+    "title": "Cảnh Báo Đơn Hàng Đang Hoạt Động",
+    "table": "Bàn {{number}}",
+    "foundPlural": "Tìm thấy {{count}} đơn hàng đang hoạt động",
+    "foundSingular": "Tìm thấy {{count}} đơn hàng đang hoạt động",
+    "description": "Bàn này có đơn hàng chưa thanh toán. Vô hiệu hóa sẽ ngăn đặt hàng mới nhưng không ảnh hưởng đến đơn hàng hiện có.",
+    "orderNumber": "Đơn hàng #{{number}}",
+    "items": "{{count}} món",
+    "created": "Tạo lúc: {{date}}",
+    "confirmMessage": "Bạn có chắc chắn muốn vô hiệu hóa bàn này? Hãy xem xét hoàn thành hoặc hủy các đơn hàng đang hoạt động trước.",
+    "deactivateAnyway": "Vẫn Vô Hiệu Hóa",
+    "deactivating": "Đang vô hiệu hóa..."
+  },
+  "timer": {
+    "onTime": "Đúng Giờ",
+    "urgent": "Khẩn Cấp",
+    "critical": "Rất Khẩn Cấp"
+  },
+  "loading": {
+    "default": "Đang tải...",
+    "text": "Đang tải"
   }
 }

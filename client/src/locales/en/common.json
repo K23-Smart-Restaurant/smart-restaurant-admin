@@ -64,6 +64,30 @@
     "showing": "Showing {{from}} to {{to}} of {{total}} entries",
     "previous": "Previous",
     "next": "Next",
-    "page": "Page {{page}}"
+    "page": "Page {{page}}",
+    "rowsPerPage": "Rows per page:",
+    "pageOf": "Page {{page}} of {{totalPages}}"
+  },
+  "activeOrders": {
+    "title": "Active Orders Warning",
+    "table": "Table {{number}}",
+    "foundPlural": "{{count}} active orders found",
+    "foundSingular": "{{count}} active order found",
+    "description": "This table has unpaid orders. Deactivating will prevent new orders from being placed but will not affect existing orders.",
+    "orderNumber": "Order #{{number}}",
+    "items": "{{count}} item(s)",
+    "created": "Created: {{date}}",
+    "confirmMessage": "Are you sure you want to deactivate this table? Consider completing or canceling active orders first.",
+    "deactivateAnyway": "Deactivate Anyway",
+    "deactivating": "Deactivating..."
+  },
+  "timer": {
+    "onTime": "On Time",
+    "urgent": "Urgent",
+    "critical": "Critical"
+  },
+  "loading": {
+    "default": "Loading...",
+    "text": "Loading"
   }
 }
