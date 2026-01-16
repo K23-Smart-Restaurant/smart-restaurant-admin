@@ -11,6 +11,7 @@ import {
   ClockIcon,
   FileTextIcon,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../common/Button';
 import { tableService } from '../../services/tableService';
 import type { Table, QRStatus } from '../../hooks/useTables';
@@ -22,6 +23,7 @@ interface QRCodeDisplayProps {
 }
 
 export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerateQR }) => {
+  const { t } = useTranslation(['tables', 'common']);
   const [isEnlarged, setIsEnlarged] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -30,7 +32,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
 
   const qrStatus: QRStatus = table.qrStatus || {
     status: table.qrToken ? 'active' : 'none',
-    label: table.qrToken ? 'Active' : 'No QR Code',
+    label: table.qrToken ? t('tables:qr.status.active') : t('tables:qr.status.noQR'),
     isActive: !!table.qrToken,
   };
 
@@ -213,12 +215,10 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
             <AlertCircleIcon className="w-8 h-8 text-gray-400" />
           </div>
         </div>
-        <h3 className="text-lg font-semibold text-charcoal mb-2">No QR Code Available</h3>
-        <p className="text-gray-600 mb-6">
-          This table doesn't have a QR code yet. Generate one to allow customers to scan and order.
-        </p>
+        <h3 className="text-lg font-semibold text-charcoal mb-2">{t('tables:qr.noCode')}</h3>
+        <p className="text-gray-600 mb-6">{t('tables:qr.noCodeDescription')}</p>
         <Button onClick={handleRegenerate} disabled={isRegenerating}>
-          {isRegenerating ? 'Generating...' : 'Generate QR Code'}
+          {isRegenerating ? t('tables:qr.generating') : t('tables:qr.generateCode')}
         </Button>
       </div>
     );
@@ -247,7 +247,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
           </div>
           {qrStatus.daysUntilExpiry && qrStatus.daysUntilExpiry < 30 && (
             <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded">
-              Expires in {qrStatus.daysUntilExpiry} days
+              {t('tables:qr.status.expiresIn', { days: qrStatus.daysUntilExpiry })}
             </span>
           )}
         </div>
@@ -266,7 +266,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
               <button
                 onClick={() => setIsEnlarged(true)}
                 className="absolute top-2 right-2 p-2 bg-charcoal/80 text-white rounded-full hover:bg-charcoal transition-colors"
-                title="Enlarge QR code"
+                title={t('tables:qr.info.enlarge')}
               >
                 <ZoomInIcon className="w-4 h-4" />
               </button>
@@ -275,21 +275,25 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
 
           {/* Table Info */}
           <div className="text-center mb-6">
-            <h3 className="text-xl font-bold text-charcoal">Table {table.tableNumber}</h3>
+            <h3 className="text-xl font-bold text-charcoal">
+              {t('tables:list.table', { number: table.tableNumber })}
+            </h3>
             <p className="text-sm text-gray-600 mt-1">
-              {table.location} • Capacity: {table.capacity} guests
+              {table.location} • {t('tables:qr.info.capacity', { capacity: table.capacity })}
             </p>
             {table.qrTokenCreatedAt && (
               <p className="text-xs text-gray-500 mt-2 flex items-center justify-center gap-1">
                 <ClockIcon className="w-3 h-3" />
-                Created: {new Date(table.qrTokenCreatedAt).toLocaleString()}
+                {t('tables:qr.info.created')} {new Date(table.qrTokenCreatedAt).toLocaleString()}
               </p>
             )}
           </div>
 
           {/* Download Format Selection */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Download Format</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('tables:qr.download.format')}
+            </label>
             <div className="flex gap-2">
               <button
                 onClick={() => setDownloadFormat('png')}
@@ -300,8 +304,10 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
                 }`}
               >
                 <FileIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">PNG</span>
-                <span className="text-xs text-gray-500">(Image)</span>
+                <span className="text-sm font-medium">{t('tables:qr.download.png')}</span>
+                <span className="text-xs text-gray-500">
+                  {t('tables:qr.download.pngDescription')}
+                </span>
               </button>
               <button
                 onClick={() => setDownloadFormat('pdf')}
@@ -312,8 +318,10 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
                 }`}
               >
                 <FileTextIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">PDF</span>
-                <span className="text-xs text-gray-500">(Print-Ready)</span>
+                <span className="text-sm font-medium">{t('tables:qr.download.pdf')}</span>
+                <span className="text-xs text-gray-500">
+                  {t('tables:qr.download.pdfDescription')}
+                </span>
               </button>
             </div>
           </div>
@@ -327,10 +335,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
               disabled={isDownloading}
               className="w-full"
             >
-              {isDownloading ? 'Downloading...' : `Download ${downloadFormat.toUpperCase()}`}
+              {isDownloading
+                ? t('tables:qr.download.downloading')
+                : t('tables:qr.download.button', { format: downloadFormat.toUpperCase() })}
             </Button>
             <Button variant="secondary" icon={PrinterIcon} onClick={handlePrint} className="w-full">
-              Print
+              {t('tables:qr.actions.print')}
             </Button>
             <Button
               variant="secondary"
@@ -339,18 +349,22 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
               disabled={isRegenerating}
               className="w-full"
             >
-              {isRegenerating ? 'Regenerating...' : 'Regenerate'}
+              {isRegenerating
+                ? t('tables:qr.actions.regenerating')
+                : t('tables:qr.actions.regenerate')}
             </Button>
           </div>
 
           {/* Info box */}
           <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-blue-900 mb-2">How it works</h4>
+            <h4 className="text-sm font-semibold text-blue-900 mb-2">
+              {t('tables:qr.howItWorks.title')}
+            </h4>
             <ul className="text-xs text-blue-800 space-y-1">
-              <li>• Place this QR code on the table for guests to scan</li>
-              <li>• Customers can view the menu and place orders directly</li>
-              <li>• Regenerating will invalidate the previous QR code</li>
-              <li>• Download PDF for high-quality print output</li>
+              <li>• {t('tables:qr.howItWorks.point1')}</li>
+              <li>• {t('tables:qr.howItWorks.point2')}</li>
+              <li>• {t('tables:qr.howItWorks.point3')}</li>
+              <li>• {t('tables:qr.howItWorks.point4')}</li>
             </ul>
           </div>
         </div>
@@ -369,7 +383,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
               setIsEnlarged(false);
             }}
             className="fixed top-4 right-4 z-[60] p-3 bg-white text-charcoal rounded-full hover:bg-naples transition-colors shadow-lg"
-            title="Close"
+            title={t('tables:qr.enlarged.close')}
           >
             <XIcon className="w-6 h-6" />
           </button>
@@ -386,9 +400,13 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ table, onRegenerat
                 style={{ imageRendering: 'pixelated' }}
               />
               <div className="text-center mt-6">
-                <h3 className="text-3xl font-bold text-charcoal">Table {table.tableNumber}</h3>
+                <h3 className="text-3xl font-bold text-charcoal">
+                  {t('tables:list.table', { number: table.tableNumber })}
+                </h3>
                 <p className="text-gray-600 mt-1">{table.location}</p>
-                <p className="text-lg font-medium text-naples mt-2">Scan to Order</p>
+                <p className="text-lg font-medium text-naples mt-2">
+                  {t('tables:qr.enlarged.scanToOrder')}
+                </p>
               </div>
             </div>
           </div>

@@ -1,13 +1,43 @@
 {
   "title": "Quản lý đơn hàng",
+  "subtitle": "Theo dõi và quản lý tất cả đơn hàng nhà hàng",
+
+  "stats": {
+    "totalToday": "Tổng đơn hôm nay",
+    "pending": "Đơn chờ xử lý",
+    "avgPrepTime": "Thời gian TB",
+    "overdue": "Đơn quá hạn",
+    "minutes": "phút",
+    "attentionRequired": "⚠️ Cần xử lý ngay!"
+  },
+
   "list": {
     "orderNumber": "Đơn hàng #{{number}}",
     "table": "Bàn",
     "items": "Món",
     "total": "Tổng cộng",
     "time": "Thời gian",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "sortBy": "Sắp xếp theo:",
+    "newest": "Mới nhất trước",
+    "oldest": "Cũ nhất trước",
+    "tableNumber": "Số bàn",
+    "showing": "Hiển thị",
+    "order": "đơn hàng",
+    "orders": "đơn hàng",
+    "noOrders": "Không tìm thấy đơn hàng",
+    "noOrdersYet": "Chưa có đơn hàng nào",
+    "noOrdersWithStatus": "Không có đơn hàng nào với trạng thái \"{{status}}\""
   },
+
+  "tabs": {
+    "all": "Tất cả",
+    "pending": "Chờ",
+    "preparing": "Đang làm",
+    "ready": "Sẵn sàng",
+    "served": "Đã phục vụ"
+  },
+
   "status": {
     "pending": "Chờ xử lý",
     "confirmed": "Đã xác nhận",
@@ -15,25 +45,75 @@
     "ready": "Sẵn sàng",
     "served": "Đã phục vụ",
     "completed": "Hoàn thành",
-    "cancelled": "Đã hủy"
+    "billRequested": "Yêu cầu hóa đơn",
+    "cancelled": "Đã hủy",
+    "all": "TẤT CẢ"
   },
+
+  "payment": {
+    "paid": "Đã thanh toán",
+    "pending": "Chờ thanh toán",
+    "unpaid": "Chưa thanh toán",
+    "failed": "Thất bại"
+  },
+
+  "itemStatus": {
+    "queued": "Đang chờ",
+    "cooking": "Đang nấu",
+    "ready": "Sẵn sàng"
+  },
+
+  "card": {
+    "orderItems": "Món đã đặt:",
+    "note": "Ghi chú:",
+    "specialNote": "⚠️ Ghi chú đặc biệt:",
+    "overdueBy": "QUÁ HẠN {{minutes}} phút",
+    "registeredCustomer": "Khách hàng đã đăng ký",
+    "markAsReady": "Đánh dấu sẵn sàng"
+  },
+
   "details": {
     "orderDetails": "Chi tiết đơn hàng",
     "customer": "Khách hàng",
+    "customerInfo": "Thông tin khách hàng",
+    "registeredCustomerId": "Khách hàng đã đăng ký (ID: {{id}})",
     "waiter": "Nhân viên phục vụ",
+    "waiterId": "Mã nhân viên: {{id}}",
     "orderTime": "Thời gian đặt",
+    "orderTiming": "Thời gian đơn hàng",
     "itemName": "Món",
     "quantity": "SL",
     "price": "Giá",
     "subtotal": "Tạm tính",
     "tax": "Thuế",
     "total": "Tổng cộng",
-    "specialInstructions": "Yêu cầu đặc biệt"
+    "orderTotal": "Tổng đơn hàng:",
+    "specialInstructions": "Yêu cầu đặc biệt",
+    "orderNotes": "Ghi chú đơn hàng:",
+    "orderProgress": "Tiến độ đơn hàng",
+    "updateOrderStatus": "Cập nhật trạng thái:",
+    "close": "Đóng",
+    "placed": "Đặt lúc:",
+    "elapsed": "Đã trôi qua:",
+    "expected": "Dự kiến:",
+    "paidAt": "Thanh toán lúc:",
+    "minutes": "phút",
+    "unknownItem": "Món không xác định"
   },
+
   "actions": {
     "confirmOrder": "Xác nhận đơn hàng",
     "cancelOrder": "Hủy đơn hàng",
     "printBill": "In hóa đơn",
-    "viewDetails": "Xem chi tiết"
+    "viewDetails": "Xem chi tiết",
+    "retry": "Thử lại"
+  },
+
+  "errors": {
+    "failedToLoad": "Không thể tải đơn hàng"
+  },
+
+  "loading": {
+    "loadingOrders": "Đang tải đơn hàng..."
   }
 }

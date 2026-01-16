@@ -9,6 +9,7 @@ import {
   PowerIcon,
   PowerOffIcon,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Table, TableStatus, ToggleActiveResult } from '../../hooks/useTables';
 import type { ActiveOrderInfo } from '../../services/tableService';
 import { Modal } from '../common/Modal';
@@ -36,6 +37,7 @@ export const TableList: React.FC<TableListProps> = ({
   onUpdateStatus,
   onToggleActive,
 }) => {
+  const { t } = useTranslation(['tables', 'common']);
   const [selectedTableForQR, setSelectedTableForQR] = useState<Table | null>(null);
 
   // Update selectedTableForQR when tables data changes (e.g., after QR regeneration)
@@ -136,13 +138,8 @@ export const TableList: React.FC<TableListProps> = ({
     return colors[status];
   };
 
-  const getStatusLabel = (status: TableStatus) => {
-    const labels = {
-      AVAILABLE: 'Available',
-      OCCUPIED: 'Occupied',
-      RESERVED: 'Reserved',
-    };
-    return labels[status];
+  const getStatusLabel = (status: TableStatus): string => {
+    return t(`tables:status.${status.toLowerCase()}`);
   };
 
   return (
@@ -174,14 +171,16 @@ export const TableList: React.FC<TableListProps> = ({
                   {table.tableNumber}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold">Table {table.tableNumber}</h3>
+                  <h3 className="text-lg font-bold">
+                    {t('tables:list.table', { number: table.tableNumber })}
+                  </h3>
                   <p className="text-xs text-antiflash opacity-90">{table.location}</p>
                 </div>
               </div>
               {/* M5: Active/Inactive Badge */}
               {table.isActive === false && (
                 <span className="px-2 py-1 text-xs font-semibold bg-gray-700 text-gray-200 rounded-full">
-                  Inactive
+                  {t('tables:card.inactive')}
                 </span>
               )}
             </div>
@@ -199,7 +198,7 @@ export const TableList: React.FC<TableListProps> = ({
                 </span>
                 <div className="flex items-center text-sm text-gray-600">
                   <UsersIcon className="w-4 h-4 mr-1" />
-                  {table.capacity} seats
+                  {table.capacity} {t('tables:card.seats')}
                 </div>
               </div>
 
@@ -211,7 +210,7 @@ export const TableList: React.FC<TableListProps> = ({
 
               {/* Quick Status Update */}
               <div className="pt-2 border-t border-antiflash">
-                <p className="text-xs text-gray-600 mb-2">Quick Status:</p>
+                <p className="text-xs text-gray-600 mb-2">{t('tables:card.quickStatus')}</p>
                 <div className="flex gap-1">
                   {(['AVAILABLE', 'OCCUPIED', 'RESERVED'] as TableStatus[]).map((status) => (
                     <button
@@ -222,13 +221,15 @@ export const TableList: React.FC<TableListProps> = ({
                           ? getStatusColor(status)
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
-                      title={`Set to ${getStatusLabel(status)}`}
+                      title={t(
+                        `tables:card.tooltip${status === 'AVAILABLE' ? 'Avail' : status === 'OCCUPIED' ? 'Occup' : 'Reserv'}`
+                      )}
                     >
                       {status === 'AVAILABLE'
-                        ? 'Avail'
+                        ? t('tables:card.avail')
                         : status === 'OCCUPIED'
-                          ? 'Occup'
-                          : 'Reserv'}
+                          ? t('tables:card.occup')
+                          : t('tables:card.reserv')}
                     </button>
                   ))}
                 </div>
@@ -240,20 +241,20 @@ export const TableList: React.FC<TableListProps> = ({
                 <button
                   onClick={() => setSelectedTableForQR(table)}
                   className="flex items-center justify-center px-3 py-2 bg-naples hover:bg-naples/80 text-charcoal rounded-md text-sm font-medium transition-colors"
-                  title="View QR Code"
+                  title={t('tables:card.tooltipQR')}
                 >
                   <QrCodeIcon className="w-4 h-4 mr-1" />
-                  QR Code
+                  {t('tables:actions.qrCode')}
                 </button>
 
                 {/* Edit Button */}
                 <button
                   onClick={() => onEdit(table)}
                   className="flex items-center justify-center px-3 py-2 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-md text-sm font-medium transition-colors"
-                  title="Edit table"
+                  title={t('tables:card.tooltipEdit')}
                 >
                   <PencilIcon className="w-4 h-4 mr-1" />
-                  Edit
+                  {t('tables:actions.edit')}
                 </button>
               </div>
 
@@ -262,10 +263,10 @@ export const TableList: React.FC<TableListProps> = ({
                 <button
                   onClick={(e) => handleQuickRegenerate(e, table)}
                   className="flex-1 flex items-center justify-center px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-medium transition-colors"
-                  title="Regenerate QR code"
+                  title={t('tables:card.tooltipRegen')}
                 >
                   <RefreshCwIcon className="w-3 h-3 mr-1" />
-                  Regen QR
+                  {t('tables:actions.regenQR')}
                 </button>
                 {/* M5: Toggle Active Button */}
                 {onToggleActive && (
@@ -277,17 +278,21 @@ export const TableList: React.FC<TableListProps> = ({
                         ? 'bg-green-50 hover:bg-green-100 text-green-700'
                         : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
                     } disabled:opacity-50`}
-                    title={table.isActive === false ? 'Activate table' : 'Deactivate table'}
+                    title={
+                      table.isActive === false
+                        ? t('tables:card.tooltipActivate')
+                        : t('tables:card.tooltipDeactivate')
+                    }
                   >
                     {table.isActive === false ? (
                       <>
                         <PowerIcon className="w-3 h-3 mr-1" />
-                        Activate
+                        {t('tables:actions.activate')}
                       </>
                     ) : (
                       <>
                         <PowerOffIcon className="w-3 h-3 mr-1" />
-                        Deactivate
+                        {t('tables:actions.deactivate')}
                       </>
                     )}
                   </button>
@@ -295,17 +300,17 @@ export const TableList: React.FC<TableListProps> = ({
                 <button
                   onClick={() => handleDelete(table)}
                   className="flex-1 flex items-center justify-center px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded text-xs font-medium transition-colors"
-                  title="Delete table"
+                  title={t('tables:card.tooltipDelete')}
                 >
                   <Trash2Icon className="w-3 h-3 mr-1" />
-                  Delete
+                  {t('tables:actions.delete')}
                 </button>
               </div>
             </div>
 
             {/* Footer - Last Updated */}
             <div className="bg-antiflash/50 px-4 py-2 text-xs text-gray-600">
-              Updated: {new Date(table.updatedAt).toLocaleDateString()}
+              {t('tables:card.updated')} {new Date(table.updatedAt).toLocaleDateString()}
             </div>
           </div>
         ))}
@@ -313,10 +318,8 @@ export const TableList: React.FC<TableListProps> = ({
         {/* Empty state */}
         {tables.length === 0 && (
           <div className="col-span-full bg-white rounded-lg shadow-md border border-antiflash p-12 text-center">
-            <p className="text-gray-600 mb-2">No tables found</p>
-            <p className="text-sm text-gray-500">
-              Create your first table to get started or adjust your filters
-            </p>
+            <p className="text-gray-600 mb-2">{t('tables:list.noTables')}</p>
+            <p className="text-sm text-gray-500">{t('tables:list.noTablesDescription')}</p>
           </div>
         )}
       </div>
@@ -326,8 +329,8 @@ export const TableList: React.FC<TableListProps> = ({
         <Modal
           isOpen={!!selectedTableForQR}
           onClose={() => setSelectedTableForQR(null)}
-          title={`QR Code - Table ${selectedTableForQR.tableNumber}`}
-          size="md"
+          title={t('tables:qr.title', { number: selectedTableForQR.tableNumber })}
+          size="lg"
         >
           <QRCodeDisplay
             table={selectedTableForQR}

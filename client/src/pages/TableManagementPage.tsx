@@ -9,6 +9,7 @@ import {
   Users,
   Calendar,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useTables } from '../hooks/useTables';
 import type { Table, TableStatus } from '../hooks/useTables';
 import { TableList } from '../components/table/TableList';
@@ -21,6 +22,7 @@ import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 
 const TableManagementPage: React.FC = () => {
+  const { t } = useTranslation(['tables', 'common']);
   const { showSuccess, showError } = useToastContext();
 
   const {
@@ -119,21 +121,21 @@ const TableManagementPage: React.FC = () => {
       if (editingTable) {
         await updateTable(editingTable.id, dto);
         showSuccess(
-          'Table Updated',
-          `Table ${tableData.tableNumber} has been successfully updated.`
+          t('common:success'),
+          t('tables:messages.updated', { number: tableData.tableNumber })
         );
       } else {
         await createTable(dto);
         showSuccess(
-          'Table Created',
-          `Table ${tableData.tableNumber} has been successfully created.`
+          t('common:success'),
+          t('tables:messages.created', { number: tableData.tableNumber })
         );
       }
       closeTableModal();
     } catch (error) {
       console.error('Error saving table:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Save Table', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('tables:errors.unexpected');
+      showError(t('tables:errors.saveFailed'), errorMessage);
     }
   };
 
@@ -154,14 +156,14 @@ const TableManagementPage: React.FC = () => {
     try {
       await deleteTable(tableToDelete.id);
       showSuccess(
-        'Table Deleted',
-        `Table ${tableToDelete.tableNumber} has been permanently removed.`
+        t('common:success'),
+        t('tables:messages.deleted', { number: tableToDelete.tableNumber })
       );
       setTableToDelete(null);
     } catch (error) {
       console.error('Error deleting table:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Delete Failed', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('tables:errors.unexpected');
+      showError(t('tables:errors.deleteFailed'), errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -187,36 +189,36 @@ const TableManagementPage: React.FC = () => {
 
   // Show loading state
   if (isLoading) {
-    return <PageLoading message="Loading tables..." />;
+    return <PageLoading message={t('tables:loading.tables')} />;
   }
 
   // Show error state
   if (isError) {
     return (
       <div className="p-6 text-center border border-red-200 rounded-lg bg-red-50">
-        <p className="mb-4 text-red-600">Failed to load tables</p>
+        <p className="mb-4 text-red-600">{t('tables:errors.loadFailed')}</p>
         <button
           onClick={() => refetch()}
           className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
         >
-          Retry
+          {t('tables:loading.retry')}
         </button>
       </div>
     );
   }
 
   const statusOptions: Array<{ value: TableStatus | 'ALL'; label: string }> = [
-    { value: 'ALL', label: 'All Statuses' },
-    { value: 'AVAILABLE', label: 'Available' },
-    { value: 'OCCUPIED', label: 'Occupied' },
-    { value: 'RESERVED', label: 'Reserved' },
+    { value: 'ALL', label: t('tables:status.all') },
+    { value: 'AVAILABLE', label: t('tables:status.available') },
+    { value: 'OCCUPIED', label: t('tables:status.occupied') },
+    { value: 'RESERVED', label: t('tables:status.reserved') },
   ];
 
   const sortOptions: Array<{ value: typeof sortBy; label: string }> = [
-    { value: 'tableNumber', label: 'Table Number' },
-    { value: 'capacity', label: 'Capacity' },
-    { value: 'status', label: 'Status' },
-    { value: 'createdAt', label: 'Created Date' },
+    { value: 'tableNumber', label: t('tables:sort.tableNumber') },
+    { value: 'capacity', label: t('tables:sort.capacity') },
+    { value: 'status', label: t('tables:sort.status') },
+    { value: 'createdAt', label: t('tables:sort.createdAt') },
   ];
 
   return (
@@ -224,13 +226,13 @@ const TableManagementPage: React.FC = () => {
       {/* Page header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">Tables</h1>
-          <p className="mt-1 text-gray-600">Manage restaurant tables and QR codes</p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('tables:title')}</h1>
+          <p className="mt-1 text-gray-600">{t('tables:subtitle')}</p>
         </div>
 
         {/* Add Table button */}
         <Button onClick={openAddTableModal} icon={PlusIcon}>
-          Add Table
+          {t('tables:actions.addTable')}
         </Button>
       </div>
 
@@ -239,7 +241,7 @@ const TableManagementPage: React.FC = () => {
         <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Tables</p>
+              <p className="text-sm text-gray-600">{t('tables:statistics.total')}</p>
               <p className="text-2xl font-bold text-charcoal">{statistics.total}</p>
             </div>
             <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
@@ -251,7 +253,7 @@ const TableManagementPage: React.FC = () => {
         <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Available</p>
+              <p className="text-sm text-gray-600">{t('tables:statistics.available')}</p>
               <p className="text-2xl font-bold text-green-600">{statistics.available}</p>
             </div>
             <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
@@ -263,7 +265,7 @@ const TableManagementPage: React.FC = () => {
         <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Occupied</p>
+              <p className="text-sm text-gray-600">{t('tables:statistics.occupied')}</p>
               <p className="text-2xl font-bold text-red-600">{statistics.occupied}</p>
             </div>
             <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
@@ -275,7 +277,7 @@ const TableManagementPage: React.FC = () => {
         <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Reserved</p>
+              <p className="text-sm text-gray-600">{t('tables:statistics.reserved')}</p>
               <p className="text-2xl font-bold text-yellow-600">{statistics.reserved}</p>
             </div>
             <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full">
@@ -292,14 +294,14 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label htmlFor="search" className="block mb-2 text-sm font-medium text-charcoal">
               <SearchIcon className="inline w-4 h-4 mr-1" />
-              Search
+              {t('tables:search.label')}
             </label>
             <input
               id="search"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Table number..."
+              placeholder={t('tables:search.placeholder')}
               className="w-full px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             />
           </div>
@@ -308,7 +310,7 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label htmlFor="status" className="block mb-2 text-sm font-medium text-charcoal">
               <FilterIcon className="inline w-4 h-4 mr-1" />
-              Status
+              {t('tables:filters.status')}
             </label>
             <select
               id="status"
@@ -328,7 +330,7 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label htmlFor="location" className="block mb-2 text-sm font-medium text-charcoal">
               <FilterIcon className="inline w-4 h-4 mr-1" />
-              Location
+              {t('tables:filters.location')}
             </label>
             <select
               id="location"
@@ -336,7 +338,7 @@ const TableManagementPage: React.FC = () => {
               onChange={(e) => setSelectedLocation(e.target.value as string | 'ALL')}
               className="w-full px-4 py-2 text-black bg-gray-200 border rounded-md border-antiflash focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             >
-              <option value="ALL">All Locations</option>
+              <option value="ALL">{t('tables:locations.all')}</option>
               {uniqueLocations.map((loc) => (
                 <option key={loc} value={loc}>
                   {loc}
@@ -349,7 +351,7 @@ const TableManagementPage: React.FC = () => {
           <div>
             <label htmlFor="sort" className="block mb-2 text-sm font-medium text-charcoal">
               <ArrowUpDownIcon className="inline w-4 h-4 mr-1" />
-              Sort By
+              {t('tables:filters.sortBy')}
             </label>
             <div className="flex gap-2">
               <select
@@ -367,7 +369,7 @@ const TableManagementPage: React.FC = () => {
               <button
                 onClick={toggleSortOrder}
                 className="px-3 py-2 transition-colors bg-gray-200 border rounded-md hover:bg-gray-300 text-charcoal border-antiflash"
-                title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                title={t(`tables:filters.sort${sortOrder === 'asc' ? 'Asc' : 'Desc'}`)}
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </button>
@@ -389,8 +391,9 @@ const TableManagementPage: React.FC = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-charcoal">{tables.length}</span> table
-          {tables.length !== 1 ? 's' : ''}
+          {t('tables:results.showing')}{' '}
+          <span className="font-semibold text-charcoal">{tables.length}</span>{' '}
+          {t(`tables:results.table${tables.length !== 1 ? '_plural' : ''}`)}
         </p>
       </div>
 
@@ -410,7 +413,7 @@ const TableManagementPage: React.FC = () => {
       <Modal
         isOpen={isTableModalOpen}
         onClose={closeTableModal}
-        title={editingTable ? 'Edit Table' : 'Create Table'}
+        title={editingTable ? t('tables:modals.edit') : t('tables:modals.create')}
       >
         <TableForm
           table={editingTable || undefined}
@@ -425,9 +428,11 @@ const TableManagementPage: React.FC = () => {
         isOpen={tableToDelete !== null}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Table"
-        itemName={tableToDelete ? `Table ${tableToDelete.tableNumber}` : undefined}
-        message="Are you sure you want to delete this table? This will permanently remove it from the system, including any associated QR codes."
+        title={t('tables:modals.delete')}
+        itemName={
+          tableToDelete ? t('tables:list.table', { number: tableToDelete.tableNumber }) : undefined
+        }
+        message={t('tables:modals.deleteMessage')}
         isLoading={isDeleting}
       />
     </div>

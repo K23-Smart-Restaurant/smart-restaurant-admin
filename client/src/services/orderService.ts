@@ -72,6 +72,16 @@ export interface OrderFilters {
   tableId?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginatedOrders {
+  data: Order[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export interface UpdateOrderStatusDto {
@@ -79,8 +89,8 @@ export interface UpdateOrderStatusDto {
 }
 
 export const orderService = {
-  // Get all orders with optional filters
-  getAll: async (filters?: OrderFilters): Promise<Order[]> => {
+  // Get all orders with optional filters and pagination
+  getAll: async (filters?: OrderFilters): Promise<PaginatedOrders> => {
     const params = new URLSearchParams();
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -89,7 +99,7 @@ export const orderService = {
         }
       });
     }
-    const response = await apiClient.get<Order[]>(
+    const response = await apiClient.get<PaginatedOrders>(
       `/orders${params.toString() ? `?${params.toString()}` : ''}`
     );
     return response.data;

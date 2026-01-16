@@ -1,28 +1,275 @@
 {
-  "title": "Table Management",
-  "list": {
-    "tableNumber": "Table #{{number}}",
-    "capacity": "Capacity",
-    "status": "Status",
-    "qrCode": "QR Code"
+  "title": "Tables",
+  "subtitle": "Manage restaurant tables and QR codes",
+
+  "statistics": {
+    "total": "Total Tables",
+    "available": "Available",
+    "occupied": "Occupied",
+    "reserved": "Reserved"
   },
+
+  "search": {
+    "label": "Search",
+    "placeholder": "Table number..."
+  },
+
+  "filters": {
+    "status": "Status",
+    "location": "Location",
+    "sortBy": "Sort By",
+    "sortAsc": "Sort Ascending",
+    "sortDesc": "Sort Descending"
+  },
+
   "status": {
+    "all": "All Statuses",
     "available": "Available",
     "occupied": "Occupied",
     "reserved": "Reserved",
     "maintenance": "Maintenance"
   },
+
+  "sort": {
+    "tableNumber": "Table Number",
+    "capacity": "Capacity",
+    "status": "Status",
+    "createdAt": "Created Date"
+  },
+
+  "locations": {
+    "all": "All Locations",
+    "mainFloor": "Main Floor",
+    "patio": "Patio",
+    "privateRoomA": "Private Room A",
+    "privateRoomB": "Private Room B",
+    "bar": "Bar Area",
+    "terrace": "Terrace",
+    "vip": "VIP Section"
+  },
+
   "actions": {
     "addTable": "Add Table",
     "editTable": "Edit Table",
-    "generateQR": "Generate QR Code",
-    "downloadQR": "Download QR",
-    "printQR": "Print QR"
+    "delete": "Delete",
+    "qrCode": "QR Code",
+    "edit": "Edit",
+    "regenQR": "Regen QR",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
   },
+
+  "card": {
+    "inactive": "Inactive",
+    "seats": "seats",
+    "quickStatus": "Quick Status:",
+    "avail": "Avail",
+    "occup": "Occup",
+    "reserv": "Reserv",
+    "tooltipQR": "View QR Code",
+    "tooltipEdit": "Edit table",
+    "tooltipRegen": "Regenerate QR code",
+    "tooltipActivate": "Activate table",
+    "tooltipDeactivate": "Deactivate table",
+    "tooltipDelete": "Delete table",
+    "updated": "Updated:"
+  },
+
+  "list": {
+    "table": "Table {{number}}",
+    "noTables": "No tables found",
+    "noTablesDescription": "Create your first table to get started or adjust your filters"
+  },
+
+  "results": {
+    "showing": "Showing",
+    "table": "table",
+    "table_plural": "tables"
+  },
+
   "form": {
     "tableNumber": "Table Number",
-    "capacity": "Capacity (people)",
+    "tableNumberPlaceholder": "e.g., 1",
+    "tableNumberHelp": "Unique table identifier",
+    "capacity": "Capacity",
+    "capacityPlaceholder": "e.g., 4",
+    "capacityHelp": "Maximum number of guests",
     "location": "Location",
-    "notes": "Notes"
+    "locationPlaceholder": "e.g., Main Floor, Patio, Private Room",
+    "locationHelp": "Physical location in the restaurant (start typing to see suggestions)",
+    "description": "Description",
+    "descriptionPlaceholder": "Additional notes about this table (e.g., 'Window view', 'Near kitchen', 'Quiet corner')...",
+    "status": "Status",
+    "statusHelp": "Available: Ready for guests | Occupied: Currently in use | Reserved: Booked",
+    "quickCapacity": "Quick Capacity Presets:",
+    "seatsPreset": "{{count}} seats",
+    "newTableNote": "Note:",
+    "newTableInfo": "A QR code will be automatically generated for this table after creation. Guests can scan this code to access the menu and place orders.",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "updateTable": "Update Table",
+    "createTable": "Create Table",
+    "required": "*",
+
+    "validation": {
+      "tableNumberRequired": "Table number is required",
+      "tableNumberMin": "Table number must be at least 1",
+      "capacityRequired": "Capacity is required",
+      "capacityMin": "Capacity must be at least 1",
+      "capacityMax": "Capacity cannot exceed 50 people",
+      "locationRequired": "Location is required",
+      "locationMax": "Location must not exceed 100 characters",
+      "descriptionMax": "Description must not exceed 500 characters",
+      "statusRequired": "Status is required"
+    }
+  },
+
+  "qr": {
+    "title": "QR Code - Table {{number}}",
+    "noCode": "No QR Code Available",
+    "noCodeDescription": "This table doesn't have a QR code yet. Generate one to allow customers to scan and order.",
+    "generating": "Generating...",
+    "generateCode": "Generate QR Code",
+
+    "status": {
+      "active": "Active",
+      "invalid": "Invalid",
+      "noQR": "No QR Code",
+      "expiresIn": "Expires in {{days}} days"
+    },
+
+    "info": {
+      "capacity": "Capacity: {{capacity}} guests",
+      "created": "Created:",
+      "enlarge": "Enlarge QR code"
+    },
+
+    "download": {
+      "format": "Download Format",
+      "png": "PNG",
+      "pngDescription": "(Image)",
+      "pdf": "PDF",
+      "pdfDescription": "(Print-Ready)",
+      "downloading": "Downloading...",
+      "button": "Download {{format}}"
+    },
+
+    "actions": {
+      "print": "Print",
+      "regenerate": "Regenerate",
+      "regenerating": "Regenerating..."
+    },
+
+    "howItWorks": {
+      "title": "How it works",
+      "point1": "Place this QR code on the table for guests to scan",
+      "point2": "Customers can view the menu and place orders directly",
+      "point3": "Regenerating will invalidate the previous QR code",
+      "point4": "Download PDF for high-quality print output"
+    },
+
+    "enlarged": {
+      "close": "Close",
+      "scanToOrder": "Scan to Order"
+    }
+  },
+
+  "batch": {
+    "title": "Batch QR Operations",
+    "selectedCount": "{{count}} table selected",
+    "selectedCount_plural": "{{count}} tables selected",
+    "allTables": "All {{count}} tables",
+    "withQR": "({{count}} with QR codes)",
+
+    "actions": {
+      "downloadAll": "Download All",
+      "printAll": "Print All",
+      "regenerateAll": "Regenerate All"
+    },
+
+    "downloadOptions": {
+      "title": "Download QR Codes",
+      "format": "Download Format",
+      "zip": "ZIP Archive",
+      "zipDescription": "Individual PNG files",
+      "pdf": "PDF Document",
+      "pdfDescription": "Print-ready format",
+
+      "layout": "Page Layout",
+      "singlePerPage": "Single per Page",
+      "multiplePerPage": "4 per Page",
+
+      "restaurantName": "Restaurant Name",
+      "restaurantPlaceholder": "Smart Restaurant",
+
+      "wifi": "Include WiFi Information",
+      "wifiName": "WiFi Network Name",
+      "wifiPassword": "WiFi Password (optional)",
+
+      "summary": "{{count}} QR codes will be downloaded as {{format}}",
+      "summaryLayout": " with {{layout}} QR code(s) per page",
+      "layout1": "1",
+      "layout4": "4",
+
+      "cancel": "Cancel",
+      "download": "Download",
+      "downloading": "Downloading..."
+    },
+
+    "regenerate": {
+      "title": "Confirm Bulk Regeneration",
+      "warning": "Warning: This action cannot be undone",
+      "warningDescription": "Regenerating QR codes will invalidate all existing codes. Customers with printed or saved QR codes will need new ones to access the menu.",
+      "count": "{{count}} table(s) will have their QR codes regenerated:",
+      "andMore": "... and {{count}} more",
+      "cancel": "Cancel",
+      "confirm": "Regenerate All",
+      "regenerating": "Regenerating..."
+    },
+
+    "results": {
+      "title": "Regeneration Complete",
+      "message": "{{count}} QR code(s) regenerated successfully",
+      "success": "Successfully Regenerated ({{count}})",
+      "failed": "Failed ({{count}})",
+      "close": "Close"
+    }
+  },
+
+  "messages": {
+    "created": "Table {{number}} has been successfully created.",
+    "updated": "Table {{number}} has been successfully updated.",
+    "deleted": "Table {{number}} has been permanently removed.",
+    "qrRegenerated": "QR code regenerated successfully",
+    "statusUpdated": "Table status updated",
+    "activated": "Table {{number}} has been activated",
+    "deactivated": "Table {{number}} has been deactivated"
+  },
+
+  "modals": {
+    "create": "Create Table",
+    "edit": "Edit Table",
+    "delete": "Delete Table",
+    "deleteMessage": "Are you sure you want to delete this table? This will permanently remove it from the system, including any associated QR codes."
+  },
+
+  "activeOrders": {
+    "title": "Active Orders Warning",
+    "message": "This table has {{count}} active order(s). Deactivating will prevent new orders but existing orders will remain active.",
+    "cancel": "Cancel",
+    "confirm": "Deactivate Anyway",
+    "deactivating": "Deactivating..."
+  },
+
+  "loading": {
+    "tables": "Loading tables...",
+    "retry": "Retry"
+  },
+
+  "errors": {
+    "loadFailed": "Failed to load tables",
+    "saveFailed": "Failed to Save Table",
+    "deleteFailed": "Delete Failed",
+    "unexpected": "An unexpected error occurred"
   }
 }

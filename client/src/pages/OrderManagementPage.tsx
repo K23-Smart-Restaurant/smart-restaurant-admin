@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Clock, TrendingUp, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useOrders } from '../hooks/useOrders';
 import type { Order } from '../hooks/useOrders';
 import { OrderList } from '../components/order/OrderList';
@@ -9,6 +10,7 @@ import { Button } from '../components/common/Button';
 import { Pagination } from '../components/common/Pagination';
 
 const OrderManagementPage: React.FC = () => {
+  const { t } = useTranslation(['orders', 'common']);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
@@ -105,11 +107,11 @@ const OrderManagementPage: React.FC = () => {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-charcoal">Order Management</h1>
-          <p className="text-gray-600 mt-1">Monitor and manage all restaurant orders</p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('orders:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('orders:subtitle')}</p>
         </div>
         <StatsSkeleton count={4} />
-        <PageLoading message="Loading orders..." />
+        <PageLoading message={t('orders:loading.loadingOrders')} />
       </div>
     );
   }
@@ -119,8 +121,8 @@ const OrderManagementPage: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load orders</p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
+          <p className="text-red-600 mb-4">{t('orders:errors.failedToLoad')}</p>
+          <Button onClick={() => window.location.reload()}>{t('orders:actions.retry')}</Button>
         </div>
       </div>
     );
@@ -130,8 +132,8 @@ const OrderManagementPage: React.FC = () => {
     <div>
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-charcoal">Order Management</h1>
-        <p className="text-gray-600 mt-1">Monitor and manage all restaurant orders</p>
+        <h1 className="text-3xl font-bold text-charcoal">{t('orders:title')}</h1>
+        <p className="text-gray-600 mt-1">{t('orders:subtitle')}</p>
       </div>
 
       {/* Summary Cards */}
@@ -140,7 +142,7 @@ const OrderManagementPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Orders Today</p>
+              <p className="text-sm font-medium text-gray-600">{t('orders:stats.totalToday')}</p>
               <p className="text-3xl font-bold text-charcoal mt-2">{todayOrders.length}</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-full">
@@ -153,7 +155,7 @@ const OrderManagementPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Pending Orders</p>
+              <p className="text-sm font-medium text-gray-600">{t('orders:stats.pending')}</p>
               <p className="text-3xl font-bold text-charcoal mt-2">{pendingOrders.length}</p>
             </div>
             <div className="bg-yellow-100 p-3 rounded-full">
@@ -166,8 +168,8 @@ const OrderManagementPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Avg Prep Time</p>
-              <p className="text-3xl font-bold text-charcoal mt-2">{avgPrepTime} min</p>
+              <p className="text-sm font-medium text-gray-600">{t('orders:stats.avgPrepTime')}</p>
+              <p className="text-3xl font-bold text-charcoal mt-2">{avgPrepTime} {t('orders:stats.minutes')}</p>
             </div>
             <div className="bg-green-100 p-3 rounded-full">
               <TrendingUp className="w-8 h-8 text-green-600" />
@@ -179,7 +181,7 @@ const OrderManagementPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Overdue Orders</p>
+              <p className="text-sm font-medium text-gray-600">{t('orders:stats.overdue')}</p>
               <p
                 className={`text-3xl font-bold mt-2 ${
                   overdueOrders.length > 0 ? 'text-red-600' : 'text-charcoal'
@@ -200,7 +202,7 @@ const OrderManagementPage: React.FC = () => {
           </div>
           {overdueOrders.length > 0 && (
             <div className="mt-2 text-xs text-red-600 font-semibold animate-pulse">
-              ⚠️ Immediate attention required!
+              {t('orders:stats.attentionRequired')}
             </div>
           )}
         </div>

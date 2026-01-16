@@ -2,24 +2,9 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import type { Table, TableStatus } from '../../hooks/useTables';
 import { Button } from '../common/Button';
-
-// Validation schema
-const tableFormSchema = z.object({
-  tableNumber: z.number().min(1, 'Table number must be at least 1'),
-  capacity: z.number().min(1, 'Capacity must be at least 1').max(20, 'Capacity cannot exceed 20'),
-  location: z
-    .string()
-    .min(1, 'Location is required')
-    .max(100, 'Location must be at most 100 characters'),
-  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
-  status: z.enum(['AVAILABLE', 'OCCUPIED', 'RESERVED'], {
-    errorMap: () => ({ message: 'Please select a valid status' }),
-  }),
-});
-
-type TableFormData = z.infer<typeof tableFormSchema>;
 
 interface TableFormProps {
   table?: Table;
@@ -36,7 +21,35 @@ export const TableForm: React.FC<TableFormProps> = ({
   onCancel,
   existingLocations = [],
 }) => {
+  const { t } = useTranslation(['tables', 'common']);
   const isEditMode = !!table;
+
+  // Validation schema with translations
+  const tableFormSchema = z.object({
+    tableNumber: z
+      .number({
+        required_error: t('tables:form.validation.tableNumberRequired'),
+        invalid_type_error: t('tables:form.validation.tableNumberRequired'),
+      })
+      .min(1, t('tables:form.validation.tableNumberMin')),
+    capacity: z
+      .number({
+        required_error: t('tables:form.validation.capacityRequired'),
+        invalid_type_error: t('tables:form.validation.capacityRequired'),
+      })
+      .min(1, t('tables:form.validation.capacityMin'))
+      .max(50, t('tables:form.validation.capacityMax')),
+    location: z
+      .string()
+      .min(1, t('tables:form.validation.locationRequired'))
+      .max(100, t('tables:form.validation.locationMax')),
+    description: z.string().max(500, t('tables:form.validation.descriptionMax')).optional(),
+    status: z.enum(['AVAILABLE', 'OCCUPIED', 'RESERVED'], {
+      required_error: t('tables:form.validation.statusRequired'),
+    }),
+  });
+
+  type TableFormData = z.infer<typeof tableFormSchema>;
 
   const {
     register,
@@ -85,22 +98,21 @@ export const TableForm: React.FC<TableFormProps> = ({
   };
 
   const statusOptions: { value: TableStatus; label: string; color: string }[] = [
-    { value: 'AVAILABLE', label: 'Available', color: 'text-green-600' },
-    { value: 'OCCUPIED', label: 'Occupied', color: 'text-red-600' },
-    { value: 'RESERVED', label: 'Reserved', color: 'text-yellow-600' },
+    { value: 'AVAILABLE', label: t('tables:status.available'), color: 'text-green-600' },
+    { value: 'OCCUPIED', label: t('tables:status.occupied'), color: 'text-red-600' },
+    { value: 'RESERVED', label: t('tables:status.reserved'), color: 'text-yellow-600' },
   ];
 
   // Common location suggestions
   const locationSuggestions = Array.from(
     new Set([
-      'Main Floor',
-      'Patio',
-      'Private Room A',
-      'Private Room B',
-      'Bar Area',
-      'Window Section',
-      'Garden',
-      'VIP Area',
+      t('tables:locations.mainFloor'),
+      t('tables:locations.patio'),
+      t('tables:locations.privateRoomA'),
+      t('tables:locations.privateRoomB'),
+      t('tables:locations.bar'),
+      t('tables:locations.terrace'),
+      t('tables:locations.vip'),
       ...existingLocations,
     ])
   ).sort();
@@ -113,7 +125,8 @@ export const TableForm: React.FC<TableFormProps> = ({
           {/* Table Number field */}
           <div>
             <label htmlFor="tableNumber" className="block text-sm font-medium text-charcoal mb-1">
-              Table Number <span className="text-red-600">*</span>
+              {t('tables:form.tableNumber')}{' '}
+              <span className="text-red-600">{t('tables:form.required')}</span>
             </label>
             <input
               id="tableNumber"
@@ -122,19 +135,20 @@ export const TableForm: React.FC<TableFormProps> = ({
               className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
                 errors.tableNumber ? 'border-red-500' : 'border-antiflash'
               }`}
-              placeholder="1"
+              placeholder={t('tables:form.tableNumberPlaceholder')}
               min="1"
             />
             {errors.tableNumber && (
               <p className="mt-1 text-sm text-red-600">{errors.tableNumber.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-600">Unique identifier for the table</p>
+            <p className="mt-1 text-xs text-gray-600">{t('tables:form.tableNumberHelp')}</p>
           </div>
 
           {/* Capacity field */}
           <div>
             <label htmlFor="capacity" className="block text-sm font-medium text-charcoal mb-1">
-              Seating Capacity <span className="text-red-600">*</span>
+              {t('tables:form.capacity')}{' '}
+              <span className="text-red-600">{t('tables:form.required')}</span>
             </label>
             <input
               id="capacity"
@@ -143,21 +157,22 @@ export const TableForm: React.FC<TableFormProps> = ({
               className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
                 errors.capacity ? 'border-red-500' : 'border-antiflash'
               }`}
-              placeholder="4"
+              placeholder={t('tables:form.capacityPlaceholder')}
               min="1"
               max="50"
             />
             {errors.capacity && (
               <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-600">Maximum number of guests</p>
+            <p className="mt-1 text-xs text-gray-600">{t('tables:form.capacityHelp')}</p>
           </div>
         </div>
 
         {/* Location field with suggestions */}
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-charcoal mb-1">
-            Location <span className="text-red-600">*</span>
+            {t('tables:form.location')}{' '}
+            <span className="text-red-600">{t('tables:form.required')}</span>
           </label>
           <input
             id="location"
@@ -167,7 +182,7 @@ export const TableForm: React.FC<TableFormProps> = ({
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.location ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="e.g., Main Floor, Patio, Private Room"
+            placeholder={t('tables:form.locationPlaceholder')}
             maxLength={100}
           />
           <datalist id="location-suggestions">
@@ -178,21 +193,19 @@ export const TableForm: React.FC<TableFormProps> = ({
           {errors.location && (
             <p className="mt-1 text-sm text-red-600">{errors.location.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-600">
-            Physical location in the restaurant (start typing to see suggestions)
-          </p>
+          <p className="mt-1 text-xs text-gray-600">{t('tables:form.locationHelp')}</p>
         </div>
 
         {/* Description field */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-charcoal mb-1">
-            Description
+            {t('tables:form.description')}
           </label>
           <textarea
             id="description"
             {...register('description')}
             rows={3}
-            placeholder="Additional notes about this table (e.g., 'Window view', 'Near kitchen', 'Quiet corner')..."
+            placeholder={t('tables:form.descriptionPlaceholder')}
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
               errors.description ? 'border-red-500' : 'border-antiflash'
             }`}
@@ -206,7 +219,8 @@ export const TableForm: React.FC<TableFormProps> = ({
         {/* Status field */}
         <div>
           <label htmlFor="status" className="block text-sm font-medium text-charcoal mb-1">
-            Status <span className="text-red-600">*</span>
+            {t('tables:form.status')}{' '}
+            <span className="text-red-600">{t('tables:form.required')}</span>
           </label>
           <select
             id="status"
@@ -222,14 +236,12 @@ export const TableForm: React.FC<TableFormProps> = ({
             ))}
           </select>
           {errors.status && <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>}
-          <p className="mt-1 text-xs text-gray-600">
-            Available: Ready for guests | Occupied: Currently in use | Reserved: Booked
-          </p>
+          <p className="mt-1 text-xs text-gray-600">{t('tables:form.statusHelp')}</p>
         </div>
 
         {/* Quick capacity presets */}
         <div>
-          <p className="text-sm font-medium text-charcoal mb-2">Quick Capacity Presets:</p>
+          <p className="text-sm font-medium text-charcoal mb-2">{t('tables:form.quickCapacity')}</p>
           <div className="flex flex-wrap gap-2">
             {[2, 4, 6, 8].map((preset) => (
               <button
@@ -238,7 +250,7 @@ export const TableForm: React.FC<TableFormProps> = ({
                 onClick={() => setValue('capacity', preset)}
                 className="px-3 py-1 bg-gray-200 hover:bg-naples hover:text-charcoal border border-antiflash rounded-md text-sm text-charcoal transition-colors"
               >
-                {preset} seats
+                {t('tables:form.seatsPreset', { count: preset })}
               </button>
             ))}
           </div>
@@ -248,8 +260,7 @@ export const TableForm: React.FC<TableFormProps> = ({
         {!isEditMode && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
             <p className="text-sm text-blue-800">
-              <strong>Note:</strong> A QR code will be automatically generated for this table after
-              creation. Guests can scan this code to access the menu and place orders.
+              <strong>{t('tables:form.newTableNote')}</strong> {t('tables:form.newTableInfo')}
             </p>
           </div>
         )}
@@ -258,10 +269,14 @@ export const TableForm: React.FC<TableFormProps> = ({
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
         <Button type="button" onClick={onCancel} variant="secondary">
-          Cancel
+          {t('tables:form.cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : isEditMode ? 'Update Table' : 'Create Table'}
+          {isSubmitting
+            ? t('tables:form.saving')
+            : isEditMode
+              ? t('tables:form.updateTable')
+              : t('tables:form.createTable')}
         </Button>
       </div>
     </form>

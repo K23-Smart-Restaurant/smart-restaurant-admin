@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Clock, DollarSign, FileText, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../../hooks/useOrders';
 import type { OrderItemStatus } from '../../services/orderService';
 
@@ -18,6 +19,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onUpdateOrderStatus,
   onUpdateItemStatus,
 }) => {
+  const { t } = useTranslation(['orders', 'common']);
   // Track elapsed time in state to avoid calling Date.now() during render
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
 
@@ -30,7 +32,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
     return () => {
       document.body.style.overflow = 'auto';
-    }
+    };
   }, [isOpen]);
 
   // Calculate elapsed time when modal opens or order changes
@@ -109,6 +111,31 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
   };
 
+  // Get translated status
+  const getStatusLabel = (status: OrderStatus) => {
+    const statusMap: Record<OrderStatus, string> = {
+      PENDING: t('orders:status.pending'),
+      CONFIRMED: t('orders:status.confirmed'),
+      PREPARING: t('orders:status.preparing'),
+      READY: t('orders:status.ready'),
+      SERVED: t('orders:status.served'),
+      COMPLETED: t('orders:status.completed'),
+      BILL_REQUESTED: t('orders:status.billRequested'),
+      CANCELLED: t('orders:status.cancelled'),
+    };
+    return statusMap[status] || status;
+  };
+
+  // Get translated item status
+  const getItemStatusLabel = (status: OrderItemStatus) => {
+    const itemStatusMap: Record<OrderItemStatus, string> = {
+      QUEUED: t('orders:itemStatus.queued'),
+      COOKING: t('orders:itemStatus.cooking'),
+      READY: t('orders:itemStatus.ready'),
+    };
+    return itemStatusMap[status] || status;
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
@@ -129,9 +156,12 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div className="p-6">
             {/* Header */}
             <div className="mb-6">
-              <h2 className="text-3xl font-bold text-charcoal">Order #{order.orderNumber}</h2>
+              <h2 className="text-3xl font-bold text-charcoal">
+                {t('orders:details.orderDetails')} #{order.orderNumber}
+              </h2>
               <p className="text-xl text-gray-600 mt-1">
-                {order.tableName || `Table ${order.table?.tableNumber || 'N/A'}`}
+                {order.tableName ||
+                  `${t('orders:list.table')} ${order.table?.tableNumber || 'N/A'}`}
               </p>
             </div>
 
@@ -139,7 +169,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Customer Info */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-charcoal mb-3">Customer Information</h3>
+                <h3 className="font-semibold text-charcoal mb-3">
+                  {t('orders:details.customerInfo')}
+                </h3>
                 {order.guestName ? (
                   <>
                     <div className="flex items-center text-gray-700 mb-2">
@@ -156,34 +188,47 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 ) : (
                   <div className="flex items-center text-gray-700">
                     <User className="w-4 h-4 mr-2" />
-                    <span>Registered Customer (ID: {order.userId})</span>
+                    <span>{t('orders:details.registeredCustomerId', { id: order.userId })}</span>
                   </div>
                 )}
                 {order.waiterId && (
-                  <div className="mt-2 text-sm text-gray-600">Waiter ID: {order.waiterId}</div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    {t('orders:details.waiterId', { id: order.waiterId })}
+                  </div>
                 )}
               </div>
 
               {/* Order Timing */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-charcoal mb-3">Order Timing</h3>
+                <h3 className="font-semibold text-charcoal mb-3">
+                  {t('orders:details.orderTiming')}
+                </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-2" />
-                    <span>Placed: {formatDate(order.createdAt)}</span>
+                    <span>
+                      {t('orders:details.placed')} {formatDate(order.createdAt)}
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-2" />
-                    <span>Elapsed: {elapsedMinutes} minutes</span>
+                    <span>
+                      {t('orders:details.elapsed')} {elapsedMinutes} {t('orders:details.minutes')}
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-2" />
-                    <span>Expected: {order.prepTime || 'N/A'} minutes</span>
+                    <span>
+                      {t('orders:details.expected')} {order.prepTime || 'N/A'}{' '}
+                      {t('orders:details.minutes')}
+                    </span>
                   </div>
                   {order.paidAt && (
                     <div className="flex items-center text-gray-700">
                       <DollarSign className="w-4 h-4 mr-2" />
-                      <span>Paid: {formatDate(order.paidAt)}</span>
+                      <span>
+                        {t('orders:details.paidAt')} {formatDate(order.paidAt)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -192,18 +237,20 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
             {/* Order Items */}
             <div className="mb-6">
-              <h3 className="font-semibold text-charcoal mb-4 text-lg">Order Items</h3>
+              <h3 className="font-semibold text-charcoal mb-4 text-lg">
+                {t('orders:card.orderItems')}
+              </h3>
               <div className="space-y-4">
                 {order.orderItems?.map((item) => (
                   <div key={item.id} className="border-l-4 border-naples pl-4 py-2">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <p className="font-medium text-charcoal text-lg">
-                          {item.quantity}x {item.menuItem?.name || 'Unknown Item'} -{' '}
-                          {formatCurrency(item.unitPrice)}
+                          {item.quantity}x {item.menuItem?.name || t('orders:details.unknownItem')}{' '}
+                          - {formatCurrency(item.unitPrice)}
                         </p>
                         <p className="text-sm text-gray-600 mt-1">
-                          Subtotal: {formatCurrency(item.subtotal)}
+                          {t('orders:details.subtotal')}: {formatCurrency(item.subtotal)}
                         </p>
                       </div>
                       <select
@@ -215,15 +262,15 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                           item.itemStatus
                         )} border-none cursor-pointer`}
                       >
-                        <option value="QUEUED">QUEUED</option>
-                        <option value="COOKING">COOKING</option>
-                        <option value="READY">READY</option>
+                        <option value="QUEUED">{t('orders:itemStatus.queued')}</option>
+                        <option value="COOKING">{t('orders:itemStatus.cooking')}</option>
+                        <option value="READY">{t('orders:itemStatus.ready')}</option>
                       </select>
                     </div>
                     {item.specialInstructions && (
                       <div className="mt-2 pl-6 text-sm text-gray-600 italic">
                         <FileText className="w-3 h-3 inline mr-1" />
-                        Note: {item.specialInstructions}
+                        {t('orders:card.note')} {item.specialInstructions}
                       </div>
                     )}
                   </div>
@@ -234,7 +281,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {/* Order Total */}
             <div className="bg-naples p-4 rounded-lg mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-charcoal">Order Total:</span>
+                <span className="text-xl font-bold text-charcoal">
+                  {t('orders:details.orderTotal')}
+                </span>
                 <span className="text-2xl font-bold text-charcoal">
                   {formatCurrency(order.totalAmount)}
                 </span>
@@ -244,14 +293,18 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {/* Order Notes */}
             {order.notes && (
               <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                <h3 className="font-semibold text-yellow-800 mb-2">Order Notes:</h3>
+                <h3 className="font-semibold text-yellow-800 mb-2">
+                  {t('orders:details.orderNotes')}
+                </h3>
                 <p className="text-yellow-700">{order.notes}</p>
               </div>
             )}
 
             {/* Status Timeline */}
             <div className="mb-6">
-              <h3 className="font-semibold text-charcoal mb-4">Order Progress</h3>
+              <h3 className="font-semibold text-charcoal mb-4">
+                {t('orders:details.orderProgress')}
+              </h3>
               <div className="relative">
                 {/* Progress Line */}
                 <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200">
@@ -284,7 +337,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                             isCompleted ? 'text-charcoal' : 'text-gray-400'
                           }`}
                         >
-                          {status}
+                          {getStatusLabel(status)}
                         </span>
                       </div>
                     );
@@ -299,7 +352,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 htmlFor="status-update"
                 className="block text-sm font-medium text-charcoal mb-2"
               >
-                Update Order Status:
+                {t('orders:details.updateOrderStatus')}
               </label>
               <select
                 id="status-update"
@@ -307,13 +360,13 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 onChange={(e) => onUpdateOrderStatus(order.id, e.target.value as OrderStatus)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-naples focus:border-naples"
               >
-                <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="PREPARING">Preparing</option>
-                <option value="READY">Ready</option>
-                <option value="SERVED">Served</option>
-                <option value="PAID">Paid</option>
-                <option value="CANCELLED">Cancelled</option>
+                <option value="PENDING">{t('orders:status.pending')}</option>
+                <option value="CONFIRMED">{t('orders:status.confirmed')}</option>
+                <option value="PREPARING">{t('orders:status.preparing')}</option>
+                <option value="READY">{t('orders:status.ready')}</option>
+                <option value="SERVED">{t('orders:status.served')}</option>
+                <option value="PAID">{t('orders:payment.paid')}</option>
+                <option value="CANCELLED">{t('orders:status.cancelled')}</option>
               </select>
             </div>
 
@@ -322,7 +375,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               onClick={onClose}
               className="w-full bg-charcoal hover:bg-charcoal/90 text-white font-bold py-3 px-4 rounded-lg transition-colors"
             >
-              Close
+              {t('orders:details.close')}
             </button>
           </div>
         </div>
