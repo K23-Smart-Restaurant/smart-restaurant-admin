@@ -1,5 +1,6 @@
 {
   "title": "Reports & Analytics",
+  "subtitle": "Comprehensive insights into your restaurant performance",
   "tabs": {
     "overview": "Overview",
     "revenue": "Revenue",
@@ -12,12 +13,87 @@
     "yesterday": "Yesterday",
     "last7days": "Last 7 Days",
     "last30days": "Last 30 Days",
-    "custom": "Custom Range"
+    "custom": "Custom Range",
+    "7days": "Last 7 Days",
+    "30days": "Last 30 Days",
+    "3months": "Last 3 Months"
   },
   "metrics": {
     "totalRevenue": "Total Revenue",
     "totalOrders": "Total Orders",
     "averageOrderValue": "Avg Order Value",
-    "topSellingItem": "Top Selling Item"
+    "topSellingItem": "Top Selling Item",
+    "mostPopularItem": "Most Popular Item",
+    "perTransaction": "Per transaction",
+    "bestSeller": "Best seller",
+    "orders": "orders",
+    "notAvailable": "N/A"
+  },
+  "actions": {
+    "downloadPDF": "Download PDF",
+    "print": "Print",
+    "exportInitiated": "Export Initiated",
+    "exportMessage": "PDF report generation has started. You will be notified when it's ready for download."
+  },
+  "print": {
+    "header": "Restaurant Performance Report",
+    "generatedOn": "Generated on",
+    "sections": {
+      "kpi": "Key Performance Indicators",
+      "revenueTrends": "Revenue Trends",
+      "topItems": "Top Menu Items Performance",
+      "orderAnalytics": "Order Analytics"
+    }
+  },
+  "loading": {
+    "reports": "Loading reports...",
+    "message": "Loading reports..."
+  },
+  "revenueChart": {
+    "title": "Revenue Over Time",
+    "totalRevenue": "Total Revenue:",
+    "revenue": "Revenue:",
+    "ordersLabel": "Orders:",
+    "dateRangeButtons": {
+      "7days": "7 Days",
+      "30days": "30 Days",
+      "3months": "3 Months"
+    }
+  },
+  "topItemsChart": {
+    "title": "Top Menu Items",
+    "subtitle": "Most ordered items by popularity",
+    "ordersLabel": "Orders:",
+    "revenueLabel": "Revenue:",
+    "clickInfo": "Click on a bar to view detailed information",
+    "selectedItem": {
+      "title": "Selected Item Details",
+      "orders": "Orders:",
+      "revenue": "Revenue:",
+      "avgOrderValue": "Avg Order Value:",
+      "rank": "Rank:"
+    }
+  },
+  "orderAnalyticsChart": {
+    "title": "Order Analytics",
+    "subtitle": "Detailed order patterns and trends",
+    "tabs": {
+      "ordersPerDay": "Orders per Day",
+      "peakHours": "Peak Hours"
+    },
+    "ordersPerDay": {
+      "avgLabel": "Average Orders per Day:",
+      "avgReference": "Average",
+      "date": "Date:",
+      "orders": "Orders:"
+    },
+    "peakHours": {
+      "avgLabel": "Average Orders per Hour:",
+      "avgReference": "Average",
+      "note": "Peak hours (above average) are highlighted in orange",
+      "hour": "Hour:",
+      "orders": "Orders:",
+      "peakHour": "Peak Hour"
+    }
   }
 }

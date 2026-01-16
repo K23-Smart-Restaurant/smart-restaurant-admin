@@ -1,5 +1,6 @@
 {
   "title": "Báo cáo & Phân tích",
+  "subtitle": "Thông tin chi tiết toàn diện về hiệu suất nhà hàng của bạn",
   "tabs": {
     "overview": "Tổng quan",
     "revenue": "Doanh thu",
@@ -12,12 +13,87 @@
     "yesterday": "Hôm qua",
     "last7days": "7 ngày qua",
     "last30days": "30 ngày qua",
-    "custom": "Tùy chỉnh"
+    "custom": "Tùy chỉnh",
+    "7days": "7 ngày qua",
+    "30days": "30 ngày qua",
+    "3months": "3 tháng qua"
   },
   "metrics": {
     "totalRevenue": "Tổng doanh thu",
     "totalOrders": "Tổng đơn hàng",
     "averageOrderValue": "Giá trị đơn hàng TB",
-    "topSellingItem": "Món bán chạy nhất"
+    "topSellingItem": "Món bán chạy nhất",
+    "mostPopularItem": "Món phổ biến nhất",
+    "perTransaction": "Trên mỗi giao dịch",
+    "bestSeller": "Bán chạy nhất",
+    "orders": "đơn hàng",
+    "notAvailable": "Không có"
+  },
+  "actions": {
+    "downloadPDF": "Tải PDF",
+    "print": "In",
+    "exportInitiated": "Bắt đầu xuất",
+    "exportMessage": "Quá trình tạo báo cáo PDF đã bắt đầu. Bạn sẽ được thông báo khi sẵn sàng để tải xuống."
+  },
+  "print": {
+    "header": "Báo cáo hiệu suất nhà hàng",
+    "generatedOn": "Tạo vào",
+    "sections": {
+      "kpi": "Các chỉ số hiệu suất chính",
+      "revenueTrends": "Xu hướng doanh thu",
+      "topItems": "Hiệu suất các món ăn hàng đầu",
+      "orderAnalytics": "Phân tích đơn hàng"
+    }
+  },
+  "loading": {
+    "reports": "Đang tải báo cáo...",
+    "message": "Đang tải báo cáo..."
+  },
+  "revenueChart": {
+    "title": "Doanh thu theo thời gian",
+    "totalRevenue": "Tổng doanh thu:",
+    "revenue": "Doanh thu:",
+    "ordersLabel": "Đơn hàng:",
+    "dateRangeButtons": {
+      "7days": "7 ngày",
+      "30days": "30 ngày",
+      "3months": "3 tháng"
+    }
+  },
+  "topItemsChart": {
+    "title": "Món ăn hàng đầu",
+    "subtitle": "Món được đặt nhiều nhất theo độ phổ biến",
+    "ordersLabel": "Đơn hàng:",
+    "revenueLabel": "Doanh thu:",
+    "clickInfo": "Nhấp vào thanh để xem thông tin chi tiết",
+    "selectedItem": {
+      "title": "Chi tiết món đã chọn",
+      "orders": "Đơn hàng:",
+      "revenue": "Doanh thu:",
+      "avgOrderValue": "Giá trị đơn hàng TB:",
+      "rank": "Xếp hạng:"
+    }
+  },
+  "orderAnalyticsChart": {
+    "title": "Phân tích đơn hàng",
+    "subtitle": "Mẫu và xu hướng đơn hàng chi tiết",
+    "tabs": {
+      "ordersPerDay": "Đơn hàng mỗi ngày",
+      "peakHours": "Giờ cao điểm"
+    },
+    "ordersPerDay": {
+      "avgLabel": "Trung bình đơn hàng mỗi ngày:",
+      "avgReference": "Trung bình",
+      "date": "Ngày:",
+      "orders": "Đơn hàng:"
+    },
+    "peakHours": {
+      "avgLabel": "Trung bình đơn hàng mỗi giờ:",
+      "avgReference": "Trung bình",
+      "note": "Giờ cao điểm (trên trung bình) được tô màu cam",
+      "hour": "Giờ:",
+      "orders": "Đơn hàng:",
+      "peakHour": "Giờ cao điểm"
+    }
   }
 }

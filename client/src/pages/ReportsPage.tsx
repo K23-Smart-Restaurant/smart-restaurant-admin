@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { DollarSign, ShoppingCart, TrendingUp, Award, Download, Printer } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useReports, type DateRange } from '../hooks/useReports';
 import { RevenueChart } from '../components/reports/RevenueChart';
 import { TopItemsChart } from '../components/reports/TopItemsChart';
@@ -8,6 +9,7 @@ import { PageLoading, StatsSkeleton } from '../components/common/LoadingSpinner'
 import { useToastContext } from '../contexts/ToastContext';
 
 const ReportsPage: React.FC = () => {
+  const { t } = useTranslation(['reports']);
   const { showSuccess } = useToastContext();
   const [dateRange, setDateRange] = useState<DateRange>('7days');
   const { useRevenue, useTopItems, useAnalytics } = useReports();
@@ -34,27 +36,17 @@ const ReportsPage: React.FC = () => {
   const { data: analyticsData, isLoading: isLoadingAnalytics } = useAnalytics();
 
   // Calculate summary stats - MUST be before conditional return
-  // Since API doesn't return daily breakdown, create mock data for the chart
+  // Use daily revenue data from API
   const revenueChartData = useMemo(() => {
-    if (!revenueData) return [];
+    if (!revenueData?.dailyRevenue) return [];
 
-    const days = dateRange === '7days' ? 7 : dateRange === '30days' ? 30 : 90;
-    const dailyData = [];
-
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-
-      // Distribute revenue across days (mock data)
-      dailyData.push({
-        date: date.toISOString().split('T')[0],
-        revenue: revenueData.totalRevenue / days,
-        orders: Math.floor(revenueData.totalOrders / days),
-      });
-    }
-
-    return dailyData;
-  }, [revenueData, dateRange]);
+    // Map to match chart format
+    return revenueData.dailyRevenue.map((item) => ({
+      date: item.date,
+      revenue: item.revenue,
+      orders: item.orderCount,
+    }));
+  }, [revenueData]);
 
   const totalRevenue = revenueData?.totalRevenue || 0;
   const totalOrders = revenueData?.totalOrders || 0;
@@ -63,31 +55,31 @@ const ReportsPage: React.FC = () => {
   const topItems = topItemsData || [];
   const mostPopularItem = topItems[0] || null;
 
-  // Transform peakHours to match chart expected format
+  // Transform analytics data to match chart expected format
+  const ordersPerDayArray = Array.isArray(analyticsData?.ordersPerDay)
+    ? analyticsData.ordersPerDay
+    : [];
   const peakHoursArray = Array.isArray(analyticsData?.peakHours) ? analyticsData.peakHours : [];
-  const peakHours = peakHoursArray.map((item: { hour: number; orderCount: number }) => ({
-    hour: String(item.hour),
-    orders: item.orderCount || 0,
-  }));
 
   // Show loading state AFTER all hooks have been called
   if (isLoadingRevenue || isLoadingTopItems || isLoadingAnalytics) {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
-          <p className="text-gray-600 mt-1">
-            Comprehensive insights into your restaurant performance
-          </p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('reports:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('reports:subtitle')}</p>
         </div>
         <StatsSkeleton count={4} />
-        <PageLoading message="Loading reports..." />
+        <PageLoading message={t('reports:loading.message')} />
       </div>
     );
   }
 
   // Format currency
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | undefined | null) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '$0.00';
+    }
     return `$${value.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -96,10 +88,7 @@ const ReportsPage: React.FC = () => {
 
   // Handle export PDF (mock)
   const handleExportPDF = () => {
-    showSuccess(
-      'Export Initiated',
-      "PDF report generation has started. You will be notified when it's ready for download."
-    );
+    showSuccess(t('reports:actions.exportInitiated'), t('reports:actions.exportMessage'));
   };
 
   // Handle print
@@ -112,16 +101,16 @@ const ReportsPage: React.FC = () => {
       {/* Print-only Header */}
       <div className="hidden print:block print-header mb-6">
         <div className="text-center border-b-2 border-charcoal pb-4 mb-6">
-          <h1 className="text-4xl font-bold text-charcoal mb-2">Restaurant Performance Report</h1>
+          <h1 className="text-4xl font-bold text-charcoal mb-2">{t('reports:print.header')}</h1>
           <p className="text-lg text-gray-600">
             {dateRange === '7days'
-              ? 'Last 7 Days'
+              ? t('reports:filters.7days')
               : dateRange === '30days'
-                ? 'Last 30 Days'
-                : 'Last 3 Months'}
+                ? t('reports:filters.30days')
+                : t('reports:filters.3months')}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Generated on{' '}
+            {t('reports:print.generatedOn')}{' '}
             {new Date().toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -136,10 +125,8 @@ const ReportsPage: React.FC = () => {
       {/* Screen-only Page Header */}
       <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">Reports & Analytics</h1>
-          <p className="text-gray-600 mt-1">
-            Comprehensive insights into your restaurant performance
-          </p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('reports:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('reports:subtitle')}</p>
         </div>
 
         {/* Action Buttons */}
@@ -149,14 +136,14 @@ const ReportsPage: React.FC = () => {
             className="flex items-center px-4 py-2 bg-naples hover:bg-arylide text-charcoal rounded-md font-medium transition-all shadow-md"
           >
             <Download className="w-4 h-4 mr-2" />
-            Download PDF
+            {t('reports:actions.downloadPDF')}
           </button>
           <button
             onClick={handlePrint}
             className="flex items-center px-4 py-2 bg-white hover:bg-antiflash text-charcoal border border-gray-300 rounded-md font-medium transition-all shadow-md"
           >
             <Printer className="w-4 h-4 mr-2" />
-            Print
+            {t('reports:actions.print')}
           </button>
         </div>
       </div>
@@ -164,7 +151,7 @@ const ReportsPage: React.FC = () => {
       {/* Print Section Title */}
       <div className="hidden print:block mb-4">
         <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
-          Key Performance Indicators
+          {t('reports:print.sections.kpi')}
         </h2>
       </div>
 
@@ -174,13 +161,15 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 print:text-xs">Total Revenue</p>
+              <p className="text-sm font-medium text-gray-600 print:text-xs">
+                {t('reports:metrics.totalRevenue')}
+              </p>
               <p className="text-xs text-gray-500 mt-1 print:hidden">
                 {dateRange === '7days'
-                  ? 'Last 7 Days'
+                  ? t('reports:filters.7days')
                   : dateRange === '30days'
-                    ? 'Last 30 Days'
-                    : 'Last 3 Months'}
+                    ? t('reports:filters.30days')
+                    : t('reports:filters.3months')}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {formatCurrency(totalRevenue)}
@@ -196,13 +185,15 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 print:text-xs">Total Orders</p>
+              <p className="text-sm font-medium text-gray-600 print:text-xs">
+                {t('reports:metrics.totalOrders')}
+              </p>
               <p className="text-xs text-gray-500 mt-1 print:hidden">
                 {dateRange === '7days'
-                  ? 'Last 7 Days'
+                  ? t('reports:filters.7days')
                   : dateRange === '30days'
-                    ? 'Last 30 Days'
-                    : 'Last 3 Months'}
+                    ? t('reports:filters.30days')
+                    : t('reports:filters.3months')}
               </p>
               <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {totalOrders.toLocaleString()}
@@ -218,8 +209,12 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 print:text-xs">Avg Order Value</p>
-              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">Per transaction</p>
+              <p className="text-sm font-medium text-gray-600 print:text-xs">
+                {t('reports:metrics.averageOrderValue')}
+              </p>
+              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">
+                {t('reports:metrics.perTransaction')}
+              </p>
               <p className="text-3xl font-bold text-charcoal mt-2 print:text-2xl print:mt-1">
                 {formatCurrency(avgOrderValue)}
               </p>
@@ -234,14 +229,18 @@ const ReportsPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:border print:border-gray-300 print:p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 print:text-xs">Most Popular Item</p>
-              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">Best seller</p>
+              <p className="text-sm font-medium text-gray-600 print:text-xs">
+                {t('reports:metrics.mostPopularItem')}
+              </p>
+              <p className="text-xs text-gray-500 mt-1 print:text-[10px]">
+                {t('reports:metrics.bestSeller')}
+              </p>
               <p className="text-xl font-bold text-charcoal mt-2 line-clamp-2 print:text-lg print:mt-1">
-                {mostPopularItem?.menuItemName || 'N/A'}
+                {mostPopularItem?.menuItemName || t('reports:metrics.notAvailable')}
               </p>
               {mostPopularItem && (
                 <p className="text-xs text-gray-600 mt-1 print:text-[10px]">
-                  {mostPopularItem.orderCount} orders
+                  {mostPopularItem.orderCount} {t('reports:metrics.orders')}
                 </p>
               )}
             </div>
@@ -255,7 +254,7 @@ const ReportsPage: React.FC = () => {
       {/* Print Section Title */}
       <div className="hidden print:block mb-4 print:page-break-before">
         <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
-          Revenue Trends
+          {t('reports:print.sections.revenueTrends')}
         </h2>
       </div>
 
@@ -273,7 +272,7 @@ const ReportsPage: React.FC = () => {
       {/* Print Section Title - Top Items */}
       <div className="hidden print:block mb-4 print:page-break-before">
         <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
-          Top Menu Items Performance
+          {t('reports:print.sections.topItems')}
         </h2>
       </div>
 
@@ -285,13 +284,13 @@ const ReportsPage: React.FC = () => {
       {/* Print Section Title - Order Analytics */}
       <div className="hidden print:block mb-4 print:page-break-before">
         <h2 className="text-2xl font-bold text-charcoal border-b border-gray-300 pb-2">
-          Order Analytics
+          {t('reports:print.sections.orderAnalytics')}
         </h2>
       </div>
 
       {/* Order Analytics Chart - Shows alone on print, in grid on screen */}
       <div className="mb-8 print:mb-0 print:block lg:hidden">
-        <OrderAnalyticsChart ordersPerDay={revenueChartData} peakHours={peakHours} />
+        <OrderAnalyticsChart ordersPerDay={ordersPerDayArray} peakHours={peakHoursArray} />
       </div>
 
       {/* Screen-only: Charts Row - 50/50 Split (hidden on print) */}
@@ -300,7 +299,7 @@ const ReportsPage: React.FC = () => {
         <TopItemsChart data={topItems} />
 
         {/* Order Analytics Chart */}
-        <OrderAnalyticsChart ordersPerDay={revenueChartData} peakHours={peakHours} />
+        <OrderAnalyticsChart ordersPerDay={ordersPerDayArray} peakHours={peakHoursArray} />
       </div>
 
       {/* Print-specific styles */}
