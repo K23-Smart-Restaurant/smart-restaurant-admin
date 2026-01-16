@@ -1,31 +1,93 @@
 {
   "title": "Quản lý nhân viên",
-	"manageMessage": "Quản lý các thành viên nhân viên nhà hàng của bạn",
-	"tabs": {
-		"waiters": "Phục vụ",
-		"kitchenStaff": "Nhân viên bếp"
-	},
-	"actions": {
-		"addWaiter": "Thêm phục vụ",
-		"addKitchenStaff": "Thêm nhân viên bếp",
-		"editStaff": "Chỉnh sửa nhân viên",
-		"deleteStaff": "Xóa nhân viên"
-	},
-	"table": {
-		"filter": {
-			"filterName": "Lọc theo trạng thái",
-			"all": "Tất cả",
-			"active": "Đang hoạt động",
-			"inactive": "Không hoạt động"
-		},
-		"noStaff": "Không có nhân viên nào.",
-		"columns": {
-			"name": "Tên",
-			"email": "Email",
-			"phone": "Số điện thoại",
-			"status": "Trạng thái",
-			"joinedDate": "Ngày tham gia",
-			"actions": "Hành động"
-		}
-	}
+  "manageMessage": "Quản lý các thành viên nhân viên nhà hàng của bạn",
+  "tabs": {
+    "waiters": "Phục vụ",
+    "kitchenStaff": "Nhân viên bếp"
+  },
+  "actions": {
+    "addWaiter": "Thêm phục vụ",
+    "addKitchenStaff": "Thêm nhân viên bếp",
+    "editStaff": "Chỉnh sửa nhân viên",
+    "deleteStaff": "Xóa nhân viên",
+    "edit": "Sửa",
+    "activate": "Kích hoạt",
+    "deactivate": "Vô hiệu hóa"
+  },
+  "table": {
+    "filter": {
+      "filterLabel": "Lọc:",
+      "filterName": "Lọc theo trạng thái",
+      "all": "Tất cả",
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động"
+    },
+    "noStaff": "Không có nhân viên nào.",
+    "avatar": "Ảnh đại diện",
+    "memberCount": "{{count}} thành viên",
+    "memberCount_plural": "{{count}} thành viên",
+    "columns": {
+      "name": "Tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "status": "Trạng thái",
+      "joinedDate": "Ngày tham gia",
+      "actions": "Hành động"
+    }
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động"
+  },
+  "modals": {
+    "createWaiter": "Tạo tài khoản phục vụ",
+    "editWaiter": "Sửa phục vụ",
+    "createKitchenStaff": "Tạo tài khoản nhân viên bếp",
+    "editKitchenStaff": "Sửa nhân viên bếp",
+    "activateStaff": "Kích hoạt nhân viên",
+    "deactivateStaff": "Vô hiệu hóa nhân viên"
+  },
+  "messages": {
+    "waiterCreated": "Đã tạo phục vụ",
+    "waiterCreatedDesc": "{{name}} đã được thêm vào nhóm thành công.",
+    "waiterUpdated": "Đã cập nhật phục vụ",
+    "waiterUpdatedDesc": "{{name}} đã được cập nhật thành công.",
+    "kitchenStaffCreated": "Đã tạo nhân viên bếp",
+    "kitchenStaffCreatedDesc": "{{name}} đã được thêm vào nhóm thành công.",
+    "kitchenStaffUpdated": "Đã cập nhật nhân viên bếp",
+    "kitchenStaffUpdatedDesc": "{{name}} đã được cập nhật thành công.",
+    "staffActivated": "Đã kích hoạt nhân viên",
+    "staffActivatedDesc": "{{name}} đã được kích hoạt thành công.",
+    "staffDeactivated": "Đã vô hiệu hóa nhân viên",
+    "staffDeactivatedDesc": "{{name}} đã được vô hiệu hóa thành công.",
+    "failedToSaveWaiter": "Không thể lưu phục vụ",
+    "failedToSaveKitchenStaff": "Không thể lưu nhân viên bếp",
+    "failedToUpdateStatus": "Không thể cập nhật trạng thái",
+    "loadingStaff": "Đang tải danh sách nhân viên...",
+    "failedToLoadStaff": "Không thể tải danh sách nhân viên",
+    "retry": "Thử lại",
+    "deactivateConfirm": "Bạn có chắc chắn muốn vô hiệu hóa nhân viên này? Họ sẽ không thể truy cập hệ thống nữa.",
+    "activateConfirm": "Bạn có chắc chắn muốn kích hoạt nhân viên này? Họ sẽ có thể truy cập hệ thống lại."
+  },
+  "form": {
+    "name": "Tên",
+    "namePlaceholder": "Nhập họ tên đầy đủ",
+    "email": "Email",
+    "emailPlaceholder": "Nhập địa chỉ email",
+    "phone": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại (không bắt buộc)",
+    "password": "Mật khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+    "required": "bắt buộc",
+    "optional": "Tùy chọn",
+    "passwordNote": "Để trống để giữ mật khẩu hiện tại",
+    "validation": {
+      "nameMin": "Tên phải có ít nhất 3 ký tự",
+      "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+      "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordMismatch": "Mật khẩu không khớp"
+    }
+  }
 }

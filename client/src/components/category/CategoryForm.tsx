@@ -2,19 +2,10 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import type { Category } from '../../hooks/useCategories';
 import type { CreateCategoryDto } from '../../services/categoryService';
 import { Button } from '../common/Button';
-
-// Validation schema
-const categoryFormSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(50, 'Name must be at most 50 characters'),
-  description: z.string().max(200, 'Description must be at most 200 characters').optional(),
-  displayOrder: z.number().min(0, 'Display order must be 0 or greater').default(0),
-  isActive: z.boolean().default(true),
-});
-
-type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
 interface CategoryFormProps {
   category?: Category;
@@ -23,7 +14,21 @@ interface CategoryFormProps {
 }
 
 export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, onCancel }) => {
+  const { t } = useTranslation('categories');
   const isEditMode = !!category;
+
+  // Validation schema - must be inside component to access t()
+  const categoryFormSchema = z.object({
+    name: z
+      .string()
+      .min(1, t('form.validation.nameRequired'))
+      .max(50, t('form.validation.nameMax')),
+    description: z.string().max(200, t('form.validation.descriptionMax')).optional(),
+    displayOrder: z.number().min(0, t('form.validation.displayOrderMin')).default(0),
+    isActive: z.boolean().default(true),
+  });
+
+  type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
   const {
     register,
@@ -77,7 +82,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
         {/* Name field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-1">
-            Name <span className="text-red-600">*</span>
+            {t('form.name')} <span className="text-red-600">*</span>
           </label>
           <input
             id="name"
@@ -86,7 +91,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.name ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Enter category name"
+            placeholder={t('form.namePlaceholder')}
             maxLength={50}
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -95,7 +100,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
         {/* Description field */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-charcoal mb-1">
-            Description
+            {t('form.description')}
           </label>
           <textarea
             id="description"
@@ -103,7 +108,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none resize-none ${
               errors.description ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Enter category description (optional)"
+            placeholder={t('form.descriptionPlaceholder')}
             rows={3}
             maxLength={200}
           />
@@ -115,7 +120,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
         {/* Display Order field */}
         <div>
           <label htmlFor="displayOrder" className="block text-sm font-medium text-charcoal mb-1">
-            Display Order
+            {t('form.displayOrder')}
           </label>
           <input
             id="displayOrder"
@@ -130,19 +135,17 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
           {errors.displayOrder && (
             <p className="mt-1 text-sm text-red-600">{errors.displayOrder.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-600">Lower numbers appear first in the menu</p>
+          <p className="mt-1 text-xs text-gray-600">{t('form.displayOrderHelp')}</p>
         </div>
 
         {/* Active toggle switch */}
         <div className="flex items-center justify-between">
           <div>
             <label htmlFor="isActive" className="block text-sm font-medium text-charcoal">
-              Active
+              {t('form.isActive')}
             </label>
             <p className="text-xs text-gray-600">
-              {isEditMode
-                ? 'Toggle to activate/deactivate this category'
-                : 'Category will be active by default'}
+              {isEditMode ? t('form.activeHelperEdit') : t('form.activeHelperCreate')}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -160,10 +163,10 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ category, onSubmit, 
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
         <Button type="button" onClick={onCancel} variant="secondary">
-          Cancel
+          {t('form.cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save Category'}
+          {isSubmitting ? t('form.saving') : t('form.save')}
         </Button>
       </div>
     </form>

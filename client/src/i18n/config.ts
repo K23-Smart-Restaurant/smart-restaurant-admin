@@ -9,6 +9,7 @@ import enMenu from '../locales/en/menu.json';
 import enOrders from '../locales/en/orders.json';
 import enKitchen from '../locales/en/kitchen.json';
 import enStaff from '../locales/en/staff.json';
+import enCategories from '../locales/en/categories.json';
 import enTables from '../locales/en/tables.json';
 import enReports from '../locales/en/reports.json';
 
@@ -18,6 +19,7 @@ import viMenu from '../locales/vi/menu.json';
 import viOrders from '../locales/vi/orders.json';
 import viKitchen from '../locales/vi/kitchen.json';
 import viStaff from '../locales/vi/staff.json';
+import viCategories from '../locales/vi/categories.json';
 import viTables from '../locales/vi/tables.json';
 import viReports from '../locales/vi/reports.json';
 
@@ -29,6 +31,7 @@ const resources = {
     orders: enOrders,
     kitchen: enKitchen,
     staff: enStaff,
+    categories: enCategories,
     tables: enTables,
     reports: enReports,
   },
@@ -39,6 +42,7 @@ const resources = {
     orders: viOrders,
     kitchen: viKitchen,
     staff: viStaff,
+    categories: viCategories,
     tables: viTables,
     reports: viReports,
   },

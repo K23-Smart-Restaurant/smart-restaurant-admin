@@ -2,23 +2,9 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import type { Staff } from '../../hooks/useStaff';
 import { Button } from '../common/Button';
-// Validation schema
-const waiterFormSchema = z
-  .object({
-    name: z.string().min(3, 'Name must be at least 3 characters'),
-    email: z.string().email('Please enter a valid email address'),
-    phoneNumber: z.string().optional(),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-
-type WaiterFormData = z.infer<typeof waiterFormSchema>;
 
 interface CreateWaiterFormProps {
   staff?: Staff;
@@ -27,7 +13,24 @@ interface CreateWaiterFormProps {
 }
 
 export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSubmit, onClose }) => {
+  const { t } = useTranslation(['staff', 'common']);
   const isEditMode = !!staff;
+
+  // Validation schema - must be inside component to use t()
+  const waiterFormSchema = z
+    .object({
+      name: z.string().min(3, t('staff:form.validation.nameMin')),
+      email: z.string().email(t('staff:form.validation.emailInvalid')),
+      phoneNumber: z.string().optional(),
+      password: z.string().min(8, t('staff:form.validation.passwordMin')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('staff:form.validation.passwordMismatch'),
+      path: ['confirmPassword'],
+    });
+
+  type WaiterFormData = z.infer<typeof waiterFormSchema>;
 
   const {
     register,
@@ -75,7 +78,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         {/* Name field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-1">
-            Name <span className="text-red-600">*</span>
+            {t('staff:form.name')} <span className="text-red-600">*</span>
           </label>
           <input
             id="name"
@@ -84,7 +87,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.name ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Enter full name"
+            placeholder={t('staff:form.namePlaceholder')}
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
@@ -92,7 +95,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         {/* Email field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-1">
-            Email <span className="text-red-600">*</span>
+            {t('staff:form.email')} <span className="text-red-600">*</span>
           </label>
           <input
             id="email"
@@ -101,7 +104,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.email ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="email@restaurant.com"
+            placeholder={t('staff:form.emailPlaceholder')}
           />
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
@@ -109,21 +112,21 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         {/* Phone Number field */}
         <div>
           <label htmlFor="phoneNumber" className="block text-sm font-medium text-charcoal mb-1">
-            Phone Number
+            {t('staff:form.phone')}
           </label>
           <input
             id="phoneNumber"
             type="tel"
             {...register('phoneNumber')}
             className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
-            placeholder="+1234567890"
+            placeholder={t('staff:form.phonePlaceholder')}
           />
         </div>
 
         {/* Password field */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-charcoal mb-1">
-            Password <span className="text-red-600">*</span>
+            {t('staff:form.password')} <span className="text-red-600">*</span>
           </label>
           <input
             id="password"
@@ -132,7 +135,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.password ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Minimum 8 characters"
+            placeholder={t('staff:form.passwordPlaceholder')}
           />
           {errors.password && (
             <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
@@ -142,7 +145,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
         {/* Confirm Password field */}
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-charcoal mb-1">
-            Confirm Password <span className="text-red-600">*</span>
+            {t('staff:form.confirmPassword')} <span className="text-red-600">*</span>
           </label>
           <input
             id="confirmPassword"
@@ -151,7 +154,7 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
             className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
               errors.confirmPassword ? 'border-red-500' : 'border-antiflash'
             }`}
-            placeholder="Re-enter password"
+            placeholder={t('staff:form.confirmPasswordPlaceholder')}
           />
           {errors.confirmPassword && (
             <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
@@ -162,10 +165,14 @@ export const CreateWaiterForm: React.FC<CreateWaiterFormProps> = ({ staff, onSub
       {/* Form actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-antiflash">
         <Button type="button" onClick={onClose} variant="secondary">
-          Cancel
+          {t('common:buttons.cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating...' : 'Create Waiter Account'}
+          {isSubmitting
+            ? t('common:actions.saving')
+            : isEditMode
+              ? t('common:buttons.save')
+              : t('staff:modals.createWaiter')}
         </Button>
       </div>
     </form>

@@ -1,0 +1,68 @@
+{
+  "title": "Danh mục",
+  "manageMessage": "Quản lý danh mục thực đơn của bạn",
+  "actions": {
+    "addCategory": "Thêm danh mục",
+    "editCategory": "Sửa danh mục",
+    "deleteCategory": "Xóa danh mục",
+    "edit": "Sửa danh mục",
+    "delete": "Xóa danh mục"
+  },
+  "sort": {
+    "sortBy": "Sắp xếp theo",
+    "displayOrder": "Thứ tự hiển thị",
+    "name": "Tên",
+    "createdDate": "Ngày tạo",
+    "ascending": "Tăng dần",
+    "descending": "Giảm dần"
+  },
+  "list": {
+    "noCategories": "Không tìm thấy danh mục nào. Tạo danh mục đầu tiên để bắt đầu!",
+    "itemCount": "{{count}} món",
+    "itemCount_plural": "{{count}} món",
+    "displayOrder": "Thứ tự hiển thị:",
+    "noDescription": "Không có mô tả"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động"
+  },
+  "modals": {
+    "createCategory": "Tạo danh mục",
+    "editCategory": "Sửa danh mục",
+    "deleteCategory": "Xóa danh mục"
+  },
+  "messages": {
+    "categoryCreated": "Đã tạo danh mục",
+    "categoryCreatedDesc": "\"{{name}}\" đã được thêm thành công.",
+    "categoryUpdated": "Đã cập nhật danh mục",
+    "categoryUpdatedDesc": "\"{{name}}\" đã được cập nhật thành công.",
+    "categoryDeleted": "Đã xóa danh mục",
+    "categoryDeletedDesc": "\"{{name}}\" đã bị xóa vĩnh viễn.",
+    "failedToSaveCategory": "Không thể lưu danh mục",
+    "deleteFailed": "Xóa thất bại",
+    "loadingCategories": "Đang tải danh mục...",
+    "errorLoadingCategories": "Lỗi khi tải danh mục:",
+    "unknownError": "Lỗi không xác định",
+    "retry": "Thử lại",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục này? Hành động này sẽ xóa vĩnh viễn khỏi hệ thống."
+  },
+  "form": {
+    "name": "Tên",
+    "namePlaceholder": "Nhập tên danh mục",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả ngắn (tùy chọn)",
+    "displayOrder": "Thứ tự hiển thị",
+    "displayOrderHelp": "Số nhỏ hơn xuất hiện trước",
+    "isActive": "Hoạt động",
+    "activeHelperEdit": "Chuyển đổi để kích hoạt/vô hiệu hóa danh mục này",
+    "activeHelperCreate": "Danh mục sẽ được kích hoạt theo mặc định",
+    "required": "bắt buộc",
+    "validation": {
+      "nameRequired": "Tên là bắt buộc",
+      "nameMaxLength": "Tên tối đa 50 ký tự",
+      "descriptionMaxLength": "Mô tả tối đa 200 ký tự",
+      "displayOrderMin": "Thứ tự hiển thị phải từ 0 trở lên"
+    }
+  }
+}

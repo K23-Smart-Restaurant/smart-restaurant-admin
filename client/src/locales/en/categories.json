@@ -1,0 +1,68 @@
+{
+  "title": "Categories",
+  "manageMessage": "Manage your menu categories",
+  "actions": {
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "edit": "Edit category",
+    "delete": "Delete category"
+  },
+  "sort": {
+    "sortBy": "Sort by",
+    "displayOrder": "Display order",
+    "name": "Name",
+    "createdDate": "Created date",
+    "ascending": "Sort Ascending",
+    "descending": "Sort Descending"
+  },
+  "list": {
+    "noCategories": "No categories found. Create your first category to get started!",
+    "itemCount": "{{count}} item",
+    "itemCount_plural": "{{count}} items",
+    "displayOrder": "Display Order:",
+    "noDescription": "No description"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "modals": {
+    "createCategory": "Create Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category"
+  },
+  "messages": {
+    "categoryCreated": "Category Created",
+    "categoryCreatedDesc": "\"{{name}}\" has been successfully added.",
+    "categoryUpdated": "Category Updated",
+    "categoryUpdatedDesc": "\"{{name}}\" has been successfully updated.",
+    "categoryDeleted": "Category Deleted",
+    "categoryDeletedDesc": "\"{{name}}\" has been permanently removed.",
+    "failedToSaveCategory": "Failed to Save Category",
+    "deleteFailed": "Delete Failed",
+    "loadingCategories": "Loading categories...",
+    "errorLoadingCategories": "Error loading categories:",
+    "unknownError": "Unknown error",
+    "retry": "Retry",
+    "deleteConfirm": "Are you sure you want to delete this category? This will permanently remove it from the system."
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Enter category name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter a brief description (optional)",
+    "displayOrder": "Display Order",
+    "displayOrderHelp": "Lower numbers appear first",
+    "isActive": "Active",
+    "activeHelperEdit": "Toggle to activate/deactivate this category",
+    "activeHelperCreate": "Category will be active by default",
+    "required": "required",
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameMaxLength": "Name must be at most 50 characters",
+      "descriptionMaxLength": "Description must be at most 200 characters",
+      "displayOrderMin": "Display order must be 0 or greater"
+    }
+  }
+}

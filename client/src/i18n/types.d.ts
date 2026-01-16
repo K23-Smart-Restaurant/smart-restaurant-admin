@@ -6,6 +6,7 @@ import menu from './locales/en/menu.json';
 import orders from './locales/en/orders.json';
 import kitchen from './locales/en/kitchen.json';
 import staff from './locales/en/staff.json';
+import categories from './locales/en/categories.json';
 import tables from './locales/en/tables.json';
 import reports from './locales/en/reports.json';
 
@@ -19,6 +20,7 @@ declare module 'i18next' {
       orders: typeof orders;
       kitchen: typeof kitchen;
       staff: typeof staff;
+      categories: typeof categories;
       tables: typeof tables;
       reports: typeof reports;
     };

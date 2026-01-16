@@ -46,7 +46,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <label htmlFor="filter" className="text-sm font-medium text-charcoal">
-            Filter:
+            {t('table.filter.filterLabel')}
           </label>
           <select
             id="filter"
@@ -60,7 +60,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
           </select>
         </div>
         <div className="text-sm text-gray-600">
-          {filteredStaff.length} {filteredStaff.length === 1 ? 'member' : 'members'}
+          {t('table.memberCount', { count: filteredStaff.length })}
         </div>
       </div>
 
@@ -76,7 +76,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
               <thead className="bg-charcoal">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Avatar
+                    {t('table.avatar')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     {t('table.columns.name')}
@@ -135,7 +135,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {member.isActive ? 'Active' : 'Inactive'}
+                        {member.isActive ? t('status.active') : t('status.inactive')}
                       </span>
                     </td>
 
@@ -151,7 +151,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                         <button
                           onClick={() => onEdit(member)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                          title="Edit"
+                          title={t('actions.edit')}
                         >
                           <PencilIcon className="w-4 h-4" />
                         </button>
@@ -161,7 +161,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                           <button
                             onClick={() => onToggleActive(member.id)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            title="Deactivate"
+                            title={t('actions.deactivate')}
                           >
                             <TrashIcon className="w-4 h-4" />
                           </button>
@@ -169,7 +169,7 @@ export const StaffList: React.FC<StaffListProps> = ({ role, staff, onEdit, onTog
                           <button
                             onClick={() => onToggleActive(member.id)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                            title="Activate"
+                            title={t('actions.activate')}
                           >
                             <CheckCircleIcon className="w-4 h-4" />
                           </button>

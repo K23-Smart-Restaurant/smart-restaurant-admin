@@ -39,7 +39,12 @@ const DashboardLayout: React.FC = () => {
       icon: UsersIcon,
       roles: ['ADMIN', 'SUPER_ADMIN'],
     },
-    { name: 'Categories', path: '/categories', icon: FolderIcon, roles: ['ADMIN', 'SUPER_ADMIN'] },
+    {
+      name: t('navigation.categories'),
+      path: '/categories',
+      icon: FolderIcon,
+      roles: ['ADMIN', 'SUPER_ADMIN'],
+    },
     {
       name: t('navigation.menu'),
       path: '/menu',

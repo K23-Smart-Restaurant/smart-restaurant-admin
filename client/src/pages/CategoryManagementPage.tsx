@@ -9,9 +9,11 @@ import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
 import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
+import { useTranslation } from 'react-i18next';
 import type { CreateCategoryDto } from '../services/categoryService';
 
 const CategoryManagementPage: React.FC = () => {
+  const { t } = useTranslation(['categories', 'common']);
   const { showSuccess, showError } = useToastContext();
 
   const {
@@ -38,17 +40,23 @@ const CategoryManagementPage: React.FC = () => {
       if (editingCategory) {
         // Update existing category
         await updateCategory(editingCategory.id, categoryData);
-        showSuccess('Category Updated', `"${categoryData.name}" has been successfully updated.`);
+        showSuccess(
+          t('categories:messages.categoryUpdated'),
+          t('categories:messages.categoryUpdatedDesc', { name: categoryData.name })
+        );
       } else {
         // Add new category
         await addCategory(categoryData);
-        showSuccess('Category Created', `"${categoryData.name}" has been successfully added.`);
+        showSuccess(
+          t('categories:messages.categoryCreated'),
+          t('categories:messages.categoryCreatedDesc', { name: categoryData.name })
+        );
       }
       closeCategoryModal();
     } catch (error) {
       console.error('Failed to save category:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      showError('Failed to Save Category', errorMessage);
+      showError(t('categories:messages.failedToSaveCategory'), errorMessage);
     }
   };
 
@@ -71,13 +79,16 @@ const CategoryManagementPage: React.FC = () => {
 
     try {
       await deleteCategory(categoryToDelete.id);
-      showSuccess('Category Deleted', `"${categoryToDelete.name}" has been permanently removed.`);
+      showSuccess(
+        t('categories:messages.categoryDeleted'),
+        t('categories:messages.categoryDeletedDesc', { name: categoryToDelete.name })
+      );
       setCategoryToDelete(null);
     } catch (error: unknown) {
       console.error('Failed to delete category:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to delete category. Please try again.';
-      showError('Delete Failed', errorMessage);
+      showError(t('categories:messages.deleteFailed'), errorMessage);
       setDeleteError(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -114,7 +125,7 @@ const CategoryManagementPage: React.FC = () => {
 
   // Loading state
   if (isLoading) {
-    return <PageLoading message="Loading categories..." />;
+    return <PageLoading message={t('categories:messages.loadingCategories')} />;
   }
 
   // Error state
@@ -123,10 +134,11 @@ const CategoryManagementPage: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <p className="text-red-600">
-            Error loading categories: {error?.message || 'Unknown error'}
+            {t('categories:messages.errorLoadingCategories')}{' '}
+            {error?.message || t('categories:messages.unknownError')}
           </p>
           <Button onClick={() => window.location.reload()} className="mt-4">
-            Retry
+            {t('categories:messages.retry')}
           </Button>
         </div>
       </div>
@@ -138,14 +150,14 @@ const CategoryManagementPage: React.FC = () => {
       {/* Page header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-charcoal">Categories</h1>
-          <p className="text-gray-600 mt-1">Manage your menu categories</p>
+          <h1 className="text-3xl font-bold text-charcoal">{t('categories:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('categories:manageMessage')}</p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-700" htmlFor="category-sort">
-              Sort by
+              {t('categories:sort.sortBy')}
             </label>
             <select
               id="category-sort"
@@ -153,15 +165,19 @@ const CategoryManagementPage: React.FC = () => {
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
             >
-              <option value="displayOrder">Display order</option>
-              <option value="name">Name</option>
-              <option value="createdAt">Created date</option>
+              <option value="displayOrder">{t('categories:sort.displayOrder')}</option>
+              <option value="name">{t('categories:sort.name')}</option>
+              <option value="createdAt">{t('categories:sort.createdDate')}</option>
             </select>
             <button
               type="button"
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="p-2 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-md border border-antiflash"
-              title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+              title={
+                sortOrder === 'asc'
+                  ? t('categories:sort.descending')
+                  : t('categories:sort.ascending')
+              }
             >
               <ArrowUpDownIcon className="w-4 h-4" />
             </button>
@@ -169,7 +185,7 @@ const CategoryManagementPage: React.FC = () => {
 
           {/* Add Category button */}
           <Button onClick={openAddCategoryModal} icon={PlusIcon}>
-            Add Category
+            {t('categories:actions.addCategory')}
           </Button>
         </div>
       </div>
@@ -185,7 +201,11 @@ const CategoryManagementPage: React.FC = () => {
       <Modal
         isOpen={isCategoryModalOpen}
         onClose={closeCategoryModal}
-        title={editingCategory ? 'Edit Category' : 'Create Category'}
+        title={
+          editingCategory
+            ? t('categories:modals.editCategory')
+            : t('categories:modals.createCategory')
+        }
       >
         <CategoryForm
           category={editingCategory || undefined}
@@ -199,13 +219,9 @@ const CategoryManagementPage: React.FC = () => {
         isOpen={categoryToDelete !== null}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Category"
+        title={t('categories:modals.deleteCategory')}
         itemName={categoryToDelete?.name}
-        message={
-          deleteError
-            ? deleteError
-            : `Are you sure you want to delete this category? This will permanently remove it from the system.`
-        }
+        message={deleteError ? deleteError : t('categories:messages.deleteConfirm')}
         isLoading={isDeleting}
       />
     </div>
