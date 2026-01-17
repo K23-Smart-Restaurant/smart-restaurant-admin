@@ -17,12 +17,17 @@ services:
       retries: 3
       start_period: 40s
 
-  # Frontend (Nginx) - .env file copied during build
+  # Frontend (Nginx) - Reads .env for build
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_WS_URL=${VITE_WS_URL}
     container_name: smart-restaurant-admin-frontend
+    env_file:
+      - ./client/.env
     ports:
       - "5173:80"
     networks:
