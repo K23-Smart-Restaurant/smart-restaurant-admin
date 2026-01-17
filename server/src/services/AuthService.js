@@ -159,6 +159,7 @@ class AuthService {
         name: true,
         role: true,
         phoneNumber: true,
+        avatarUrl: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -243,6 +244,62 @@ class AuthService {
       // Ignore errors during logout
       console.error('Error during logout:', error);
     }
+  }
+  /**
+   * Update user profile
+   * @param {string} userId - User ID
+   * @param {Object} data - Profile data to update
+   * @returns {Object} Updated user profile data
+   */
+  async updateProfile(userId, data) {
+    const { name, phoneNumber } = data;
+
+    // Build update data - only include fields that are provided
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phoneNumber: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
+  }
+
+  /**
+   * Upload user avatar
+   * @param {string} userId - User ID
+   * @param {string} avatarUrl - Avatar URL from storage
+   * @returns {Object} Updated user profile data
+   */
+  async uploadAvatar(userId, avatarUrl) {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { avatarUrl },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phoneNumber: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
   }
 }
 

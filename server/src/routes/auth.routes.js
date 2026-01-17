@@ -1,12 +1,28 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import multer from 'multer';
 import AuthController from '../controllers/AuthController.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validation.middleware.js';
 import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
+import { handleUploadError } from '../middleware/upload.middleware.js';
 
 const router = Router();
 const authController = new AuthController();
+
+// Multer config for avatar upload
+const avatarUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.'));
+    }
+  },
+}).single('avatar');
 
 // Rate limiters for authentication endpoints
 const loginLimiter = rateLimit({
@@ -48,5 +64,9 @@ router.post('/logout', (req, res, next) => authController.logout(req, res, next)
 
 // Protected routes
 router.get('/me', authenticate, (req, res, next) => authController.getMe(req, res, next));
+router.patch('/me', authenticate, (req, res, next) => authController.updateMe(req, res, next));
+router.post('/me/avatar', authenticate, handleUploadError(avatarUpload), (req, res, next) =>
+  authController.uploadAvatar(req, res, next)
+);
 
 export default router;

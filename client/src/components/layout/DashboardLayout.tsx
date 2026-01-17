@@ -15,6 +15,7 @@ import {
   MenuIcon,
   XIcon,
   ChevronDownIcon,
+  UserIcon,
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -177,10 +178,18 @@ const DashboardLayout: React.FC = () => {
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                   className="flex items-center space-x-3 px-3 py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-105 group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
-                    <span className="text-charcoal font-bold text-base">
-                      {user?.name?.charAt(0).toUpperCase() || 'A'}
-                    </span>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300 overflow-hidden">
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-charcoal font-bold text-base">
+                        {user?.name?.charAt(0).toUpperCase() || 'A'}
+                      </span>
+                    )}
                   </div>
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-semibold text-charcoal">{user?.name || 'Admin'}</p>
@@ -205,6 +214,17 @@ const DashboardLayout: React.FC = () => {
                         </p>
                         <p className="text-xs text-gray-600 mt-0.5">{user?.email || ''}</p>
                       </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 transition-all duration-300 flex items-center space-x-2 group"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>{t('navigation.profile')}</span>
+                        <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
+                          →
+                        </span>
+                      </Link>
                       <button
                         onClick={() => {
                           setIsProfileDropdownOpen(false);

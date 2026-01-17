@@ -21,6 +21,7 @@ const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 const KitchenDisplayPage = lazy(() => import('./pages/KitchenDisplayPage'));
 const WaiterDashboardPage = lazy(() => import('./pages/WaiterDashboardPage'));
 const BillPrintPage = lazy(() => import('./pages/BillPrintPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 // T420: Import RoleBasedRedirect
 import { RoleBasedRedirect } from './components/common/RoleBasedRedirect';
@@ -77,6 +78,7 @@ function App() {
                     }
                   >
                     <Route index element={<KitchenDisplayPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
                   </Route>
 
                   {/* T421: Waiter Routes with StaffLayout */}
@@ -90,6 +92,7 @@ function App() {
                   >
                     <Route index element={<WaiterDashboardPage />} />
                     <Route path="bill/:orderId" element={<BillPrintPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
                   </Route>
 
                   {/* T421: Admin routes with DashboardLayout */}
@@ -173,6 +176,9 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
+                    {/* Profile - All admin roles */}
+                    <Route path="profile" element={<ProfilePage />} />
 
                     {/* 404 - Redirect to dashboard */}
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
