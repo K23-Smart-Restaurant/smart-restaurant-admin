@@ -3,12 +3,8 @@ name: Deploy Admin to AWS EC2
 on:
   push:
     branches:
-      - main
+      - production
   workflow_dispatch:
-
-env:
-  NODE_VERSION: '18'
-  EC2_PATH: ~/smart-restaurant/smart-restaurant-admin
 
 jobs:
   deploy:
@@ -19,119 +15,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # ==================== DEPLOY WITH DOCKER ====================
+      # Note: Both .env files are created manually on EC2 (one-time setup):
+      #   - server/.env (backend runtime vars)
+      #   - .env (frontend build args)
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      # ==================== BUILD FRONTEND ====================
-      - name: Install frontend dependencies
-        working-directory: ./client
-        run: npm ci
-
-      - name: Create frontend .env file from secrets
-        working-directory: ./client
-        run: |
-          cat > .env << 'EOF'
-          VITE_API_URL=${{ secrets.VITE_API_URL }}
-          VITE_WS_URL=${{ secrets.VITE_WS_URL }}
-          EOF
-
-      - name: Build frontend
-        working-directory: ./client
-        run: npm run build
-
-      # ==================== SETUP SSH ====================
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          known_hosts: 'placeholder'
-
-      - name: Add EC2 to known hosts
-        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      # ==================== DEPLOY BACKEND ====================
-      - name: Create backend .env on EC2
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
-            cat > ${{ env.EC2_PATH }}/server/.env << 'EOF'
-          PORT=3001
-          NODE_ENV=production
-
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN=7d
-
-          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
-
-          CLIENT_URL=${{ secrets.CLIENT_URL }}
-          CUSTOMER_APP_URL=${{ secrets.CUSTOMER_APP_URL }}
-
-          MAX_FILE_SIZE=5242880
-          UPLOAD_DIR=./uploads
-
-          RATE_LIMIT_WINDOW_MS=900000
-          RATE_LIMIT_MAX_REQUESTS=100
-
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-
-          TAX_RATE=0.10
-          SERVICE_CHARGE_RATE=0.05
-
-          PREP_TIME_THRESHOLD_MINUTES=30
-
-          QR_TOKEN_SECRET=${{ secrets.QR_TOKEN_SECRET }}
-          REDIS_URL=${{ secrets.REDIS_URL }}
-          EOF
-          ENDSSH
-
-      - name: Deploy backend code
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
-            cd ${{ env.EC2_PATH }}/server
+          port: 22
+          script: |
+            # Go to project directory
+            cd ~/smart-restaurant/smart-restaurant-admin
 
             # Pull latest code
-            git pull origin main
+            git pull origin production
 
-            # Install dependencies
-            npm ci --only=production
+            # Reset to HEAD (in case of merge conflicts)
+            git reset --hard origin/production
 
-            # Generate Prisma client
-            npx prisma generate
+            # Stop and remove old containers
+            docker-compose down
 
-            # Run migrations
-            npx prisma migrate deploy
+            # Rebuild and start containers (uses .env for build args)
+            docker-compose up -d --build
 
-            # Restart backend with PM2
-            pm2 restart smart-restaurant-admin-api || pm2 start src/index.js --name smart-restaurant-admin-api
-            pm2 save
-          ENDSSH
+            # Clean up dangling images
+            docker image prune -f
 
-      # ==================== DEPLOY FRONTEND ====================
-      - name: Deploy frontend build files
-        run: |
-          rsync -avz --delete ./client/dist/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ env.EC2_PATH }}/client/dist/
-
-      - name: Restart Nginx
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
-            sudo systemctl reload nginx
-          ENDSSH
-
-      # ==================== HEALTH CHECK ====================
-      - name: Wait for services to restart
-        run: sleep 10
-
-      - name: Health check - Backend
-        run: |
-          curl --fail --retry 3 --retry-delay 5 ${{ secrets.VITE_API_URL }}/health || echo "Warning: Backend health check failed"
-
-      - name: Deployment summary
-        run: |
-          echo "✅ Deployment completed successfully!"
-          echo "Frontend URL: ${{ secrets.CLIENT_URL }}"
-          echo "Backend URL: ${{ secrets.VITE_API_URL }}"
+      - name: Deployment complete
+        run: echo "✅ Deployment completed successfully!"

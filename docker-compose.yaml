@@ -1,29 +1,39 @@
 services:
-  # Client
-  client:
-    build: ./client
-    container_name: client
-    ports:
-      - "5173:80"
-    env_file:
-      - ./client/.env
-    networks:
-      - smart-restaurant-network
-    restart: unless-stopped
-
-  # Server
+  # Backend API
   backend:
-    build: ./backend
-    container_name: backend
+    build: ./server
+    container_name: smart-restaurant-admin-backend
     ports:
       - "3001:3001"
     env_file:
-      - ./backend/.env
+      - ./server/.env
     networks:
       - smart-restaurant-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_WS_URL: ${VITE_WS_URL}
+    container_name: smart-restaurant-admin-frontend
+    ports:
+      - "5173:80"
+    networks:
+      - smart-restaurant-network
+    depends_on:
+      - backend
     restart: unless-stopped
 
 networks:
   smart-restaurant-network:
     driver: bridge
-

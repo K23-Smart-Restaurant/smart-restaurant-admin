@@ -1,359 +1,364 @@
-# GitHub Secrets Setup Guide
+# GitHub Secrets Setup Guide (Simplified)
 # Smart Restaurant Projects - EC2 Deployment
 
-This guide explains how to configure GitHub Secrets for both **smart-restaurant-admin** and **smart-restaurant-customer** projects.
+**Maximum Simplicity Approach:**
+- ✅ **All .env files created manually on EC2**
+- ✅ **Only 3 GitHub Secrets needed for EC2 connection**
+- ✅ **No frontend/backend secrets in GitHub at all**
 
 ---
 
-## 🎯 Overview
+## 🎯 Philosophy
 
-**Approach:** GitHub Secrets → Create .env During Build
+**All configuration stays on the server:**
+- Frontend build variables → Created once on EC2
+- Backend runtime variables → Created once on EC2
+- GitHub only needs SSH access to deploy code
 
-- **Frontend:** `.env` file created from GitHub Secrets during build (build-time variables)
-- **Backend:** `.env` file created on EC2 from GitHub Secrets during deployment (runtime variables)
-- **No .env files committed to Git** ✅
-
----
-
-## 📋 GitHub Secrets Configuration
-
-### How to Add Secrets
-
-1. Go to your GitHub repository
-2. Click **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add each secret from the tables below
+**Benefits:**
+- 🔒 Maximum security - no secrets in GitHub
+- ⚡ Simplest setup - only 3 secrets total
+- 🎯 Clear separation - all config on server
+- 🔄 Easy updates - SSH and edit files directly
 
 ---
 
-## 🔧 Smart Restaurant Admin - GitHub Secrets
+## 📋 Required GitHub Secrets
 
-Repository: `smart-restaurant-admin`
+### For BOTH Repositories (Same 3 Secrets)
 
-### EC2 Connection (Shared Secrets - Same for both projects)
-
-| Secret Name | Value | Example |
-|-------------|-------|---------|
-| `EC2_SSH_KEY` | Your EC2 private key (.pem file content) | `-----BEGIN RSA PRIVATE KEY-----\n...` |
-| `EC2_HOST` | EC2 public IP or domain | `54.123.45.67` or `ec2.yourdomain.com` |
+| Secret Name | Purpose | Example |
+|-------------|---------|---------|
+| `EC2_SSH_KEY` | SSH private key for EC2 access | `-----BEGIN RSA PRIVATE KEY-----...` |
+| `EC2_HOST` | EC2 public IP or domain | `54.123.45.67` |
 | `EC2_USER` | SSH username | `ubuntu` |
 
-### Frontend Environment Variables
-
-| Secret Name | Value | Example |
-|-------------|-------|---------|
-| `VITE_API_URL` | Admin backend API URL | `http://54.123.45.67:3001/api` |
-| `VITE_WS_URL` | Admin WebSocket URL | `http://54.123.45.67:3001` |
-
-### Backend Environment Variables
-
-| Secret Name | Value | Example |
-|-------------|-------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:pass@host:6543/postgres?pgbouncer=true` |
-| `JWT_SECRET` | JWT signing secret (256-bit) | Generate with: `node -e "..."` |
-| `STRIPE_SECRET_KEY` | Stripe secret key | `sk_test_...` or `sk_live_...` |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret | `whsec_...` |
-| `CLIENT_URL` | Admin frontend URL | `http://54.123.45.67` or `https://admin.yourdomain.com` |
-| `CUSTOMER_APP_URL` | Customer app URL | `http://54.123.45.67:3000` or `https://customer.yourdomain.com` |
-| `SUPABASE_URL` | Supabase project URL | `https://xxxxx.supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | `eyJhbGci...` |
-| `REDIS_URL` | Redis connection string | `redis://default:pass@host:11529` |
-| `QR_TOKEN_SECRET` | QR token secret (256-bit) | Generate with: `node -e "..."` |
-
-### Total Secrets for Admin: **15 secrets**
+**Total: 3 secrets (shared across both repos)** ✅
 
 ---
 
-## 🛍️ Smart Restaurant Customer - GitHub Secrets
+## 🔑 How to Get EC2 Secrets
 
-Repository: `smart-restaurant-customer`
-
-### EC2 Connection (Use Same Values)
-
-| Secret Name | Value |
-|-------------|-------|
-| `EC2_SSH_KEY` | Same as admin |
-| `EC2_HOST` | Same as admin |
-| `EC2_USER` | Same as admin |
-
-### Frontend Environment Variables
-
-| Secret Name | Value | Example |
-|-------------|-------|---------|
-| `VITE_API_URL` | Customer backend API URL | `http://54.123.45.67:3002/api` |
-| `VITE_WS_URL` | Customer WebSocket URL | `http://54.123.45.67:3002` |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `pk_test_...` or `pk_live_...` |
-
-### Backend Environment Variables
-
-| Secret Name | Value | Example |
-|-------------|-------|---------|
-| `DATABASE_URL` | PostgreSQL (same as admin) | `postgresql://...` |
-| `JWT_SECRET` | JWT secret (can be different from admin) | Generate new or reuse |
-| `STRIPE_SECRET_KEY` | Stripe secret key (same as admin) | `sk_test_...` |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID | `668722833029-...` |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | `GOCSPX-...` |
-| `GOOGLE_CALLBACK_URL` | Google OAuth callback URL | `http://54.123.45.67:3002/api/auth/google/callback` |
-| `CLIENT_URL` | Customer frontend URL | `http://54.123.45.67:3000` or `https://yourdomain.com` |
-| `QR_TOKEN_SECRET` | QR token secret (same as admin recommended) | Same as admin |
-| `REDIS_URL` | Redis URL (same as admin) | Same as admin |
-| `SMTP_HOST` | SMTP server hostname | `smtp.gmail.com` |
-| `SMTP_PORT` | SMTP port | `587` |
-| `SMTP_SECURE` | Use TLS | `false` |
-| `SMTP_USER` | Email address for sending | `your-email@gmail.com` |
-| `SMTP_PASS` | Email app password | Gmail app password |
-| `EMAIL_FROM_NAME` | Sender name | `Smart Restaurant` |
-| `EMAIL_FROM_ADDRESS` | Sender email | `noreply@smartrestaurant.com` |
-
-### Total Secrets for Customer: **20 secrets**
-
----
-
-## 🔐 How to Get Secret Values
-
-### 1. EC2 SSH Key
+### 1. EC2_SSH_KEY
 
 ```bash
 # Windows (PowerShell)
 Get-Content your-key.pem | Set-Clipboard
 
-# Mac/Linux
-cat your-key.pem | pbcopy  # Mac
-cat your-key.pem | xclip -selection clipboard  # Linux
+# Mac
+cat your-key.pem | pbcopy
+
+# Linux
+cat your-key.pem | xclip -selection clipboard
 ```
 
-Copy entire content including `-----BEGIN` and `-----END` lines.
+Copy **entire content** including `-----BEGIN RSA PRIVATE KEY-----` and `-----END RSA PRIVATE KEY-----`
 
-### 2. Generate JWT_SECRET and QR_TOKEN_SECRET
+### 2. EC2_HOST
 
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+Find in AWS Console:
+- EC2 Dashboard → Instances → Select your instance
+- Copy **Public IPv4 address** (e.g., `54.123.45.67`)
+- Or use your domain if configured (e.g., `ec2.yourdomain.com`)
 
-Output will be 64 characters (256-bit). Use different values for each or same based on security requirements.
+### 3. EC2_USER
 
-### 3. Database URL (Supabase)
-
-1. Go to https://supabase.com/dashboard
-2. Select your project
-3. Settings → Database
-4. Copy **Connection string** (with pooler)
-5. Format: `postgresql://postgres:[password]@[host]:6543/postgres?pgbouncer=true`
-
-### 4. Supabase Storage
-
-1. Settings → API
-2. Copy **URL** for `SUPABASE_URL`
-3. Copy **service_role** secret for `SUPABASE_SERVICE_ROLE_KEY`
-
-### 5. Redis URL
-
-From Redis Labs or your Redis provider:
-```
-redis://default:[password]@[host]:[port]
-```
-
-### 6. Stripe Keys
-
-1. Go to https://dashboard.stripe.com
-2. Developers → API keys
-3. For testing: Use test keys (`sk_test_...`, `pk_test_...`)
-4. For production: Toggle to "Live mode" and use live keys
-
-### 7. Google OAuth (Customer App)
-
-1. Go to https://console.cloud.google.com
-2. Create or select project
-3. APIs & Services → Credentials
-4. Create OAuth 2.0 Client ID
-5. Set redirect URI: `http://your-ec2-ip:3002/api/auth/google/callback`
-
-### 8. Gmail SMTP (Customer App)
-
-1. Enable 2-Step Verification in your Google Account
-2. Go to App Passwords: https://myaccount.google.com/apppasswords
-3. Generate app password
-4. Use your email for `SMTP_USER`
-5. Use generated password for `SMTP_PASS`
+- For Ubuntu AMI: `ubuntu`
+- For Amazon Linux: `ec2-user`
+- For other AMIs: Check  AMI documentation
 
 ---
 
-## 📍 URL Configuration Examples
+## 🖥️ Manual .env File Setup on EC2
 
-### Option 1: Using EC2 Public IP
+### Admin Project
 
-```bash
-# Admin URLs
-VITE_API_URL=http://54.123.45.67:3001/api
-VITE_WS_URL=http://54.123.45.67:3001
-CLIENT_URL=http://54.123.45.67
+#### 1. Backend .env
 
-# Customer URLs
-VITE_API_URL=http://54.123.45.67:3002/api
-VITE_WS_URL=http://54.123.45.67:3002
-CLIENT_URL=http://54.123.45.67:3000
-GOOGLE_CALLBACK_URL=http://54.123.45.67:3002/api/auth/google/callback
-```
-
-### Option 2: Using Custom Domains
-
-```bash
-# Admin URLs
-VITE_API_URL=https://admin-api.yourdomain.com/api
-VITE_WS_URL=https://admin-api.yourdomain.com
-CLIENT_URL=https://admin.yourdomain.com
-
-# Customer URLs
-VITE_API_URL=https://api.yourdomain.com/api
-VITE_WS_URL=https://api.yourdomain.com
-CLIENT_URL=https://yourdomain.com
-GOOGLE_CALLBACK_URL=https://api.yourdomain.com/api/auth/google/callback
-```
-
----
-
-## ✅ Secrets Checklist
-
-### Admin Project (`smart-restaurant-admin`)
-
-**EC2 Connection:**
-- [ ] EC2_SSH_KEY
-- [ ] EC2_HOST
-- [ ] EC2_USER
-
-**Frontend:**
-- [ ] VITE_API_URL
-- [ ] VITE_WS_URL
-
-**Backend:**
-- [ ] DATABASE_URL
-- [ ] JWT_SECRET
-- [ ] STRIPE_SECRET_KEY
-- [ ] STRIPE_WEBHOOK_SECRET
-- [ ] CLIENT_URL
-- [ ] CUSTOMER_APP_URL
-- [ ] SUPABASE_URL
-- [ ] SUPABASE_SERVICE_ROLE_KEY
-- [ ] REDIS_URL
-- [ ] QR_TOKEN_SECRET
-
----
-
-### Customer Project (`smart-restaurant-customer`)
-
-**EC2 Connection:**
-- [ ] EC2_SSH_KEY (same)
-- [ ] EC2_HOST (same)
-- [ ] EC2_USER (same)
-
-**Frontend:**
-- [ ] VITE_API_URL
-- [ ] VITE_WS_URL
-- [ ] VITE_STRIPE_PUBLISHABLE_KEY
-
-**Backend:**
-- [ ] DATABASE_URL
-- [ ] JWT_SECRET
-- [ ] STRIPE_SECRET_KEY
-- [ ] GOOGLE_CLIENT_ID
-- [ ] GOOGLE_CLIENT_SECRET
-- [ ] GOOGLE_CALLBACK_URL
-- [ ] CLIENT_URL
-- [ ] QR_TOKEN_SECRET
-- [ ] REDIS_URL
-- [ ] SMTP_HOST
-- [ ] SMTP_PORT
-- [ ] SMTP_SECURE
-- [ ] SMTP_USER
-- [ ] SMTP_PASS
-- [ ] EMAIL_FROM_NAME
-- [ ] EMAIL_FROM_ADDRESS
-
----
-
-## 🚀 Deployment Process
-
-Once all secrets are configured:
-
-### 1. Push to Trigger Deployment
-
-```bash
-git add .
-git commit -m "Deploy to production"
-git push origin main
-```
-
-### 2. GitHub Actions Will:
-
-✅ Build frontend with production `VITE_API_URL`
-✅ SSH into EC2
-✅ Create backend `.env` from secrets
-✅ Deploy code
-✅ Run database migrations
-✅ Restart PM2 processes
-✅ Deploy frontend build files
-✅ Reload Nginx
-✅ Run health checks
-
-### 3. Monitor Deployment
-
-Go to: `https://github.com/your-username/your-repo/actions`
-
----
-
-## 🐛 Troubleshooting
-
-### "Secret not found" Error
-
-**Cause:** Secret name mismatch (case-sensitive)
-**Fix:** Verify secret names match exactly: `VITE_API_URL` not `vite_api_url`
-
-### "Permission denied" SSH Error
-
-**Cause:** Wrong SSH key or EC2_USER
-**Fix:**
-1. Test manually: `ssh -i your-key.pem ubuntu@your-ec2-ip`
-2. Verify `EC2_SSH_KEY` includes full content
-3. Check `EC2_USER` is correct (usually `ubuntu`)
-
-### Build Fails - "VITE_API_URL is undefined"
-
-**Cause:** Secret not set
-**Fix:** Add `VITE_API_URL` to GitHub Secrets
-
-### Backend Health Check Fails
-
-**Cause:** Backend not running or wrong URL
-**Fix:**
 ```bash
 ssh -i your-key.pem ubuntu@your-ec2-ip
-pm2 status
-pm2 logs smart-restaurant-admin-api
+nano ~/smart-restaurant/smart-restaurant-admin/server/.env
+```
+
+**Content:**
+```env
+# Server Configuration
+PORT=3001
+NODE_ENV=production
+
+# Database
+DATABASE_URL=postgresql://postgres.pkpnqgwptlemdaedxtxu:dQkOxguUTVevNXmm@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+
+# JWT Authentication
+JWT_SECRET=your-256-bit-secret-key-change-in-production
+JWT_EXPIRES_IN=7d
+
+# Stripe Payment Integration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# CORS - Client URLs
+CLIENT_URL=http://54.123.45.67
+CUSTOMER_APP_URL=http://54.123.45.67:3000
+
+# File Upload
+MAX_FILE_SIZE=5242880
+UPLOAD_DIR=./uploads
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Supabase Storage
+SUPABASE_URL=https://pkpnqgwptlemdaedxtxu.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrcG5xZ3dwdGxlbWRhZWR4dHh1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTc4NTQyOSwiZXhwIjoyMDgxMzYxNDI5fQ.4VqPrAw6cPPb0NGhq8f9S3gwQeeSwBLc9Clp34_2oik
+
+# Tax and Service Charges
+TAX_RATE=0.10
+SERVICE_CHARGE_RATE=0.05
+
+# Kitchen Alert Threshold
+PREP_TIME_THRESHOLD_MINUTES=30
+
+# QR Token Secret
+QR_TOKEN_SECRET=your-256-bit-secret-key-change-in-production
+
+# Redis
+REDIS_URL=redis://default:QHxNReWHlJa81Ue1YGAWNIdBb3KjRQpG@redis-11529.c273.us-east-1-2.ec2.cloud.redislabs.com:11529
+```
+
+**Save:** Ctrl+O, Enter, Ctrl+X
+
+#### 2. Frontend .env
+
+```bash
+nano ~/smart-restaurant/smart-restaurant-admin/.env
+```
+
+**Content:**
+```env
+# Frontend Build Variables
+VITE_API_URL=http://54.123.45.67/api
+VITE_WS_URL=http://54.123.45.67
+```
+
+**Save:** Ctrl+O, Enter, Ctrl+X
+
+---
+
+### Customer Project
+
+#### 1. Backend .env
+
+```bash
+nano ~/smart-restaurant/smart-restaurant-customer/server/.env
+```
+
+**Content:**
+```env
+# Server Configuration
+PORT=3002
+NODE_ENV=production
+
+# Database
+DATABASE_URL=postgresql://postgres.pkpnqgwptlemdaedxtxu:dQkOxguUTVevNXmm@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
+
+# JWT Authentication
+JWT_SECRET=dev_secret_key_123456789
+
+# Stripe Payment
+STRIPE_SECRET_KEY=sk_test_51S1Pd0AHPawL0kSb3PKHgaRAL9kHGPIbP44ZMLdtaciCkthThym4Z3MRJr1uhDwP2ezov8CFounVdmr4bqWXwrIH00QvMnI5BU
+
+# Google OAuth
+GOOGLE_CLIENT_ID=668722833029-96j6eq3bu70btlu9kva0nrpit4sk7dq7.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=http://54.123.45.67:3002/api/auth/google/callback
+
+# CORS
+CLIENT_URL=http://54.123.45.67:3000
+
+# QR Token
+QR_TOKEN_SECRET=your-256-bit-secret-key-change-in-production
+
+# Redis
+REDIS_URL=redis://default:QHxNReWHlJa81Ue1YGAWNIdBb3KjRQpG@redis-11529.c273.us-east-1-2.ec2.cloud.redislabs.com:11529
+
+# Email (Gmail SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=smart.restaurant.table@gmail.com
+SMTP_PASS=sved thhh ytgy hhjw
+EMAIL_FROM_NAME=Smart Restaurant
+EMAIL_FROM_ADDRESS=noreply@smartrestaurant.com
+
+# Email verification
+EMAIL_VERIFICATION_EXPIRATION_HOURS=24
+```
+
+**Save:** Ctrl+O, Enter, Ctrl+X
+
+#### 2. Frontend .env
+
+```bash
+nano ~/smart-restaurant/smart-restaurant-customer/.env
+```
+
+**Content:**
+```env
+# Frontend Build Variables
+NODE_ENV=production
+VITE_API_URL=http://54.123.45.67:3000/api
+VITE_WS_URL=http://54.123.45.67:3000
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_51S1Pd0AHPawL0kSbWH2huAO2eUZFs2WPIkJS1qoGMeMfMMnMrBQS1CUXWALo40MJpYTeiyWKLqY5rgKGqAPtdrpQ00CcNGR0se
+```
+
+**Save:** Ctrl+O, Enter, Ctrl+X
+
+---
+
+## 📁 File Structure on EC2
+
+```
+~/smart-restaurant/
+├── smart-restaurant-admin/
+│   ├── .env                        ← Frontend build variables
+│   ├── server/
+│   │   └── .env                    ← Backend runtime variables
+│   ├── docker-compose.yaml
+│   └── .git/
+│
+└── smart-restaurant-customer/
+    ├── .env                        ← Frontend build variables
+    ├── server/
+    │   └── .env                    ← Backend runtime variables
+    ├── docker-compose.yaml
+    └── .git/
 ```
 
 ---
 
-## 🔒 Security Best Practices
+## 🚀 Deployment Workflow
 
-1. ✅ **Never commit** `.env` files to Git
-2. ✅ **Use different** JWT secrets for admin vs customer (recommended)
-3. ✅ **Rotate secrets** every 90 days
-4. ✅ **Use test keys** during development
-5. ✅ **Enable 2FA** on GitHub, AWS, Supabase accounts
-6. ✅ **Limit SSH access** by IP in EC2 security groups
-7. ✅ **Use HTTPS** in production (setup SSL)
-8. ✅ **Review logs** regularly for unauthorized access
+### What Happens When You Push?
+
+```
+git push origin production
+         ↓
+GitHub Actions:
+├─ SSH into EC2 (using EC2_SSH_KEY, EC2_HOST, EC2_USER)
+├─ cd ~/smart-restaurant/smart-restaurant-admin
+├─ git pull origin production
+├─ docker-compose down
+├─ docker-compose up -d --build
+│   ├─ Reads .env for frontend build args
+│   └─ Reads server/.env for backend runtime
+└─ docker image prune -f
+```
+
+**No secrets passed from GitHub!** ✅
+**All configuration read from EC2!** ✅
 
 ---
 
-## 📞 Support
+## 🔄 When to Update .env Files
 
-**If deployment fails:**
-1. Check GitHub Actions logs
-2. SSH into EC2 and check PM2 logs
-3. Verify all secrets are set correctly
-4. Ensure EC2 security groups allow required ports
+### Update Frontend .env When:
+- API URL changes (new domain, different port)
+- WebSocket URL changes
+- Stripe publishable key changes
+
+```bash
+ssh -i your-key.pem ubuntu@your-ec2-ip
+nano ~/smart-restaurant/smart-restaurant-admin/.env
+# Make changes, save
+
+# Rebuild frontend container
+cd ~/smart-restaurant/smart-restaurant-admin
+docker-compose up -d --build frontend
+```
+
+### Update Backend .env When:
+- Database credentials change
+- API keys are rotated
+- Environment variables change
+
+```bash
+ssh -i your-key.pem ubuntu@your-ec2-ip
+nano ~/smart-restaurant/smart-restaurant-admin/server/.env
+# Make changes, save
+
+# Restart backend container
+cd ~/smart-restaurant/smart-restaurant-admin
+docker-compose restart backend
+```
 
 ---
 
-**Ready to deploy! 🚀**
+## ✅ Setup Checklist
+
+### One-Time EC2 Setup:
+
+- [ ] Install Docker and Docker Compose
+- [ ] Clone both repositories
+- [ ] Create admin backend .env (`server/.env`)
+- [ ] Create admin frontend .env (`.env`)
+- [ ] Create customer backend .env (`server/.env`)
+- [ ] Create customer frontend .env (`.env`)
+
+### GitHub Configuration:
+
+- [ ] Add `EC2_SSH_KEY` to admin repo
+- [ ] Add `EC2_HOST` to admin repo
+- [ ] Add `EC2_USER` to admin repo
+- [ ] Add same 3 secrets to customer repo
+
+### Deploy:
+
+- [ ] Push to `production` branch
+- [ ] Monitor GitHub Actions
+- [ ] Verify deployment
+
+---
+
+## 🎁 Benefits of This Approach
+
+| Feature | Value |
+|---------|-------|
+| **GitHub Secrets** | Only 3 (EC2 connection) ✅ |
+| **Security** | All secrets stay on EC2 ✅ |
+| **Simplicity** | Minimal GitHub configuration ✅ |
+| **Control** | Direct access via SSH ✅ |
+| **Transparency** | Clear where config lives ✅ |
+| **Updates** | SSH and edit - no GitHub changes ✅ |
+
+---
+
+## 📞 Need Help?
+
+**Can't SSH into EC2?**
+```bash
+# Test SSH connection
+ssh -i your-key.pem ubuntu@your-ec2-ip
+
+# Check key permissions
+chmod 400 your-key.pem
+```
+
+**.env file syntax error?**
+```bash
+# Check logs
+cd ~/smart-restaurant/smart-restaurant-admin
+docker-compose logs backend
+```
+
+**Deployment fails?**
+- Check GitHub Actions logs
+- Verify all 4 .env files exist on EC2
+- Ensure EC2_SSH_KEY includes full key content
+
+---
+
+**Ready to deploy with maximum simplicity! 🚀**
+
+**Total GitHub Secrets needed: 3** (same for both repos!)

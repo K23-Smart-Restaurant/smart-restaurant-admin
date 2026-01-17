@@ -2,6 +2,14 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
+# Accept build arguments
+ARG VITE_API_URL
+ARG VITE_WS_URL
+
+# Set as environment variables for the build
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_WS_URL=$VITE_WS_URL
+
 # Copy package files
 COPY package*.json ./
 
@@ -20,7 +28,7 @@ FROM nginx:alpine
 # Copy built files
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx config (optional)
+# Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
