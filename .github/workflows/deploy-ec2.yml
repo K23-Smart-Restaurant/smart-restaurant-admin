@@ -30,6 +30,8 @@ jobs:
           script: |
             cd ${{ env.EC2_PATH }}
 
+            export $(grep -v '^#' .env | xargs)
+
             # Pull latest code
             git pull origin production
 
