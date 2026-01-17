@@ -179,7 +179,7 @@ const StaffManagementPage: React.FC = () => {
     <div>
       {/* Page title */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-charcoal">{t('title')}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-charcoal">{t('title')}</h1>
         <p className="text-gray-600 mt-1">{t('manageMessage')}</p>
       </div>
 

@@ -224,7 +224,7 @@ const TableManagementPage: React.FC = () => {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-charcoal">{t('tables:title')}</h1>
           <p className="mt-1 text-gray-600">{t('tables:subtitle')}</p>
@@ -237,7 +237,7 @@ const TableManagementPage: React.FC = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="p-4 bg-white border rounded-lg shadow-md border-antiflash">
           <div className="flex items-center justify-between">
             <div>
@@ -289,7 +289,7 @@ const TableManagementPage: React.FC = () => {
 
       {/* Filters Section */}
       <div className="p-4 mb-6 bg-white border rounded-lg shadow-md border-antiflash">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
             <label htmlFor="search" className="block mb-2 text-sm font-medium text-charcoal">

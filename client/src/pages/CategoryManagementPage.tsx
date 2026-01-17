@@ -148,45 +148,47 @@ const CategoryManagementPage: React.FC = () => {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-charcoal">{t('categories:title')}</h1>
-          <p className="text-gray-600 mt-1">{t('categories:manageMessage')}</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-700" htmlFor="category-sort">
-              {t('categories:sort.sortBy')}
-            </label>
-            <select
-              id="category-sort"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
-            >
-              <option value="displayOrder">{t('categories:sort.displayOrder')}</option>
-              <option value="name">{t('categories:sort.name')}</option>
-              <option value="createdAt">{t('categories:sort.createdDate')}</option>
-            </select>
-            <button
-              type="button"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="p-2 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-md border border-antiflash"
-              title={
-                sortOrder === 'asc'
-                  ? t('categories:sort.descending')
-                  : t('categories:sort.ascending')
-              }
-            >
-              <ArrowUpDownIcon className="w-4 h-4" />
-            </button>
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-charcoal">{t('categories:title')}</h1>
+            <p className="text-gray-600 mt-1">{t('categories:manageMessage')}</p>
           </div>
 
-          {/* Add Category button */}
-          <Button onClick={openAddCategoryModal} icon={PlusIcon}>
-            {t('categories:actions.addCategory')}
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-700" htmlFor="category-sort">
+                {t('categories:sort.sortBy')}
+              </label>
+              <select
+                id="category-sort"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="bg-white text-black px-3 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none text-sm"
+              >
+                <option value="displayOrder">{t('categories:sort.displayOrder')}</option>
+                <option value="name">{t('categories:sort.name')}</option>
+                <option value="createdAt">{t('categories:sort.createdDate')}</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="p-2 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-md border border-antiflash"
+                title={
+                  sortOrder === 'asc'
+                    ? t('categories:sort.descending')
+                    : t('categories:sort.ascending')
+                }
+              >
+                <ArrowUpDownIcon className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Add Category button */}
+            <Button onClick={openAddCategoryModal} icon={PlusIcon}>
+              {t('categories:actions.addCategory')}
+            </Button>
+          </div>
         </div>
       </div>
 
