@@ -51,6 +51,7 @@
     "categories": "Categories",
     "reports": "Reports",
     "settings": "Settings",
+    "profile": "Profile",
     "logout": "Logout"
   },
   "status": {
@@ -117,5 +118,21 @@
     "offline": "Offline",
     "connected": "Connected",
     "disconnected": "Disconnected"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account information",
+    "name": "Full Name",
+    "namePlaceholder": "Enter your full name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "role": "Role",
+    "readOnly": "read-only",
+    "editButton": "Edit Profile",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile",
+    "avatarSuccess": "Avatar uploaded successfully",
+    "avatarError": "Failed to upload avatar"
   }
 }
