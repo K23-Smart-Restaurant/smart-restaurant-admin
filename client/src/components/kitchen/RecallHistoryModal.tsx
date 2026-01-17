@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, CheckCircle, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowLocalized } from '../../utils/dateUtils';
 import type { Order } from '../../services/orderService';
 
 interface RecallHistoryModalProps {
@@ -72,7 +72,7 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                       <div className="text-left sm:text-right w-full sm:w-auto">
                         <p className="text-xs sm:text-sm text-gray-600">
                           Completed{' '}
-                          {formatDistanceToNow(new Date(order.updatedAt), { addSuffix: true })}
+                          {formatDistanceToNowLocalized(new Date(order.updatedAt), { addSuffix: true })}
                         </p>
                         <p className="text-xs text-gray-500">
                           {new Date(order.updatedAt).toLocaleTimeString()}

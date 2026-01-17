@@ -15,7 +15,7 @@ import { PageLoading, StatsSkeleton } from '../components/common/LoadingSpinner'
 import { useOrders } from '../hooks/useOrders';
 import { useTables } from '../hooks/useTables';
 import { useStaff } from '../hooks/useStaff';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowLocalized } from '../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
 const DashboardPage: React.FC = () => {
@@ -37,9 +37,9 @@ const DashboardPage: React.FC = () => {
 
     const todayOrders = Array.isArray(orders)
       ? orders.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate >= today;
-        })
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= today;
+      })
       : [];
 
     const todayRevenue = todayOrders.reduce((sum, order) => {
@@ -83,7 +83,7 @@ const DashboardPage: React.FC = () => {
         items: order.orderItems?.length || 0,
         amount: Number(order.totalAmount || 0),
         status: t(`table.statuses.${order.status.toLowerCase()}`),
-        time: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true }),
+        time: formatDistanceToNowLocalized(new Date(order.createdAt), { addSuffix: true }),
       }));
   }, [orders, t]);
 
@@ -243,11 +243,10 @@ const DashboardPage: React.FC = () => {
               {Array.from({ length: Math.min(dashboardData.totalStaff, 8) }).map((_, index) => (
                 <div
                   key={index}
-                  className={`w-7 h-7 rounded-full transition-all duration-300 ${
-                    index < dashboardData.staffOnline
-                      ? 'bg-charcoal shadow-md transform scale-110'
-                      : 'bg-charcoal/30'
-                  }`}
+                  className={`w-7 h-7 rounded-full transition-all duration-300 ${index < dashboardData.staffOnline
+                    ? 'bg-charcoal shadow-md transform scale-110'
+                    : 'bg-charcoal/30'
+                    }`}
                 ></div>
               ))}
               {dashboardData.totalStaff > 8 && (

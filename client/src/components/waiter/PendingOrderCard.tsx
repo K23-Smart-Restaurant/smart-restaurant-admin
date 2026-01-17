@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { User, MapPin, DollarSign, Check, X, ChevronDown } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowLocalized } from '../../utils/dateUtils';
 import type { Order } from '../../services/orderService';
 
 interface PendingOrderCardProps {
@@ -79,7 +79,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
             <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
           </div>
           <div className="text-gray-500 text-xs ml-auto">
-            {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+            {formatDistanceToNowLocalized(new Date(order.createdAt), { addSuffix: true })}
           </div>
         </div>
       </div>
