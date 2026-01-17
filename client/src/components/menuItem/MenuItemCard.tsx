@@ -51,24 +51,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     menuItem.imageUrl ||
     '';
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      APPETIZER: t('categories.APPETIZER'),
-      MAIN_COURSE: t('categories.MAIN_COURSE'),
-      DESSERT: t('categories.DESSERT'),
-      BEVERAGE: t('categories.BEVERAGE'),
-    };
-    return labels[category] || category;
+  const getCategoryLabel = () => {
+    return menuItem.category?.name || t('categories.unknown');
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      APPETIZER: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm',
-      MAIN_COURSE: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 shadow-sm',
-      DESSERT: 'bg-gradient-to-r from-pink-100 to-pink-200 text-pink-800 shadow-sm',
-      BEVERAGE: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 shadow-sm',
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+  const getCategoryColor = () => {
+    // Dynamic category coloring based on category name
+    // Can be enhanced later with color field from Category table
+    return 'bg-gradient-to-r from-naples/20 to-arylide/30 text-charcoal shadow-sm';
   };
 
   // Extract highlights for specific fields (Task 4.3)
@@ -188,9 +178,9 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <div className="flex items-start justify-between mb-1">
             <h3 className="text-lg font-bold text-charcoal line-clamp-1">{renderName()}</h3>
             <span
-              className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor(menuItem.category)}`}
+              className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor()}`}
             >
-              {getCategoryLabel(menuItem.category)}
+              {getCategoryLabel()}
             </span>
           </div>
           <p className="text-sm text-gray-600 line-clamp-2">{renderDescription()}</p>

@@ -9,7 +9,6 @@ class MenuItemController {
     try {
       const filters = {
         name: req.query.name,
-        category: req.query.category,
         categoryId: req.query.categoryId,
         isAvailable: req.query.isAvailable === 'true' ? true : undefined,
         sortBy: req.query.sortBy,

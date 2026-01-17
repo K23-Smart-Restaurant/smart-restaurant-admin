@@ -4,9 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { XIcon, UploadIcon, ImageIcon, StarIcon } from 'lucide-react';
-import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
+import type { MenuItem } from '../../hooks/useMenuItems';
 import type { PhotoInput } from '../../services/menuItemService';
 import { Button } from '../common/Button';
+import { useCategories } from '../../hooks/useCategories';
 
 type PhotoState = PhotoInput & { previewUrl: string };
 
@@ -27,14 +28,15 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   const isEditMode = !!menuItem;
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Fetch categories from the Category table
+  const { categories, isLoading: categoriesLoading, getActiveCategories } = useCategories();
 
   // Validation schema - must be inside component to access t()
   const menuItemFormSchema = z.object({
     name: z.string().min(2, t('form.validation.nameMin')).max(80, t('form.validation.nameMax')),
     description: z.string().max(500, t('form.validation.descriptionMax')).optional(),
-    category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE'], {
-      errorMap: () => ({ message: t('form.validation.categoryRequired') }),
-    }),
+    categoryId: z.string().uuid(t('form.validation.categoryRequired')).min(1, t('form.validation.categoryRequired')),
     price: z.number().min(0, t('form.validation.priceMin')),
     preparationTime: z
       .number()
@@ -44,7 +46,6 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     isAvailable: z.boolean().default(true),
     isSoldOut: z.boolean().default(false),
     isChefRecommendation: z.boolean().default(false),
-    categoryId: z.string().optional(),
   });
 
   type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
@@ -86,13 +87,12 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     defaultValues: {
       name: menuItem?.name || '',
       description: menuItem?.description || '',
-      category: menuItem?.category || 'MAIN_COURSE',
+      categoryId: menuItem?.categoryId || (categories.length > 0 ? categories[0].id : ''),
       price: menuItem?.price || 0,
       preparationTime: menuItem?.preparationTime || 15,
       isAvailable: menuItem?.isAvailable ?? true,
       isSoldOut: menuItem?.isSoldOut ?? false,
       isChefRecommendation: menuItem?.isChefRecommendation ?? false,
-      categoryId: menuItem?.categoryId || '',
     },
   });
 
@@ -101,13 +101,12 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     if (menuItem) {
       setValue('name', menuItem.name);
       setValue('description', menuItem.description ?? undefined);
-      setValue('category', menuItem.category);
+      setValue('categoryId', menuItem.categoryId || '');
       setValue('price', menuItem.price);
       setValue('preparationTime', menuItem.preparationTime ?? undefined);
       setValue('isAvailable', menuItem.isAvailable);
       setValue('isSoldOut', menuItem.isSoldOut);
       setValue('isChefRecommendation', menuItem.isChefRecommendation);
-      setValue('categoryId', menuItem.categoryId || '');
     }
 
     setPhotos(initialPhotos);
@@ -143,7 +142,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
           ...data,
           description: data.description || '',
           preparationTime: data.preparationTime || 15,
-          categoryId: data.categoryId || undefined,
+          categoryId: data.categoryId,
         } as MenuItemFormData,
         photos: normalizedPhotos,
         removedPhotoIds,
@@ -213,12 +212,8 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     });
   };
 
-  const categoryOptions: { value: MenuCategory; label: string }[] = [
-    { value: 'APPETIZER', label: t('categories.APPETIZER') },
-    { value: 'MAIN_COURSE', label: t('categories.MAIN_COURSE') },
-    { value: 'DESSERT', label: t('categories.DESSERT') },
-    { value: 'BEVERAGE', label: t('categories.BEVERAGE') },
-  ];
+  // Get active categories for the dropdown
+  const activeCategories = getActiveCategories();
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 relative">
@@ -277,24 +272,31 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Category field */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-charcoal mb-1">
+            <label htmlFor="categoryId" className="block text-sm font-medium text-charcoal mb-1">
               {t('form.category')} <span className="text-red-600">*</span>
             </label>
             <select
-              id="category"
-              {...register('category')}
+              id="categoryId"
+              {...register('categoryId')}
+              disabled={categoriesLoading}
               className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
-                errors.category ? 'border-red-500' : 'border-antiflash'
-              }`}
+                errors.categoryId ? 'border-red-500' : 'border-antiflash'
+              } ${categoriesLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {categoriesLoading ? (
+                <option value="">{t('form.loadingCategories', 'Loading categories...')}</option>
+              ) : activeCategories.length === 0 ? (
+                <option value="">{t('form.noCategories', 'No categories available')}</option>
+              ) : (
+                activeCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))
+              )}
             </select>
-            {errors.category && (
-              <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+            {errors.categoryId && (
+              <p className="mt-1 text-sm text-red-600">{errors.categoryId.message}</p>
             )}
           </div>
 

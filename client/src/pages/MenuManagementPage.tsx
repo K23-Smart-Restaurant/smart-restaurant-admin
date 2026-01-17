@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PlusIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMenuItems, type ModifierGroupFormState } from '../hooks/useMenuItems';
-import type { MenuItem, MenuCategory } from '../hooks/useMenuItems';
+import type { MenuItem } from '../hooks/useMenuItems';
 import { MenuItemList } from '../components/menuItem/MenuItemList';
 import { MenuItemForm, type MenuItemFormSubmitPayload } from '../components/menuItem/MenuItemForm';
 import { ModifierGroupForm } from '../components/menuItem/ModifierGroupForm';
@@ -11,14 +11,16 @@ import { Button } from '../components/common/Button';
 import { ConfirmDeleteDialog } from '../components/common/ConfirmDeleteDialog';
 import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
+import { useCategories } from '../hooks/useCategories';
 
 const MenuManagementPage: React.FC = () => {
   const { t } = useTranslation(['menu', 'common']);
   const { showSuccess, showError } = useToastContext();
+  const { getActiveCategories } = useCategories();
 
   // Local filter state
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'ALL'>('ALL');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | 'ALL'>('ALL');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'category' | 'createdAt' | 'popularity'>(
     'name'
   );
@@ -44,7 +46,7 @@ const MenuManagementPage: React.FC = () => {
     isSearchActive,
   } = useMenuItems({
     searchQuery,
-    selectedCategory,
+    selectedCategoryId,
     sortBy,
     sortOrder,
     page,
@@ -162,8 +164,8 @@ const MenuManagementPage: React.FC = () => {
     setPage(1);
   };
 
-  const handleCategoryChange = (value: MenuCategory | 'ALL') => {
-    setSelectedCategory(value);
+  const handleCategoryChange = (value: string | 'ALL') => {
+    setSelectedCategoryId(value);
     setPage(1);
   };
 
@@ -209,8 +211,9 @@ const MenuManagementPage: React.FC = () => {
         menuItems={menuItems}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
-        selectedCategory={selectedCategory}
+        selectedCategoryId={selectedCategoryId}
         onCategoryChange={handleCategoryChange}
+        categories={getActiveCategories()}
         sortBy={sortBy}
         onSortChange={handleSortChange}
         sortOrder={sortOrder}

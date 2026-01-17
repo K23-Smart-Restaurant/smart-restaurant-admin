@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   menuItemService,
   type MenuItem,
-  type MenuCategory,
   type CreateMenuItemDto,
   type UpdateMenuItemDto,
   type ModifierGroupInput,
@@ -24,13 +23,13 @@ import {
 } from '../utils/fuzzySearch';
 
 // Re-export types
-export type { MenuItem, MenuCategory };
+export type { MenuItem };
 
 type SortOption = 'name' | 'price' | 'category' | 'createdAt' | 'popularity';
 
 interface UseMenuItemsOptions {
   searchQuery?: string;
-  selectedCategory?: MenuCategory | 'ALL';
+  selectedCategoryId?: string | 'ALL';
   sortBy?: SortOption;
   sortOrder?: 'asc' | 'desc';
   page?: number;
@@ -75,7 +74,7 @@ const MIN_RELEVANCE_THRESHOLD = 15;
 export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
   const {
     searchQuery = '',
-    selectedCategory = 'ALL',
+    selectedCategoryId = 'ALL',
     sortBy = 'name',
     sortOrder = 'asc',
     page = 1,
@@ -108,7 +107,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     queryKey: [
       'menuItems',
       shouldFetchAll ? '' : searchQuery, // Don't filter by name if fuzzy is enabled
-      selectedCategory,
+      selectedCategoryId,
       sortBy,
       sortOrder,
       page,
@@ -119,7 +118,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
       menuItemService.getAll({
         // Don't send name filter when fuzzy is enabled - we filter client-side
         name: shouldFetchAll ? undefined : searchQuery || undefined,
-        category: selectedCategory === 'ALL' ? undefined : selectedCategory,
+        categoryId: selectedCategoryId === 'ALL' ? undefined : selectedCategoryId,
         sortBy: shouldFetchAll ? undefined : sortBy, // Don't sort server-side when fuzzy
         sortOrder: shouldFetchAll ? undefined : sortOrder,
         limit: shouldFetchAll ? 500 : pageSize, // Fetch all for client-side fuzzy search
@@ -383,7 +382,7 @@ export const useMenuItems = (options: UseMenuItemsOptions = {}) => {
     // Legacy properties for compatibility
     searchQuery,
     setSearchQuery: () => {}, // Deprecated - use options instead
-    selectedCategory,
+    selectedCategoryId,
     setSelectedCategory: () => {}, // Deprecated - use options instead
     sortBy,
     setSortBy: () => {}, // Deprecated - use options instead
