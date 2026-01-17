@@ -167,7 +167,7 @@ class KitchenService {
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: orderWithCurrentItems,
-        orderId: orderId,
+        orderId,
         newStatus: 'PREPARING',
       });
       return orderWithCurrentItems;
@@ -208,7 +208,7 @@ class KitchenService {
       // Publish to Redis for customer app
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: orderWithReadyItems,
-        orderId: orderId,
+        orderId,
         newStatus: 'READY',
       });
       return orderWithReadyItems;
@@ -312,7 +312,7 @@ class KitchenService {
       socketService.emitOrderReady(updatedOrder);
       publishEvent(REDIS_CHANNELS.ORDER_STATUS_UPDATED, {
         order: updatedOrder,
-        orderId: orderId,
+        orderId,
         newStatus: 'READY',
       });
     }

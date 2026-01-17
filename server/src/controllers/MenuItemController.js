@@ -65,9 +65,10 @@ class MenuItemController {
         }
 
         // Determine primary index - use provided index or default to 0
-        const primaryIndex = primaryPhotoIndex >= 0 && primaryPhotoIndex < filesToUpload.length
-          ? primaryPhotoIndex
-          : 0;
+        const primaryIndex =
+          primaryPhotoIndex >= 0 && primaryPhotoIndex < filesToUpload.length
+            ? primaryPhotoIndex
+            : 0;
 
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
@@ -163,7 +164,7 @@ class MenuItemController {
       }
 
       // Handle photo deletions (removedPhotoIds from frontend)
-      const removedPhotoIds = req.body.removedPhotoIds;
+      const { removedPhotoIds } = req.body;
       if (removedPhotoIds) {
         // removedPhotoIds can be a string (single ID) or array (multiple IDs)
         const idsToDelete = Array.isArray(removedPhotoIds) ? removedPhotoIds : [removedPhotoIds];
