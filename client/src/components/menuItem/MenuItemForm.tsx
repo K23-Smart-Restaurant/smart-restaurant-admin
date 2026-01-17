@@ -283,8 +283,9 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
             <select
               id="category"
               {...register('category')}
-              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${errors.category ? 'border-red-500' : 'border-antiflash'
-                }`}
+              className={`w-full bg-gray-200 text-black px-4 py-2 border rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none ${
+                errors.category ? 'border-red-500' : 'border-antiflash'
+              }`}
             >
               {categoryOptions.map((option) => (
                 <option key={option.value} value={option.value}>

@@ -23,7 +23,6 @@ import {
   type FieldHighlight,
 } from '../utils/fuzzySearch';
 
-
 // Re-export types
 export type { MenuItem, MenuCategory };
 
