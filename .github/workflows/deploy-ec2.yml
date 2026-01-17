@@ -30,7 +30,8 @@ jobs:
           script: |
             cd ${{ env.EC2_PATH }}
 
-            export $(grep -v '^#' .env | xargs)
+            # Export environment variables from .env file (React build args)
+            export $(grep -v '^#' client/.env | xargs)
 
             # Pull latest code
             git pull origin production
