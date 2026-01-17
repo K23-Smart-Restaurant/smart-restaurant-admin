@@ -110,6 +110,7 @@
   },
   "header": {
     "appName": "Smart Restaurant",
+    "adminDashboard": "Bảng Điều Khiển Quản Trị",
     "kitchenDisplay": "Màn Hình Bếp",
     "waiterDashboard": "Bảng Điều Khiển Phục Vụ",
     "online": "Trực tuyến",

@@ -110,6 +110,7 @@
   },
   "header": {
     "appName": "Smart Restaurant",
+    "adminDashboard": "Admin Dashboard",
     "kitchenDisplay": "Kitchen Display",
     "waiterDashboard": "Waiter Dashboard",
     "online": "Online",

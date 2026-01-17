@@ -55,9 +55,14 @@
     "disabled": "Sound disabled"
   },
   "history": {
-    "title": "Recall History",
-    "empty": "No completed orders",
-    "completedOrders": "Recently Completed Orders"
+    "title": "Order History",
+    "subtitle": "Last 10 completed orders",
+    "empty": "No completed orders yet",
+    "completedOrders": "Recently Completed Orders",
+    "table": "Table #{{number}}",
+    "orderNumber": "Order #{{number}}",
+    "completed": "Completed",
+    "note": "Note:"
   },
   "empty": {
     "title": "No Active Orders",

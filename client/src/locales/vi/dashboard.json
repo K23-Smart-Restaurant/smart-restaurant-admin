@@ -13,26 +13,27 @@
     "addMenuItem": "Thêm món vào thực đơn",
     "viewOrders": "Xem đơn hàng"
   },
-"table": {
+  "table": {
     "title": "Đơn hàng gần đây",
     "noOrders": "Không có đơn hàng gần đây.",
     "columns": {
+      "orderId": "Mã Đơn Hàng",
       "orderNumber": "Đơn hàng #",
       "table": "Bàn",
       "items": "Món",
       "total": "Tổng cộng",
       "time": "Thời gian",
       "status": "Trạng thái"
+    },
+    "statuses": {
+      "pending": "Chờ xử lý",
+      "confirmed": "Đã xác nhận",
+      "preparing": "Đang chuẩn bị",
+      "ready": "Sẵn sàng",
+      "served": "Đã phục vụ",
+      "completed": "Hoàn thành",
+      "billRequested": "Yêu cầu thanh toán",
+      "cancelled": "Đã hủy"
     }
-  },
-  "statuses": {
-    "pending": "Chờ xử lý",
-    "confirmed": "Đã xác nhận",
-    "preparing": "Đang chuẩn bị",
-    "ready": "Sẵn sàng",
-    "served": "Đã phục vụ",
-    "completed": "Hoàn thành",
-    "billRequested": "Yêu cầu thanh toán",
-    "cancelled": "Đã hủy"
   }
 }
