@@ -150,25 +150,23 @@ model MenuItem {
   id                   String          @id @default(uuid())
   name                 String
   description          String?
-  category             MenuCategory
   price                Decimal         @db.Decimal(10, 2)
   imageUrl             String?
   isAvailable          Boolean         @default(true)
   isSoldOut            Boolean         @default(false)
   isChefRecommendation Boolean         @default(false)
   preparationTime      Int?
-  categoryId           String?
+  categoryId           String
   restaurantId         String?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  categoryModel        Category?       @relation(fields: [categoryId], references: [id])
+  category             Category        @relation(fields: [categoryId], references: [id])
   restaurant           Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   photos               MenuItemPhoto[]
   modifiers            ModifierGroup[]
   orderItems           OrderItem[]
   reviews              Review[]
 
-  @@index([category, isAvailable])
   @@index([isAvailable])
   @@index([categoryId])
   @@index([restaurantId])
@@ -292,13 +290,6 @@ enum TableStatus {
   AVAILABLE
   OCCUPIED
   RESERVED
-}
-
-enum MenuCategory {
-  APPETIZER
-  MAIN_COURSE
-  DESSERT
-  BEVERAGE
 }
 
 enum OrderStatus {

@@ -9,6 +9,7 @@ import staff from './locales/en/staff.json';
 import categories from './locales/en/categories.json';
 import tables from './locales/en/tables.json';
 import reports from './locales/en/reports.json';
+import waiter from './locales/en/waiter.json';
 
 declare module 'i18next' {
   interface CustomTypeOptions {
@@ -23,6 +24,7 @@ declare module 'i18next' {
       categories: typeof categories;
       tables: typeof tables;
       reports: typeof reports;
+      waiter: typeof waiter;
     };
   }
 }

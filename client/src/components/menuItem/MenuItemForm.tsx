@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { XIcon, UploadIcon, ImageIcon, StarIcon } from 'lucide-react';
-import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
+import type { MenuItem } from '../../hooks/useMenuItems';
 import type { PhotoInput } from '../../services/menuItemService';
 import { Button } from '../common/Button';
 import { useCategories } from '../../hooks/useCategories';
@@ -36,7 +36,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   const menuItemFormSchema = z.object({
     name: z.string().min(2, t('form.validation.nameMin')).max(80, t('form.validation.nameMax')),
     description: z.string().max(500, t('form.validation.descriptionMax')).optional(),
-    category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE']).default('MAIN_COURSE'),
+    categoryId: z.string().uuid(t('form.validation.categoryRequired')).min(1, t('form.validation.categoryRequired')),
     price: z.number().min(0, t('form.validation.priceMin')),
     preparationTime: z
       .number()
@@ -46,7 +46,6 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     isAvailable: z.boolean().default(true),
     isSoldOut: z.boolean().default(false),
     isChefRecommendation: z.boolean().default(false),
-    categoryId: z.string().uuid(t('form.validation.categoryRequired')).min(1, t('form.validation.categoryRequired')),
   });
 
   type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
@@ -88,13 +87,12 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     defaultValues: {
       name: menuItem?.name || '',
       description: menuItem?.description || '',
-      category: menuItem?.category || 'MAIN_COURSE',
+      categoryId: menuItem?.categoryId || (categories.length > 0 ? categories[0].id : ''),
       price: menuItem?.price || 0,
       preparationTime: menuItem?.preparationTime || 15,
       isAvailable: menuItem?.isAvailable ?? true,
       isSoldOut: menuItem?.isSoldOut ?? false,
       isChefRecommendation: menuItem?.isChefRecommendation ?? false,
-      categoryId: menuItem?.categoryId || (categories.length > 0 ? categories[0].id : ''),
     },
   });
 
@@ -103,13 +101,12 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
     if (menuItem) {
       setValue('name', menuItem.name);
       setValue('description', menuItem.description ?? undefined);
-      setValue('category', menuItem.category);
+      setValue('categoryId', menuItem.categoryId || '');
       setValue('price', menuItem.price);
       setValue('preparationTime', menuItem.preparationTime ?? undefined);
       setValue('isAvailable', menuItem.isAvailable);
       setValue('isSoldOut', menuItem.isSoldOut);
       setValue('isChefRecommendation', menuItem.isChefRecommendation);
-      setValue('categoryId', menuItem.categoryId || '');
     }
 
     setPhotos(initialPhotos);

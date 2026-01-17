@@ -39,7 +39,12 @@ class WaiterService {
                 name: true,
                 description: true,
                 price: true,
-                category: true,
+                categoryId: true,
+                category: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },

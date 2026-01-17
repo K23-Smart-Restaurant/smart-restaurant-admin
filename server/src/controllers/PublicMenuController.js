@@ -11,7 +11,6 @@ class PublicMenuController {
    * Query params:
    * - search: Search by item name
    * - categoryId: Filter by category ID
-   * - category: Filter by category enum
    * - isChefRecommendation: Filter chef picks (true/false)
    * - sortBy: name, price, popularity
    * - sortOrder: asc, desc
@@ -24,7 +23,6 @@ class PublicMenuController {
       const filters = {
         search: req.query.search,
         categoryId: req.query.categoryId,
-        category: req.query.category,
         isChefRecommendation:
           req.query.isChefRecommendation === 'true'
             ? true

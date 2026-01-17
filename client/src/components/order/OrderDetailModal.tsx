@@ -126,16 +126,6 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     return statusMap[status] || status;
   };
 
-  // Get translated item status
-  const _getItemStatusLabel = (status: OrderItemStatus) => {
-    const itemStatusMap: Record<OrderItemStatus, string> = {
-      QUEUED: t('orders:itemStatus.queued'),
-      COOKING: t('orders:itemStatus.cooking'),
-      READY: t('orders:itemStatus.ready'),
-    };
-    return itemStatusMap[status] || status;
-  };
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
