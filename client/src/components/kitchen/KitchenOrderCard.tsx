@@ -82,7 +82,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               <div className="bg-gradient-to-r from-naples to-arylide rounded-full p-1.5 sm:p-2">
                 <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-charcoal">{translations.updateStatus}</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-charcoal">
+                {translations.updateStatus}
+              </h3>
             </div>
             <button
               onClick={onCancel}
@@ -371,10 +373,11 @@ const KitchenOrderCard: React.FC<KitchenOrderCardProps> = ({
               <button
                 onClick={handleMarkReady}
                 disabled={!canMarkReady || isUpdating}
-                className={`w-full mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ${canMarkReady && !isUpdating
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
-                  : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
-                  }`}
+                className={`w-full mt-3 sm:mt-4 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ${
+                  canMarkReady && !isUpdating
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
+                }`}
               >
                 {isUpdating ? (
                   <span className="flex items-center justify-center gap-2">

@@ -35,7 +35,7 @@ const KitchenDisplayPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [showToast]);
+  }, [showToast, t]);
 
   // Fetch order history (last 10 completed orders)
   const fetchOrderHistory = useCallback(async () => {
@@ -65,9 +65,13 @@ const KitchenDisplayPage: React.FC = () => {
         }
         return [order, ...prevOrders];
       });
-      showToast('success', t('messages.newOrder'), t('messages.orderForTable', { tableNumber: order.table?.tableNumber }));
+      showToast(
+        'success',
+        t('messages.newOrder'),
+        t('messages.orderForTable', { tableNumber: order.table?.tableNumber })
+      );
     },
-    [showToast]
+    [showToast, t]
   );
 
   // Handle order updated
@@ -176,7 +180,11 @@ const KitchenDisplayPage: React.FC = () => {
     const newState = !soundEnabled;
     setSoundEnabled(newState);
     soundManager.setEnabled(newState);
-    showToast('success', t('messages.settings'), newState ? t('sound.enabled') : t('sound.disabled'));
+    showToast(
+      'success',
+      t('messages.settings'),
+      newState ? t('sound.enabled') : t('sound.disabled')
+    );
   };
 
   // Sort orders by priority (oldest first, then by status)
@@ -204,9 +212,7 @@ const KitchenDisplayPage: React.FC = () => {
       {/* Header Bar */}
       <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shadow-sm rounded-t-lg">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
-            {t('title')}
-          </h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">{t('title')}</h1>
           <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">
             {t('activeOrders', { count: orders.length })}
           </p>
@@ -233,10 +239,11 @@ const KitchenDisplayPage: React.FC = () => {
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm ${soundEnabled
-              ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
-              : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
-              }`}
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0 text-xs sm:text-sm ${
+              soundEnabled
+                ? 'bg-gradient-to-r from-naples/20 to-arylide/20 hover:from-naples/30 hover:to-arylide/30 border border-naples/30 text-charcoal'
+                : 'bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600'
+            }`}
           >
             {soundEnabled ? (
               <>
@@ -308,9 +315,7 @@ const KitchenDisplayPage: React.FC = () => {
               <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-1 sm:mb-2">
                 {t('empty.title')}
               </h2>
-              <p className="text-sm sm:text-base text-gray-600">
-                {t('empty.description')}
-              </p>
+              <p className="text-sm sm:text-base text-gray-600">{t('empty.description')}</p>
             </div>
           </div>
         )}

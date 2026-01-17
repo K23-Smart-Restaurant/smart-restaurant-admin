@@ -59,7 +59,9 @@ const StaffLayout: React.FC = () => {
                 {t('header.appName')}
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">
-                {user?.role === 'KITCHEN_STAFF' ? t('header.kitchenDisplay') : t('header.waiterDashboard')}
+                {user?.role === 'KITCHEN_STAFF'
+                  ? t('header.kitchenDisplay')
+                  : t('header.waiterDashboard')}
               </p>
             </div>
           </div>
@@ -82,10 +84,11 @@ const StaffLayout: React.FC = () => {
 
             {/* WiFi/Socket Status */}
             <div
-              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${isConnected
-                ? 'bg-green-50 text-green-600 border border-green-200'
-                : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
-                }`}
+              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                isConnected
+                  ? 'bg-green-50 text-green-600 border border-green-200'
+                  : 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
+              }`}
               title={isConnected ? t('header.connected') : t('header.disconnected')}
             >
               {isConnected ? (

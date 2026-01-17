@@ -53,7 +53,8 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('payment.title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              {t('orders.orderNumber', { number: order.orderNumber })} • {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
+              {t('orders.orderNumber', { number: order.orderNumber })} •{' '}
+              {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
             </p>
           </div>
           <button
@@ -69,7 +70,9 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           {/* Order Total */}
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium text-sm sm:text-base">{t('bill.total')}:</span>
+              <span className="text-gray-700 font-medium text-sm sm:text-base">
+                {t('bill.total')}:
+              </span>
               <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
                 ${totalAmount.toFixed(2)}
               </span>
@@ -85,10 +88,11 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
               <button
                 type="button"
                 onClick={() => setPaymentMethod('CASH')}
-                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all ${paymentMethod === 'CASH'
-                  ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
-                  }`}
+                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all ${
+                  paymentMethod === 'CASH'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                    : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                }`}
               >
                 <Banknote className="w-6 h-6 sm:w-8 sm:h-8" />
                 <span className="font-semibold text-sm sm:text-base">{t('payment.cash')}</span>
@@ -96,10 +100,11 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
               <button
                 type="button"
                 onClick={() => setPaymentMethod('CARD')}
-                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all ${paymentMethod === 'CARD'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
-                  }`}
+                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all ${
+                  paymentMethod === 'CARD'
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                }`}
               >
                 <CreditCard className="w-6 h-6 sm:w-8 sm:h-8" />
                 <span className="font-semibold text-sm sm:text-base">{t('payment.card')}</span>
@@ -175,8 +180,8 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
             </button>
           </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

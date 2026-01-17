@@ -55,7 +55,17 @@ i18n
     resources,
     fallbackLng: 'en',
     defaultNS: 'common',
-    ns: ['common', 'dashboard', 'menu', 'orders', 'kitchen', 'staff', 'tables', 'reports', 'waiter'],
+    ns: [
+      'common',
+      'dashboard',
+      'menu',
+      'orders',
+      'kitchen',
+      'staff',
+      'tables',
+      'reports',
+      'waiter',
+    ],
 
     interpolation: {
       escapeValue: false, // React already escapes

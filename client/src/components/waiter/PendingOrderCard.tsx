@@ -49,7 +49,9 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
               <h3 className="text-lg sm:text-xl font-bold text-charcoal">
                 {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
               </h3>
-              <p className="text-gray-600 text-xs sm:text-sm">{t('orders.orderNumber', { number: order.orderNumber })}</p>
+              <p className="text-gray-600 text-xs sm:text-sm">
+                {t('orders.orderNumber', { number: order.orderNumber })}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
@@ -115,8 +117,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
             </div>
           )}
         </div>
-      )
-      }
+      )}
 
       {/* Action Buttons */}
       <div className="p-3 sm:p-4 bg-white flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -144,7 +145,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
           )}
         </button>
       </div>
-    </div >
+    </div>
   );
 };
 

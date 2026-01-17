@@ -70,7 +70,8 @@ const BillForm: React.FC<BillFormProps> = ({
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-charcoal">{t('bill.title')}</h2>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  {t('orders.table', { number: order.table?.tableNumber })} • {t('orders.orderNumber', { number: order.orderNumber })}
+                  {t('orders.table', { number: order.table?.tableNumber })} •{' '}
+                  {t('orders.orderNumber', { number: order.orderNumber })}
                 </p>
               </div>
             </div>
@@ -166,20 +167,22 @@ const BillForm: React.FC<BillFormProps> = ({
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <button
                   onClick={() => setPaymentMethod('CASH')}
-                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${paymentMethod === 'CASH'
-                    ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
-                    : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
-                    }`}
+                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${
+                    paymentMethod === 'CASH'
+                      ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
                 >
                   <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
                   <span className="font-semibold text-sm sm:text-base">{t('payment.cash')}</span>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('CARD')}
-                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${paymentMethod === 'CARD'
-                    ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
-                    : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
-                    }`}
+                  className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${
+                    paymentMethod === 'CARD'
+                      ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-naples text-charcoal'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
                 >
                   <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
                   <span className="font-semibold text-sm sm:text-base">{t('payment.card')}</span>

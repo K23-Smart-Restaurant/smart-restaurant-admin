@@ -78,12 +78,12 @@ const WaiterDashboardPage: React.FC = () => {
           status: activeOrder ? 'BILL_REQUESTED' : table.status,
           currentOrder: activeOrder
             ? {
-              id: activeOrder.id,
-              orderNumber: activeOrder.orderNumber,
-              orderStatus: activeOrder.status,
-              guestName: activeOrder.guestName || 'Guest',
-              totalAmount: activeOrder.totalAmount,
-            }
+                id: activeOrder.id,
+                orderNumber: activeOrder.orderNumber,
+                orderStatus: activeOrder.status,
+                guestName: activeOrder.guestName || 'Guest',
+                totalAmount: activeOrder.totalAmount,
+              }
             : undefined,
         };
       });
@@ -112,29 +112,41 @@ const WaiterDashboardPage: React.FC = () => {
     (order: Order) => {
       setPendingOrders((prev) => [order, ...prev]);
       setNotifications((prev) => ({ ...prev, pending: prev.pending + 1 }));
-      showToast('success', t('toasts.newOrder'), t('orders.fromTable', { tableNumber: order.table?.tableNumber }));
+      showToast(
+        'success',
+        t('toasts.newOrder'),
+        t('orders.fromTable', { tableNumber: order.table?.tableNumber })
+      );
     },
-    [showToast]
+    [showToast, t]
   );
 
   // Handle order ready
   const handleOrderReady = useCallback(
     (order: Order) => {
       setNotifications((prev) => ({ ...prev, ready: prev.ready + 1 }));
-      showToast('success', t('toasts.orderReady'), t('orders.tableReady', { tableNumber: order.table?.tableNumber }));
+      showToast(
+        'success',
+        t('toasts.orderReady'),
+        t('orders.tableReady', { tableNumber: order.table?.tableNumber })
+      );
       fetchReadyOrders(); // Refresh ready orders list
     },
-    [showToast, fetchReadyOrders]
+    [showToast, t, fetchReadyOrders]
   );
 
   // Handle bill requested
   const handleBillRequested = useCallback(
     (data: { orderId: string; tableNumber: number }) => {
       setNotifications((prev) => ({ ...prev, billRequests: prev.billRequests + 1 }));
-      showToast('success', t('toasts.billRequested'), t('messages.billRequested', { tableNumber: data.tableNumber }));
+      showToast(
+        'success',
+        t('toasts.billRequested'),
+        t('messages.billRequested', { tableNumber: data.tableNumber })
+      );
       fetchTables(); // Refresh tables to update status
     },
-    [showToast, fetchTables]
+    [showToast, t, fetchTables]
   );
 
   // Set up socket listeners
@@ -237,9 +249,17 @@ const WaiterDashboardPage: React.FC = () => {
         showToast('error', t('toasts.error'), t('errors.loadOrderFailed'));
       }
     } else if (table.status === 'AVAILABLE') {
-      showToast('success', t('toasts.tableInfo'), t('tables.tableInfo', { number: table.tableNumber, status: t('tables.available') }));
+      showToast(
+        'success',
+        t('toasts.tableInfo'),
+        t('tables.tableInfo', { number: table.tableNumber, status: t('tables.available') })
+      );
     } else if (table.status === 'RESERVED') {
-      showToast('success', t('toasts.tableInfo'), t('tables.tableInfo', { number: table.tableNumber, status: t('tables.reserved') }));
+      showToast(
+        'success',
+        t('toasts.tableInfo'),
+        t('tables.tableInfo', { number: table.tableNumber, status: t('tables.reserved') })
+      );
     }
   };
 
@@ -267,7 +287,11 @@ const WaiterDashboardPage: React.FC = () => {
   const handleMarkPaid = async (orderId: string, paymentMethod: 'CASH' | 'CARD') => {
     try {
       await waiterService.payBill({ orderId, paymentMethod });
-      showToast('success', t('toasts.paymentCompleted'), t('messages.paymentProcessed', { method: paymentMethod }));
+      showToast(
+        'success',
+        t('toasts.paymentCompleted'),
+        t('messages.paymentProcessed', { method: paymentMethod })
+      );
       setNotifications((prev) => ({ ...prev, billRequests: Math.max(0, prev.billRequests - 1) }));
       setIsBillFormOpen(false);
       fetchTables(); // Refresh tables
@@ -320,7 +344,12 @@ const WaiterDashboardPage: React.FC = () => {
       count: notifications.pending,
     },
     { id: 'ready' as TabType, label: t('tabs.ready'), icon: Utensils, count: notifications.ready },
-    { id: 'tables' as TabType, label: t('tabs.tables'), icon: Layout, count: notifications.billRequests },
+    {
+      id: 'tables' as TabType,
+      label: t('tabs.tables'),
+      icon: Layout,
+      count: notifications.billRequests,
+    },
   ];
 
   return (
@@ -354,10 +383,11 @@ const WaiterDashboardPage: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                      ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples text-charcoal'
-                      : 'bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200'
-                      }`}
+                    className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-naples/20 to-arylide/20 border-2 border-naples text-charcoal'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200'
+                    }`}
                   >
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="hidden sm:inline text-sm sm:text-base">{tab.label}</span>

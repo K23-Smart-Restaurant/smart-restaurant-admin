@@ -13,7 +13,6 @@ import { PageLoading } from '../components/common/LoadingSpinner';
 import { useToastContext } from '../contexts/ToastContext';
 import { useTranslation } from 'react-i18next';
 
-
 // Type for staff data from forms (matches what forms actually send)
 type StaffFormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>;
 
