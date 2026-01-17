@@ -107,5 +107,14 @@
       "invalidCredentials": "Invalid email or password",
       "unexpectedError": "An unexpected error occurred"
     }
+  },
+  "header": {
+    "appName": "Smart Restaurant",
+    "kitchenDisplay": "Kitchen Display",
+    "waiterDashboard": "Waiter Dashboard",
+    "online": "Online",
+    "offline": "Offline",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
   }
 }

@@ -1,0 +1,119 @@
+{
+    "title": "Bảng điều khiển Phục vụ",
+    "subtitle": "Quản lý đơn hàng, bàn và thanh toán",
+    "tabs": {
+        "pending": "Đơn chờ xử lý",
+        "ready": "Sẵn sàng phục vụ",
+        "tables": "Bàn"
+    },
+    "orders": {
+        "newOrder": "Đơn hàng mới",
+        "fromTable": "Đơn hàng mới từ Bàn #{{tableNumber}}",
+        "orderReady": "Đơn hàng sẵn sàng",
+        "tableReady": "Đơn hàng Bàn #{{tableNumber}} đã sẵn sàng!",
+        "table": "Bàn #{{number}}",
+        "orderNumber": "Đơn #{{number}}",
+        "orderItems": "Các món:",
+        "note": "Ghi chú:",
+        "guest": "Khách"
+    },
+    "pendingOrders": {
+        "title": "Đơn chờ xử lý",
+        "empty": "Không có đơn chờ",
+        "emptyDescription": "Đơn hàng mới sẽ tự động xuất hiện ở đây"
+    },
+    "readyOrders": {
+        "title": "Đơn sẵn sàng",
+        "empty": "Không có đơn sẵn sàng",
+        "emptyDescription": "Đơn hàng từ bếp sẽ xuất hiện ở đây"
+    },
+    "tables": {
+        "available": "trống",
+        "occupied": "có khách",
+        "reserved": "đã đặt trước",
+        "billRequested": "Yêu cầu thanh toán",
+        "tableInfo": "Bàn {{number}} đang {{status}}",
+        "noActiveOrder": "Bàn {{number}} không có đơn hàng"
+    },
+    "actions": {
+        "accept": "Chấp nhận",
+        "acceptAndSend": "Chấp nhận & Gửi bếp",
+        "reject": "Từ chối",
+        "markServed": "Đã phục vụ",
+        "processPayment": "Thanh toán",
+        "generateBill": "Tạo hóa đơn",
+        "refresh": "Làm mới"
+    },
+    "status": {
+        "pending": "CHỜ XỬ LÝ",
+        "confirmed": "ĐÃ XÁC NHẬN",
+        "preparing": "ĐANG NẤU",
+        "ready": "SẴN SÀNG",
+        "served": "ĐÃ PHỤC VỤ",
+        "completed": "HOÀN THÀNH",
+        "offline": "Ngoại tuyến",
+        "processing": "Đang xử lý..."
+    },
+    "payment": {
+        "title": "Thanh toán",
+        "method": "Phương thức",
+        "cash": "Tiền mặt",
+        "card": "Thẻ",
+        "amountDue": "Số tiền cần trả",
+        "amountPaid": "Số tiền đã trả",
+        "amountReceived": "Số tiền nhận",
+        "change": "Tiền thừa",
+        "confirm": "Xác nhận thanh toán",
+        "cancel": "Hủy",
+        "selectMethod": "Chọn phương thức thanh toán",
+        "enterAmount": "Nhập số tiền nhận",
+        "insufficientAmount": "Số tiền không đủ"
+    },
+    "bill": {
+        "title": "Chi tiết hóa đơn",
+        "tableNumber": "Bàn #{{number}}",
+        "orderNumber": "Đơn #{{number}}",
+        "guestName": "Tên khách",
+        "discount": "Giảm giá",
+        "discountPercent": "Giảm giá ({{percent}}%)",
+        "subtotal": "Tạm tính",
+        "total": "Tổng cộng",
+        "generate": "Tạo hóa đơn",
+        "print": "In hóa đơn",
+        "markPaid": "Đánh dấu đã trả",
+        "applyDiscount": "Áp dụng giảm giá",
+        "noDiscount": "Không giảm giá",
+        "customDiscount": "Giảm giá tùy chỉnh",
+        "navigatingToPrint": "Đang chuyển đến trang in..."
+    },
+    "messages": {
+        "orderAccepted": "Đơn hàng đã được gửi đến bếp",
+        "orderRejected": "Đơn hàng đã bị hủy",
+        "orderServed": "Đơn hàng đã được phục vụ",
+        "billGenerated": "Đang chuyển đến trang in...",
+        "paymentProcessed": "Thanh toán {{method}} thành công",
+        "billRequested": "Bàn #{{tableNumber}} yêu cầu thanh toán",
+        "loading": "Đang tải..."
+    },
+    "errors": {
+        "acceptFailed": "Không thể chấp nhận đơn hàng",
+        "rejectFailed": "Không thể từ chối đơn hàng",
+        "servedFailed": "Không thể cập nhật trạng thái đơn hàng",
+        "billFailed": "Không thể tạo hóa đơn",
+        "paymentFailed": "Không thể xử lý thanh toán",
+        "loadOrderFailed": "Không thể tải chi tiết đơn hàng"
+    },
+    "toasts": {
+        "newOrder": "Đơn hàng mới",
+        "orderReady": "Đơn sẵn sàng",
+        "billRequested": "Yêu cầu thanh toán",
+        "orderAccepted": "Đã chấp nhận đơn",
+        "orderRejected": "Đã từ chối đơn",
+        "orderServed": "Đã phục vụ",
+        "billGenerated": "Đã tạo hóa đơn",
+        "paymentCompleted": "Thanh toán hoàn tất",
+        "tableInfo": "Thông tin bàn",
+        "noActiveOrder": "Không có đơn hàng",
+        "error": "Lỗi"
+    }
+}

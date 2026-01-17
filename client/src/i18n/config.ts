@@ -12,6 +12,7 @@ import enStaff from '../locales/en/staff.json';
 import enCategories from '../locales/en/categories.json';
 import enTables from '../locales/en/tables.json';
 import enReports from '../locales/en/reports.json';
+import enWaiter from '../locales/en/waiter.json';
 
 import viCommon from '../locales/vi/common.json';
 import viDashboard from '../locales/vi/dashboard.json';
@@ -22,6 +23,7 @@ import viStaff from '../locales/vi/staff.json';
 import viCategories from '../locales/vi/categories.json';
 import viTables from '../locales/vi/tables.json';
 import viReports from '../locales/vi/reports.json';
+import viWaiter from '../locales/vi/waiter.json';
 
 const resources = {
   en: {
@@ -34,6 +36,7 @@ const resources = {
     categories: enCategories,
     tables: enTables,
     reports: enReports,
+    waiter: enWaiter,
   },
   vi: {
     common: viCommon,
@@ -45,6 +48,7 @@ const resources = {
     categories: viCategories,
     tables: viTables,
     reports: viReports,
+    waiter: viWaiter,
   },
 };
 
@@ -55,7 +59,17 @@ i18n
     resources,
     fallbackLng: 'en',
     defaultNS: 'common',
-    ns: ['common', 'dashboard', 'menu', 'orders', 'kitchen', 'staff', 'tables', 'reports'],
+    ns: [
+      'common',
+      'dashboard',
+      'menu',
+      'orders',
+      'kitchen',
+      'staff',
+      'tables',
+      'reports',
+      'waiter',
+    ],
 
     interpolation: {
       escapeValue: false, // React already escapes

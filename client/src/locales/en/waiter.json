@@ -1,0 +1,119 @@
+{
+    "title": "Waiter Dashboard",
+    "subtitle": "Manage orders, tables, and billing",
+    "tabs": {
+        "pending": "Pending Orders",
+        "ready": "Ready to Serve",
+        "tables": "Tables"
+    },
+    "orders": {
+        "newOrder": "New Order",
+        "fromTable": "New order from Table #{{tableNumber}}",
+        "orderReady": "Order Ready",
+        "tableReady": "Table #{{tableNumber}} order is ready!",
+        "table": "Table #{{number}}",
+        "orderNumber": "Order #{{number}}",
+        "orderItems": "Order Items:",
+        "note": "Note:",
+        "guest": "Guest"
+    },
+    "pendingOrders": {
+        "title": "Pending Orders",
+        "empty": "No Pending Orders",
+        "emptyDescription": "New orders will appear here automatically"
+    },
+    "readyOrders": {
+        "title": "Ready Orders",
+        "empty": "No Ready Orders",
+        "emptyDescription": "Orders ready from kitchen will appear here"
+    },
+    "tables": {
+        "available": "available",
+        "occupied": "occupied",
+        "reserved": "reserved",
+        "billRequested": "Bill Requested",
+        "tableInfo": "Table {{number}} is {{status}}",
+        "noActiveOrder": "Table {{number}} has no active order"
+    },
+    "actions": {
+        "accept": "Accept",
+        "acceptAndSend": "Accept & Send to Kitchen",
+        "reject": "Reject",
+        "markServed": "Mark Served",
+        "processPayment": "Process Payment",
+        "generateBill": "Generate Bill",
+        "refresh": "Refresh"
+    },
+    "status": {
+        "pending": "PENDING",
+        "confirmed": "CONFIRMED",
+        "preparing": "PREPARING",
+        "ready": "READY",
+        "served": "SERVED",
+        "completed": "COMPLETED",
+        "offline": "Offline",
+        "processing": "Processing..."
+    },
+    "payment": {
+        "title": "Process Payment",
+        "method": "Payment Method",
+        "cash": "Cash",
+        "card": "Card",
+        "amountDue": "Amount Due",
+        "amountPaid": "Amount Paid",
+        "amountReceived": "Amount Received",
+        "change": "Change",
+        "confirm": "Confirm Payment",
+        "cancel": "Cancel",
+        "selectMethod": "Select payment method",
+        "enterAmount": "Enter amount received",
+        "insufficientAmount": "Insufficient amount"
+    },
+    "bill": {
+        "title": "Bill Details",
+        "tableNumber": "Table #{{number}}",
+        "orderNumber": "Order #{{number}}",
+        "guestName": "Guest Name",
+        "discount": "Discount",
+        "discountPercent": "Discount ({{percent}}%)",
+        "subtotal": "Subtotal",
+        "total": "Total",
+        "generate": "Generate Bill",
+        "print": "Print Bill",
+        "markPaid": "Mark as Paid",
+        "applyDiscount": "Apply Discount",
+        "noDiscount": "No Discount",
+        "customDiscount": "Custom Discount",
+        "navigatingToPrint": "Navigating to print page..."
+    },
+    "messages": {
+        "orderAccepted": "Order has been sent to the kitchen",
+        "orderRejected": "Order has been cancelled",
+        "orderServed": "Order has been marked as served",
+        "billGenerated": "Navigating to print page...",
+        "paymentProcessed": "{{method}} payment processed successfully",
+        "billRequested": "Table #{{tableNumber}} requested the bill",
+        "loading": "Loading..."
+    },
+    "errors": {
+        "acceptFailed": "Failed to accept order",
+        "rejectFailed": "Failed to reject order",
+        "servedFailed": "Failed to update order status",
+        "billFailed": "Failed to generate bill",
+        "paymentFailed": "Failed to process payment",
+        "loadOrderFailed": "Failed to load order details"
+    },
+    "toasts": {
+        "newOrder": "New Order",
+        "orderReady": "Order Ready",
+        "billRequested": "Bill Requested",
+        "orderAccepted": "Order Accepted",
+        "orderRejected": "Order Rejected",
+        "orderServed": "Order Served",
+        "billGenerated": "Bill Generated",
+        "paymentCompleted": "Payment Completed",
+        "tableInfo": "Table Info",
+        "noActiveOrder": "No Active Order",
+        "error": "Error"
+    }
+}

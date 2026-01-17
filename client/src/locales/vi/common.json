@@ -107,5 +107,14 @@
       "invalidCredentials": "Email hoặc mật khẩu không đúng",
       "unexpectedError": "Đã xảy ra lỗi không mong muốn"
     }
+  },
+  "header": {
+    "appName": "Smart Restaurant",
+    "kitchenDisplay": "Màn Hình Bếp",
+    "waiterDashboard": "Bảng Điều Khiển Phục Vụ",
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "connected": "Đã kết nối",
+    "disconnected": "Mất kết nối"
   }
 }

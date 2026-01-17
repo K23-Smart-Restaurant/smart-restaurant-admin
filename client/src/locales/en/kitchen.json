@@ -1,21 +1,80 @@
 {
   "title": "Kitchen Display System",
+  "activeOrders": "{{count}} active order",
+  "activeOrders_plural": "{{count}} active orders",
   "orders": {
     "newOrder": "New Order",
-    "table": "Table {{number}}",
+    "table": "Table #{{number}}",
+    "orderNumber": "Order #{{number}}",
     "orderTime": "{{time}} ago",
-    "items": "{{count}} items"
+    "items": "{{count}} items",
+    "noItems": "No items in this order",
+    "orderNotes": "Order Notes:",
+    "note": "Note:"
+  },
+  "status": {
+    "new": "NEW",
+    "cooking": "COOKING",
+    "ready": "READY",
+    "queued": "Queued",
+    "preparing": "Cooking",
+    "done": "Ready"
+  },
+  "itemStatus": {
+    "queued": "Queued",
+    "cooking": "Cooking",
+    "ready": "Ready"
   },
   "actions": {
     "startCooking": "Start Cooking",
     "markReady": "Mark Ready",
+    "markOrderReady": "Mark Order Ready",
+    "completeAllFirst": "Complete All Items First",
     "recall": "Recall",
-    "viewHistory": "View History"
+    "viewHistory": "View History",
+    "history": "History",
+    "refresh": "Refresh",
+    "updating": "Updating..."
+  },
+  "dialogs": {
+    "updateStatus": "Update Item Status",
+    "confirmChange": "Are you sure you want to update the status for:",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "filters": {
     "all": "All Orders",
     "pending": "Pending",
     "cooking": "Cooking",
     "ready": "Ready"
+  },
+  "sound": {
+    "on": "Sound On",
+    "off": "Sound Off",
+    "enabled": "Sound enabled",
+    "disabled": "Sound disabled"
+  },
+  "history": {
+    "title": "Recall History",
+    "empty": "No completed orders",
+    "completedOrders": "Recently Completed Orders"
+  },
+  "empty": {
+    "title": "No Active Orders",
+    "description": "New orders will appear here automatically"
+  },
+  "loading": "Loading orders...",
+  "offline": "Offline",
+  "readyForPickup": "Order Ready for Pickup",
+  "messages": {
+    "newOrder": "New Order",
+    "orderForTable": "Order for Table #{{tableNumber}}",
+    "orderReady": "Order marked as ready!",
+    "success": "Success",
+    "error": "Error",
+    "loadFailed": "Failed to load orders",
+    "updateFailed": "Failed to update order status",
+    "itemUpdateFailed": "Failed to update item status",
+    "settings": "Settings"
   }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, Layout, Bell, Utensils, RefreshCw } from 'lucide-react';
 import PendingOrderCard from '../components/waiter/PendingOrderCard';
@@ -19,6 +20,7 @@ type TabType = 'pending' | 'ready' | 'tables';
  * Manages pending orders, table status, and billing
  */
 const WaiterDashboardPage: React.FC = () => {
+  const { t } = useTranslation(['waiter', 'common']);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
   const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
   const [readyOrders, setReadyOrders] = useState<Order[]>([]);
@@ -110,29 +112,41 @@ const WaiterDashboardPage: React.FC = () => {
     (order: Order) => {
       setPendingOrders((prev) => [order, ...prev]);
       setNotifications((prev) => ({ ...prev, pending: prev.pending + 1 }));
-      showToast('success', 'New Order', `New order from Table #${order.table?.tableNumber}`);
+      showToast(
+        'success',
+        t('toasts.newOrder'),
+        t('orders.fromTable', { tableNumber: order.table?.tableNumber })
+      );
     },
-    [showToast]
+    [showToast, t]
   );
 
   // Handle order ready
   const handleOrderReady = useCallback(
     (order: Order) => {
       setNotifications((prev) => ({ ...prev, ready: prev.ready + 1 }));
-      showToast('success', 'Order Ready', `Table #${order.table?.tableNumber} order is ready!`);
+      showToast(
+        'success',
+        t('toasts.orderReady'),
+        t('orders.tableReady', { tableNumber: order.table?.tableNumber })
+      );
       fetchReadyOrders(); // Refresh ready orders list
     },
-    [showToast, fetchReadyOrders]
+    [showToast, t, fetchReadyOrders]
   );
 
   // Handle bill requested
   const handleBillRequested = useCallback(
     (data: { orderId: string; tableNumber: number }) => {
       setNotifications((prev) => ({ ...prev, billRequests: prev.billRequests + 1 }));
-      showToast('success', 'Bill Requested', `Table #${data.tableNumber} requested the bill`);
+      showToast(
+        'success',
+        t('toasts.billRequested'),
+        t('messages.billRequested', { tableNumber: data.tableNumber })
+      );
       fetchTables(); // Refresh tables to update status
     },
-    [showToast, fetchTables]
+    [showToast, t, fetchTables]
   );
 
   // Set up socket listeners
@@ -148,11 +162,11 @@ const WaiterDashboardPage: React.FC = () => {
       await waiterService.acceptOrder(orderId);
       setPendingOrders((prev) => prev.filter((o) => o.id !== orderId));
       setNotifications((prev) => ({ ...prev, pending: Math.max(0, prev.pending - 1) }));
-      showToast('success', 'Order Accepted', 'Order has been sent to the kitchen');
+      showToast('success', t('toasts.orderAccepted'), t('messages.orderAccepted'));
       fetchTables(); // Refresh tables to show occupied status
     } catch (error) {
       console.error('Failed to accept order:', error);
-      showToast('error', 'Error', 'Failed to accept order');
+      showToast('error', t('toasts.error'), t('errors.acceptFailed'));
     }
   };
 
@@ -162,10 +176,10 @@ const WaiterDashboardPage: React.FC = () => {
       await waiterService.rejectOrder(orderId);
       setPendingOrders((prev) => prev.filter((o) => o.id !== orderId));
       setNotifications((prev) => ({ ...prev, pending: Math.max(0, prev.pending - 1) }));
-      showToast('success', 'Order Rejected', 'Order has been cancelled');
+      showToast('success', t('toasts.orderRejected'), t('messages.orderRejected'));
     } catch (error) {
       console.error('Failed to reject order:', error);
-      showToast('error', 'Error', 'Failed to reject order');
+      showToast('error', t('toasts.error'), t('errors.rejectFailed'));
     }
   };
 
@@ -175,10 +189,10 @@ const WaiterDashboardPage: React.FC = () => {
       await waiterService.markAsServed(orderId);
       setReadyOrders((prev) => prev.filter((o) => o.id !== orderId));
       setNotifications((prev) => ({ ...prev, ready: Math.max(0, prev.ready - 1) }));
-      showToast('success', 'Order Served', 'Order has been marked as served');
+      showToast('success', t('toasts.orderServed'), t('messages.orderServed'));
     } catch (error) {
       console.error('Failed to mark order as served:', error);
-      showToast('error', 'Error', 'Failed to update order status');
+      showToast('error', t('toasts.error'), t('errors.servedFailed'));
     }
   };
 
@@ -225,19 +239,27 @@ const WaiterDashboardPage: React.FC = () => {
           } else {
             showToast(
               'success',
-              'No Active Order',
-              `Table ${table.tableNumber} has no active order`
+              t('toasts.noActiveOrder'),
+              t('tables.noActiveOrder', { number: table.tableNumber })
             );
           }
         }
       } catch (error) {
         console.error('Failed to fetch order:', error);
-        showToast('error', 'Error', 'Failed to load order details');
+        showToast('error', t('toasts.error'), t('errors.loadOrderFailed'));
       }
     } else if (table.status === 'AVAILABLE') {
-      showToast('success', 'Table Info', `Table ${table.tableNumber} is available`);
+      showToast(
+        'success',
+        t('toasts.tableInfo'),
+        t('tables.tableInfo', { number: table.tableNumber, status: t('tables.available') })
+      );
     } else if (table.status === 'RESERVED') {
-      showToast('success', 'Table Info', `Table ${table.tableNumber} is reserved`);
+      showToast(
+        'success',
+        t('toasts.tableInfo'),
+        t('tables.tableInfo', { number: table.tableNumber, status: t('tables.reserved') })
+      );
     }
   };
 
@@ -245,7 +267,7 @@ const WaiterDashboardPage: React.FC = () => {
   const handleGenerateBill = async (orderId: string, discount: number) => {
     try {
       await waiterService.createBill({ orderId, discount });
-      showToast('success', 'Bill Generated', 'Navigating to print page...');
+      showToast('success', t('toasts.billGenerated'), t('bill.navigatingToPrint'));
 
       // Close the bill form modal
       setIsBillFormOpen(false);
@@ -257,7 +279,7 @@ const WaiterDashboardPage: React.FC = () => {
       navigate(`/waiter/bill/${orderId}`);
     } catch (error) {
       console.error('Failed to generate bill:', error);
-      showToast('error', 'Error', 'Failed to generate bill');
+      showToast('error', t('toasts.error'), t('errors.billFailed'));
     }
   };
 
@@ -265,13 +287,17 @@ const WaiterDashboardPage: React.FC = () => {
   const handleMarkPaid = async (orderId: string, paymentMethod: 'CASH' | 'CARD') => {
     try {
       await waiterService.payBill({ orderId, paymentMethod });
-      showToast('success', 'Payment Processed', 'Order has been marked as paid');
+      showToast(
+        'success',
+        t('toasts.paymentCompleted'),
+        t('messages.paymentProcessed', { method: paymentMethod })
+      );
       setNotifications((prev) => ({ ...prev, billRequests: Math.max(0, prev.billRequests - 1) }));
       setIsBillFormOpen(false);
       fetchTables(); // Refresh tables
     } catch (error) {
       console.error('Failed to process payment:', error);
-      showToast('error', 'Error', 'Failed to process payment');
+      showToast('error', t('toasts.error'), t('errors.paymentFailed'));
     }
   };
 
@@ -313,12 +339,17 @@ const WaiterDashboardPage: React.FC = () => {
   const tabs = [
     {
       id: 'pending' as TabType,
-      label: 'Pending Orders',
+      label: t('tabs.pending'),
       icon: ClipboardList,
       count: notifications.pending,
     },
-    { id: 'ready' as TabType, label: 'Ready to Serve', icon: Utensils, count: notifications.ready },
-    { id: 'tables' as TabType, label: 'Tables', icon: Layout, count: notifications.billRequests },
+    { id: 'ready' as TabType, label: t('tabs.ready'), icon: Utensils, count: notifications.ready },
+    {
+      id: 'tables' as TabType,
+      label: t('tabs.tables'),
+      icon: Layout,
+      count: notifications.billRequests,
+    },
   ];
 
   return (
@@ -329,16 +360,16 @@ const WaiterDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-charcoal">
-                Waiter Dashboard
+                {t('title')}
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">
-                Manage orders, tables, and billing
+                {t('subtitle')}
               </p>
             </div>
             {!isConnected && (
               <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-red-50 border border-red-200 rounded-lg text-red-600">
                 <Bell className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-                <span className="font-semibold text-xs sm:text-sm">Offline</span>
+                <span className="font-semibold text-xs sm:text-sm">{t('status.offline')}</span>
               </div>
             )}
           </div>
@@ -375,7 +406,7 @@ const WaiterDashboardPage: React.FC = () => {
               className="px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 bg-gray-100 border-2 border-gray-200 text-gray-700 hover:bg-gray-200 flex-shrink-0"
             >
               <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline text-sm sm:text-base">Refresh</span>
+              <span className="hidden sm:inline text-sm sm:text-base">{t('actions.refresh')}</span>
             </button>
           </div>
         </div>
@@ -387,7 +418,7 @@ const WaiterDashboardPage: React.FC = () => {
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-naples/30 border-t-naples rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 text-lg">Loading...</p>
+              <p className="text-gray-600 text-lg">{t('messages.loading')}</p>
             </div>
           </div>
         ) : (
@@ -410,10 +441,10 @@ const WaiterDashboardPage: React.FC = () => {
                   <div className="text-center py-8 sm:py-12">
                     <ClipboardList className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
                     <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">
-                      No Pending Orders
+                      {t('pendingOrders.empty')}
                     </h2>
                     <p className="text-sm sm:text-base text-gray-600">
-                      New orders will appear here automatically
+                      {t('pendingOrders.emptyDescription')}
                     </p>
                   </div>
                 )}
@@ -441,10 +472,10 @@ const WaiterDashboardPage: React.FC = () => {
                   <div className="text-center py-8 sm:py-12">
                     <Utensils className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
                     <h2 className="text-lg sm:text-xl font-bold text-charcoal mb-1 sm:mb-2">
-                      No Ready Orders
+                      {t('readyOrders.empty')}
                     </h2>
                     <p className="text-sm sm:text-base text-gray-600">
-                      Orders ready from kitchen will appear here
+                      {t('readyOrders.emptyDescription')}
                     </p>
                   </div>
                 )}

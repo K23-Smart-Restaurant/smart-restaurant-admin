@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, CreditCard, Banknote, Loader2, X } from 'lucide-react';
 import type { Order } from '../../services/orderService';
 
@@ -13,6 +14,7 @@ interface CashPaymentFormProps {
  * Allows waiters to process cash/card payments at the restaurant
  */
 const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCancel }) => {
+  const { t } = useTranslation(['waiter', 'common']);
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD'>('CASH');
   const [amountPaid, setAmountPaid] = useState<string>(order.totalAmount.toString());
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,7 +30,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
 
     // Validation
     if (paidAmount < totalAmount) {
-      setError(`Insufficient amount. Need at least $${totalAmount.toFixed(2)}`);
+      setError(t('payment.insufficientAmount'));
       return;
     }
 
@@ -49,9 +51,10 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Process Payment</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('payment.title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Order #{order.orderNumber} • Table {order.table?.tableNumber || 'N/A'}
+              {t('orders.orderNumber', { number: order.orderNumber })} •{' '}
+              {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
             </p>
           </div>
           <button
@@ -67,7 +70,9 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           {/* Order Total */}
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium text-sm sm:text-base">Order Total:</span>
+              <span className="text-gray-700 font-medium text-sm sm:text-base">
+                {t('bill.total')}:
+              </span>
               <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
                 ${totalAmount.toFixed(2)}
               </span>
@@ -77,7 +82,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           {/* Payment Method Selection */}
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-              Payment Method
+              {t('payment.method')}
             </label>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <button
@@ -90,7 +95,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
                 }`}
               >
                 <Banknote className="w-6 h-6 sm:w-8 sm:h-8" />
-                <span className="font-semibold text-sm sm:text-base">Cash</span>
+                <span className="font-semibold text-sm sm:text-base">{t('payment.cash')}</span>
               </button>
               <button
                 type="button"
@@ -102,7 +107,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
                 }`}
               >
                 <CreditCard className="w-6 h-6 sm:w-8 sm:h-8" />
-                <span className="font-semibold text-sm sm:text-base">Card</span>
+                <span className="font-semibold text-sm sm:text-base">{t('payment.card')}</span>
               </button>
             </div>
           </div>
@@ -110,7 +115,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
           {/* Amount Paid Input */}
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-              Amount Received
+              {t('payment.amountReceived')}
             </label>
             <div className="relative">
               <DollarSign className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -133,7 +138,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <span className="text-gray-700 font-medium text-sm sm:text-base">
-                  Change to Return:
+                  {t('payment.change')}:
                 </span>
                 <span className="text-xl sm:text-2xl font-bold text-amber-600">
                   ${change.toFixed(2)}
@@ -157,7 +162,7 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
               disabled={isProcessing}
               className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
-              Cancel
+              {t('payment.cancel')}
             </button>
             <button
               type="submit"
@@ -167,10 +172,10 @@ const CashPaymentForm: React.FC<CashPaymentFormProps> = ({ order, onSubmit, onCa
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                  <span>Processing...</span>
+                  <span>{t('status.processing')}</span>
                 </>
               ) : (
-                <span>Complete Payment</span>
+                <span>{t('payment.confirm')}</span>
               )}
             </button>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, MapPin, DollarSign, Check, X, ChevronDown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { Order } from '../../services/orderService';
@@ -13,6 +14,7 @@ interface PendingOrderCardProps {
  * PendingOrderCard - Display pending order for waiter approval (Light Theme)
  */
 const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, onReject }) => {
+  const { t } = useTranslation(['waiter', 'common']);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -45,14 +47,16 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-charcoal">
-                Table #{order.table?.tableNumber || 'N/A'}
+                {t('orders.table', { number: order.table?.tableNumber || 'N/A' })}
               </h3>
-              <p className="text-gray-600 text-xs sm:text-sm">Order #{order.orderNumber}</p>
+              <p className="text-gray-600 text-xs sm:text-sm">
+                {t('orders.orderNumber', { number: order.orderNumber })}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-200 text-blue-800 rounded-lg text-xs font-semibold border border-blue-300">
-              PENDING
+              {t('status.pending')}
             </span>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
@@ -68,7 +72,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
             <User className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="font-medium">{order.guestName || 'Guest'}</span>
+            <span className="font-medium">{order.guestName || t('orders.guest')}</span>
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700">
             <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -84,7 +88,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
       {isExpanded && (
         <div className="p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
           <h4 className="font-semibold text-charcoal mb-2 sm:mb-3 text-xs sm:text-sm">
-            Order Items:
+            {t('orders.orderItems')}
           </h4>
           <div className="space-y-2">
             {order.orderItems?.map((item) => (
@@ -107,7 +111,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
           {order.notes && (
             <div className="mt-2 sm:mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-yellow-800 text-xs">
-                <span className="font-semibold">Note: </span>
+                <span className="font-semibold">{t('orders.note')} </span>
                 {order.notes}
               </p>
             </div>
@@ -123,7 +127,7 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
           className="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border-2 border-red-300 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
-          {isProcessing ? 'Processing...' : 'Reject'}
+          {isProcessing ? t('status.processing') : t('actions.reject')}
         </button>
         <button
           onClick={handleAccept}
@@ -132,11 +136,11 @@ const PendingOrderCard: React.FC<PendingOrderCardProps> = ({ order, onAccept, on
         >
           <Check className="w-4 h-4 sm:w-5 sm:h-5" />
           {isProcessing ? (
-            'Processing...'
+            t('status.processing')
           ) : (
             <>
-              <span className="hidden sm:inline">Accept & Send to Kitchen</span>
-              <span className="sm:hidden">Accept</span>
+              <span className="hidden sm:inline">{t('actions.acceptAndSend')}</span>
+              <span className="sm:hidden">{t('actions.accept')}</span>
             </>
           )}
         </button>

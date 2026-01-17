@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Printer, CreditCard, DollarSign, Receipt } from 'lucide-react';
 import type { Order } from '../../services/orderService';
 
@@ -20,6 +21,7 @@ const BillForm: React.FC<BillFormProps> = ({
   onGenerateBill,
   onMarkPaid,
 }) => {
+  const { t } = useTranslation(['waiter', 'common']);
   const [discount, setDiscount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD'>('CASH');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -66,9 +68,10 @@ const BillForm: React.FC<BillFormProps> = ({
                 <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">Bill Summary</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">{t('bill.title')}</h2>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  Table #{order.table?.tableNumber} • Order #{order.orderNumber}
+                  {t('orders.table', { number: order.table?.tableNumber })} •{' '}
+                  {t('orders.orderNumber', { number: order.orderNumber })}
                 </p>
               </div>
             </div>
@@ -85,7 +88,7 @@ const BillForm: React.FC<BillFormProps> = ({
             {/* Order Items */}
             <div className="mb-4 sm:mb-6">
               <h3 className="font-semibold text-charcoal mb-2 sm:mb-3 text-sm sm:text-base">
-                Order Items:
+                {t('orders.orderItems')}
               </h3>
               <div className="space-y-2">
                 {order.orderItems?.map((item) => (
@@ -115,7 +118,7 @@ const BillForm: React.FC<BillFormProps> = ({
             {/* Discount Input */}
             <div className="mb-4 sm:mb-6">
               <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2">
-                Discount (%)
+                {t('bill.discount')} (%)
               </label>
               <input
                 type="number"
@@ -132,7 +135,7 @@ const BillForm: React.FC<BillFormProps> = ({
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
               <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex justify-between text-gray-700 text-sm sm:text-base">
-                  <span>Subtotal:</span>
+                  <span>{t('bill.subtotal')}:</span>
                   <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700 text-sm sm:text-base">
@@ -141,13 +144,13 @@ const BillForm: React.FC<BillFormProps> = ({
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-700 text-sm sm:text-base">
-                    <span>Discount ({discount}%):</span>
+                    <span>{t('bill.discountPercent', { percent: discount })}:</span>
                     <span className="font-medium">-${discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-t-2 border-gray-300 pt-2 mt-2">
                   <div className="flex justify-between text-charcoal">
-                    <span className="text-base sm:text-lg font-bold">Total:</span>
+                    <span className="text-base sm:text-lg font-bold">{t('bill.total')}:</span>
                     <span className="text-xl sm:text-2xl font-bold text-naples">
                       ${total.toFixed(2)}
                     </span>
@@ -159,7 +162,7 @@ const BillForm: React.FC<BillFormProps> = ({
             {/* Payment Method */}
             <div className="mb-4 sm:mb-6">
               <label className="block text-xs sm:text-sm font-semibold text-charcoal mb-2 sm:mb-3">
-                Payment Method
+                {t('payment.method')}
               </label>
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <button
@@ -171,7 +174,7 @@ const BillForm: React.FC<BillFormProps> = ({
                   }`}
                 >
                   <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
-                  <span className="font-semibold text-sm sm:text-base">Cash</span>
+                  <span className="font-semibold text-sm sm:text-base">{t('payment.cash')}</span>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('CARD')}
@@ -182,7 +185,7 @@ const BillForm: React.FC<BillFormProps> = ({
                   }`}
                 >
                   <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
-                  <span className="font-semibold text-sm sm:text-base">Card</span>
+                  <span className="font-semibold text-sm sm:text-base">{t('payment.card')}</span>
                 </button>
               </div>
             </div>
@@ -196,7 +199,7 @@ const BillForm: React.FC<BillFormProps> = ({
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-200 hover:bg-gray-300 text-charcoal rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               <Printer className="w-4 h-4 sm:w-5 sm:h-5" />
-              Print Bill
+              {t('bill.print')}
             </button>
             <button
               onClick={handleMarkPaid}
@@ -204,7 +207,7 @@ const BillForm: React.FC<BillFormProps> = ({
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
-              {isProcessing ? 'Processing...' : 'Mark as Paid'}
+              {isProcessing ? t('status.processing') : t('bill.markPaid')}
             </button>
           </div>
         </div>
