@@ -1,6 +1,13 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Debug logging
+console.log('=== API Configuration ===');
+console.log('VITE_API_URL from env:', import.meta.env.VITE_API_URL);
+console.log('API_URL being used:', API_URL);
+console.log('All env vars:', import.meta.env);
+console.log('========================');
 
 // Create axios instance
 export const api = axios.create({
