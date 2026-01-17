@@ -1,7 +1,5 @@
 node_modules
 npm-debug.log
-# .env (needed for Vite build)
-.env.local
 .git
 .gitignore
 README.md
