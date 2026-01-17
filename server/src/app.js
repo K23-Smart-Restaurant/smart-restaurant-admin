@@ -19,6 +19,7 @@ const allowedOrigins = [
   process.env.VERCEL_ADMIN_URL,
   process.env.CLIENT_URL,
   process.env.CUSTOMER_APP_URL,
+  process.env.EC2_CLIENT_URL,
   // Development URLs
   'http://localhost:5173',
   'http://localhost:5174',
