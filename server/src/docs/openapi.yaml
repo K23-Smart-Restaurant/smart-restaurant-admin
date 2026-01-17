@@ -1,0 +1,1529 @@
+openapi: 3.0.0
+info:
+  title: Smart Restaurant Admin API
+  version: 1.0.0
+  description: |
+    RESTful API for Smart Restaurant Admin Panel
+
+    ## Features
+    - Manage menus, orders, tables, and staff
+    - Real-time order updates via WebSocket
+    - Role-based access control (ADMIN, WAITER, KITCHEN_STAFF)
+    - JWT authentication with refresh tokens
+    - QR code generation for tables
+    - Bill generation and payment processing
+    - Analytics and reporting
+
+  contact:
+    name: API Support
+    email: support@smartrestaurant.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+  - url: https://api.smartrestaurant.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Staff Management
+    description: Manage waiter and kitchen staff accounts
+  - name: Menu Items
+    description: Menu item CRUD operations
+  - name: Categories
+    description: Menu category management
+  - name: Tables
+    description: Restaurant table management and QR codes
+  - name: Orders
+    description: Order management and tracking
+  - name: Kitchen
+    description: Kitchen staff order management
+  - name: Waiter
+    description: Waiter order and bill management
+  - name: Reports
+    description: Analytics and business reports
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /api/auth/login
+
+  schemas:
+    # ===== Authentication Schemas =====
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, WAITER, KITCHEN_STAFF]
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              description: JWT access token (expires in 24 hours)
+            refreshToken:
+              type: string
+              description: Refresh token (expires in 7 days)
+        message:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [SUPER_ADMIN, ADMIN, WAITER, KITCHEN_STAFF, CUSTOMER]
+        phoneNumber:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateStaffRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+        phoneNumber:
+          type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        displayOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        displayOrder:
+          type: integer
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        category:
+          type: string
+          enum: [APPETIZER, MAIN_COURSE, DESSERT, BEVERAGE]
+        imageUrl:
+          type: string
+          format: uri
+        isAvailable:
+          type: boolean
+        isSoldOut:
+          type: boolean
+        isChefRecommendation:
+          type: boolean
+        preparationTime:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    Table:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tableNumber:
+          type: integer
+        capacity:
+          type: integer
+        status:
+          type: string
+          enum: [AVAILABLE, OCCUPIED, RESERVED, CLEANING]
+        qrCode:
+          type: string
+        qrToken:
+          type: string
+        location:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTableRequest:
+      type: object
+      required:
+        - tableNumber
+        - capacity
+      properties:
+        tableNumber:
+          type: integer
+        capacity:
+          type: integer
+        location:
+          type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderNumber:
+          type: integer
+        tableId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        waiterId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, PREPARING, READY, SERVED, COMPLETED, CANCELLED]
+        paymentStatus:
+          type: string
+          enum: [UNPAID, PENDING, PAID, REFUNDED]
+        totalAmount:
+          type: number
+          format: decimal
+        notes:
+          type: string
+        billRequested:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, PREPARING, READY, SERVED, COMPLETED, CANCELLED]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ========== Authentication Endpoints ==========
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          description: Too many registration attempts
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+        '429':
+          description: Too many login attempts
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed successfully
+        '401':
+          description: Invalid or expired refresh token
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidate the current refresh token
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Logout successful
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Retrieve authenticated user profile
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ========== Staff Management ==========
+  /api/staff/waiter:
+    post:
+      tags:
+        - Staff Management
+      summary: Create waiter account
+      description: Admin creates a new waiter account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStaffRequest'
+      responses:
+        '201':
+          description: Waiter account created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /api/staff/kitchen:
+    post:
+      tags:
+        - Staff Management
+      summary: Create kitchen staff account
+      description: Admin creates a new kitchen staff account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStaffRequest'
+      responses:
+        '201':
+          description: Kitchen staff account created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/staff:
+    get:
+      tags:
+        - Staff Management
+      summary: Get all staff members
+      description: Retrieve list of all staff
+      responses:
+        '200':
+          description: Staff list retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+
+  /api/staff/{id}:
+    patch:
+      tags:
+        - Staff Management
+      summary: Update staff member
+      description: Update staff member details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        '200':
+          description: Staff member updated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Staff Management
+      summary: Delete staff member
+      description: Deactivate a staff member account
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Staff member deactivated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ========== Categories ==========
+  /api/categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Retrieve list of all menu categories
+      responses:
+        '200':
+          description: Categories retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Create a new menu category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/categories/{id}:
+    patch:
+      tags:
+        - Categories
+      summary: Update category
+      description: Update category details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                displayOrder:
+                  type: integer
+      responses:
+        '200':
+          description: Category updated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Delete a menu category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Category deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/categories/{id}/status:
+    patch:
+      tags:
+        - Categories
+      summary: Update category status
+      description: Toggle category active status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Status updated
+
+  # ========== Menu Items =========
+  /api/menu-items:
+    get:
+      tags:
+        - Menu Items
+      summary: Get all menu items
+      description: Retrieve list of all menu items
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [APPETIZER, MAIN_COURSE, DESSERT, BEVERAGE]
+        - in: query
+          name: isAvailable
+          schema:
+            type: boolean
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Menu items retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MenuItem'
+
+    post:
+      tags:
+        - Menu Items
+      summary: Create menu item
+      description: Add a new menu item with optional images (max 5)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - price
+                - category
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                  enum: [APPETIZER, MAIN_COURSE, DESSERT, BEVERAGE]
+                categoryId:
+                  type: string
+                  format: uuid
+                isChefRecommendation:
+                  type: boolean
+                preparationTime:
+                  type: integer
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Menu item created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/menu-items/{id}:
+    get:
+      tags:
+        - Menu Items
+      summary: Get menu item by ID
+      description: Retrieve detailed information about a menu item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Menu item retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/MenuItem'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    patch:
+      tags:
+        - Menu Items
+      summary: Update menu item
+      description: Update menu item details and images
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                isAvailable:
+                  type: boolean
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Menu item updated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Menu Items
+      summary: Delete menu item
+      description: Permanently delete a menu item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Menu item deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/menu-items/{id}/status:
+    patch:
+      tags:
+        - Menu Items
+      summary: Update menu item status
+      description: Toggle availability or sold-out status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isAvailable:
+                  type: boolean
+                isSoldOut:
+                  type: boolean
+      responses:
+        '200':
+          description: Status updated
+
+  # ========== Tables ==========
+  /api/tables/validate-qr:
+    get:
+      tags:
+        - Tables
+      summary: Validate QR token
+      description: Public endpoint to validate table QR code
+      security: []
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Valid QR token
+        '404':
+          description: Invalid token
+
+  /api/tables:
+    get:
+      tags:
+        - Tables
+      summary: Get all tables
+      description: Retrieve list of all restaurant tables
+      responses:
+        '200':
+          description: Tables retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Table'
+
+    post:
+      tags:
+        - Tables
+      summary: Create table
+      description: Create a new table with QR code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableRequest'
+      responses:
+        '201':
+          description: Table created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/tables/batch/download:
+    post:
+      tags:
+        - Tables
+      summary: Download batch QR codes
+      description: Download QR codes for multiple tables
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tableIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: QR codes generated (ZIP file)
+
+  /api/tables/batch/regenerate:
+    post:
+      tags:
+        - Tables
+      summary: Regenerate QR codes in batch
+      description: Regenerate QR codes for multiple tables
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tableIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: QR codes regenerated
+
+  /api/tables/{id}:
+    patch:
+      tags:
+        - Tables
+      summary: Update table
+      description: Update table details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tableNumber:
+                  type: integer
+                capacity:
+                  type: integer
+                location:
+                  type: string
+      responses:
+        '200':
+          description: Table updated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Tables
+      summary: Delete table
+      description: Delete a restaurant table
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/tables/{id}/regenerate-qr:
+    post:
+      tags:
+        - Tables
+      summary: Regenerate table QR code
+      description: Generate a new QR code for security
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: QR code regenerated
+
+  /api/tables/{id}/qr-code:
+    get:
+      tags:
+        - Tables
+      summary: Download table QR code
+      description: Download QR code image for a table
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: QR code image (PNG)
+
+  /api/tables/{id}/active-orders:
+    get:
+      tags:
+        - Tables
+      summary: Check table active orders
+      description: Check if table has active orders
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Active orders status
+
+  /api/tables/{id}/toggle-active:
+    patch:
+      tags:
+        - Tables
+      summary: Toggle table active status
+      description: Activate or deactivate a table
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table status toggled
+
+  # ========== Orders ==========
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders
+      description: Retrieve list of all orders
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, CONFIRMED, PREPARING, READY, SERVED, COMPLETED, CANCELLED]
+        - in: query
+          name: paymentStatus
+          schema:
+            type: string
+            enum: [UNPAID, PENDING, PAID, REFUNDED]
+      responses:
+        '200':
+          description: Orders retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+
+  /api/orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      description: Retrieve detailed order information
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/orders/{id}/status:
+    patch:
+      tags:
+        - Orders
+      summary: Update order status
+      description: Update the status of an order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+      responses:
+        '200':
+          description: Order status updated
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ========== Kitchen Routes ==========
+  /api/kitchen/orders:
+    get:
+      tags:
+        - Kitchen
+      summary: Get active kitchen orders
+      description: Get orders with status CONFIRMED, PREPARING, or READY
+      responses:
+        '200':
+          description: Active orders retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+
+  /api/kitchen/orders/history:
+    get:
+      tags:
+        - Kitchen
+      summary: Get order history
+      description: Get recent completed orders
+      responses:
+        '200':
+          description: Order history retrieved
+
+  /api/kitchen/orders/{id}/status:
+    patch:
+      tags:
+        - Kitchen
+      summary: Update kitchen order status
+      description: Update order status (CONFIRMED → PREPARING → READY)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [PREPARING, READY]
+      responses:
+        '200':
+          description: Order status updated
+
+  /api/kitchen/orders/{id}/items/{itemId}/status:
+    patch:
+      tags:
+        - Kitchen
+      summary: Update order item status
+      description: Update individual item status in an order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - itemStatus
+              properties:
+                itemStatus:
+                  type: string
+                  enum: [PENDING, PREPARING, READY, SERVED]
+      responses:
+        '200':
+          description: Item status updated
+
+  # ========== Waiter Routes ==========
+  /api/waiter/orders/pending:
+    get:
+      tags:
+        - Waiter
+      summary: Get pending orders
+      description: Get orders waiting for waiter confirmation
+      responses:
+        '200':
+          description: Pending orders retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+
+  /api/waiter/orders/ready:
+    get:
+      tags:
+        - Waiter
+      summary: Get ready orders
+      description: Get orders ready to be served
+      responses:
+        '200':
+          description: Ready orders retrieved
+
+  /api/waiter/orders/bill-requested:
+    get:
+      tags:
+        - Waiter
+      summary: Get bill-requested orders
+      description: Get orders where customer requested bill
+      responses:
+        '200':
+          description: Bill-requested orders retrieved
+
+  /api/waiter/orders/{id}/accept:
+    post:
+      tags:
+        - Waiter
+      summary: Accept pending order
+      description: Waiter accepts a customer order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order accepted
+
+  /api/waiter/orders/{id}/reject:
+    post:
+      tags:
+        - Waiter
+      summary: Reject pending order
+      description: Waiter rejects an order with reason
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Order rejected
+
+  /api/waiter/orders/{id}/served:
+    post:
+      tags:
+        - Waiter
+      summary: Mark order as served
+      description: Waiter marks order as delivered to customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order marked as served
+
+  /api/waiter/orders/{id}/process-payment:
+    post:
+      tags:
+        - Waiter
+      summary: Process cash/card payment
+      description: Record payment completion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment processed
+
+  /api/waiter/tables:
+    get:
+      tags:
+        - Waiter
+      summary: Get table status
+      description: Get overview of all table statuses
+      responses:
+        '200':
+          description: Table status retrieved
+
+  /api/waiter/bill/generate:
+    post:
+      tags:
+        - Waiter
+      summary: Generate bill
+      description: Generate bill for an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+              properties:
+                orderId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Bill generated
+
+  /api/waiter/bill/{orderId}:
+    get:
+      tags:
+        - Waiter
+      summary: Get bill by order ID
+      description: Retrieve bill details for an order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bill retrieved
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/waiter/bill/pay:
+    post:
+      tags:
+        - Waiter
+      summary: Record payment
+      description: Record payment completion for an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - amount
+                - method
+              properties:
+                orderId:
+                  type: string
+                  format: uuid
+                amount:
+                  type: number
+                method:
+                  type: string
+                  enum: [CASH, CARD, ONLINE]
+      responses:
+        '200':
+          description: Payment recorded
+
+  # ========== Reports ==========
+  /api/reports/revenue:
+    get:
+      tags:
+        - Reports
+      summary: Get revenue report
+      description: Get revenue analytics
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Revenue report generated
+
+  /api/reports/top-items:
+    get:
+      tags:
+        - Reports
+      summary: Get top-selling items
+      description: Get best-selling menu items
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Top items retrieved
+
+  /api/reports/analytics:
+    get:
+      tags:
+        - Reports
+      summary: Get business analytics
+      description: Get comprehensive business analytics
+      responses:
+        '200':
+          description: Analytics retrieved

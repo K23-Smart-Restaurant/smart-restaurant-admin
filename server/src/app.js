@@ -2,6 +2,8 @@ import express, { json, urlencoded } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.config.js';
 import { passport } from './config/passport.config.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 import { logger } from './config/winston.config.js';
@@ -17,13 +19,13 @@ const allowedOrigins = [
   process.env.VERCEL_ADMIN_URL,
   process.env.CLIENT_URL,
   process.env.CUSTOMER_APP_URL,
+  process.env.EC2_CLIENT_URL,
   // Development URLs
   'http://localhost:5173',
   'http://localhost:5174',
-  'http://localhost:3000',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
-  'http://127.0.0.1:3000',
+  'http://localhost:3001',
 ].filter(Boolean); // Remove undefined/null values
 
 const corsOptions = {
@@ -97,6 +99,31 @@ app.get('/health', (req, res) => {
     message: 'Admin server is running',
     timestamp: new Date().toISOString(),
   });
+});
+
+// API Documentation (Swagger UI)
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
+  explorer: true,
+  customCss: `
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+
+      .swagger-ui {
+        filter: invert(0);
+      }
+    }
+  `,
+  customSiteTitle: 'Smart Restaurant API Docs',
+}));
+
+// Serve raw OpenAPI spec as JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 // API routes
