@@ -131,7 +131,7 @@ const DashboardPage: React.FC = () => {
     <div>
       {/* Page title */}
       <div className="mb-8 animate-fade-in-down">
-        <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
+        <h1 className="mb-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-transparent bg-gradient-to-r from-gradient-primary via-gradient-secondary to-gradient-accent bg-clip-text">
           {t('title')}
         </h1>
         <p className="font-medium text-gray-600">{t('welcomeMessage')}</p>

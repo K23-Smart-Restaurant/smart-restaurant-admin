@@ -194,7 +194,7 @@ const MenuManagementPage: React.FC = () => {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-charcoal">{t('menu:title')}</h1>
           <p className="text-gray-600 mt-1">{t('menu:description')}</p>
