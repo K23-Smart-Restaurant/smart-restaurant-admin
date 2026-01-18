@@ -40,10 +40,10 @@ jobs:
             export $(grep -v '^#' client/.env | xargs)
 
             # Pull latest code
-            git pull origin production
+            git pull origin main
 
-            # Reset to production branch
-            git reset --hard origin/production
+            # Reset to main branch
+            git reset --hard origin/main
 
             # Stop and remove old containers
             docker-compose down
