@@ -59,7 +59,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Try to verify token is still valid (optional check)
           try {
-            const response = await apiClient.get<{ success: boolean; data: Record<string, unknown> }>('/auth/me');
+            const response = await apiClient.get<{
+              success: boolean;
+              data: Record<string, unknown>;
+            }>('/auth/me');
             // Extract user from nested response structure
             const apiUserData = response.data.data || response.data;
             // Map avatarUrl to avatar and update with fresh data
@@ -172,7 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 // Custom hook to use auth context
-// eslint-disable-next-line react-refresh/only-export-components
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

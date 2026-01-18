@@ -3,7 +3,14 @@ import { Outlet, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
-import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon, UserIcon } from 'lucide-react';
+import {
+  LogOutIcon,
+  WifiIcon,
+  WifiOffIcon,
+  ClockIcon,
+  ChevronDownIcon,
+  UserIcon,
+} from 'lucide-react';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 
 /**

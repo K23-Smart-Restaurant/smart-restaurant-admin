@@ -86,7 +86,9 @@ const LoginPage: React.FC = () => {
             >
               <Globe className="w-4 h-4" />
               <span className="text-base">{currentLanguage.flag}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isLanguageMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${isLanguageMenuOpen ? 'rotate-180' : ''}`}
+              />
             </button>
 
             {/* Dropdown Menu */}
@@ -96,16 +98,15 @@ const LoginPage: React.FC = () => {
                   <button
                     key={language.code}
                     onClick={() => handleLanguageChange(language.code)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${i18n.language === language.code
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                      i18n.language === language.code
                         ? 'bg-naples/10 text-charcoal font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
-                      }`}
+                    }`}
                   >
                     <span className="text-lg">{language.flag}</span>
                     <span className="flex-1 text-left">{language.name}</span>
-                    {i18n.language === language.code && (
-                      <Check className="w-4 h-4 text-naples" />
-                    )}
+                    {i18n.language === language.code && <Check className="w-4 h-4 text-naples" />}
                   </button>
                 ))}
               </div>

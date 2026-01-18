@@ -4,13 +4,13 @@ class CategoryService {
   async createCategory(data) {
     // If restaurantId not provided, get it from an existing category
     let restaurantId = data.restaurantId;
-    
+
     if (!restaurantId) {
       const existingCategory = await prisma.category.findFirst({
         where: { restaurantId: { not: null } },
         select: { restaurantId: true },
       });
-      
+
       if (existingCategory) {
         restaurantId = existingCategory.restaurantId;
       }

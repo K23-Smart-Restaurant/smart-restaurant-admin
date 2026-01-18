@@ -37,9 +37,9 @@ const DashboardPage: React.FC = () => {
 
     const todayOrders = Array.isArray(orders)
       ? orders.filter((order) => {
-        const orderDate = new Date(order.createdAt);
-        return orderDate >= today;
-      })
+          const orderDate = new Date(order.createdAt);
+          return orderDate >= today;
+        })
       : [];
 
     const todayRevenue = todayOrders.reduce((sum, order) => {
@@ -243,10 +243,11 @@ const DashboardPage: React.FC = () => {
               {Array.from({ length: Math.min(dashboardData.totalStaff, 8) }).map((_, index) => (
                 <div
                   key={index}
-                  className={`w-7 h-7 rounded-full transition-all duration-300 ${index < dashboardData.staffOnline
-                    ? 'bg-charcoal shadow-md transform scale-110'
-                    : 'bg-charcoal/30'
-                    }`}
+                  className={`w-7 h-7 rounded-full transition-all duration-300 ${
+                    index < dashboardData.staffOnline
+                      ? 'bg-charcoal shadow-md transform scale-110'
+                      : 'bg-charcoal/30'
+                  }`}
                 ></div>
               ))}
               {dashboardData.totalStaff > 8 && (
