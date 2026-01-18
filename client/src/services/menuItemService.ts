@@ -45,7 +45,7 @@ export interface MenuItem {
   isSoldOut: boolean;
   isChefRecommendation: boolean;
   preparationTime: number | null;
-  categoryId: string;
+  categoryId?: string;
   categoryModel?: Category;
   createdAt: string;
   updatedAt: string;
