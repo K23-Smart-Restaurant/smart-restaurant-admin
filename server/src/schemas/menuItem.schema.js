@@ -6,9 +6,11 @@ const createMenuItemSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(80, 'Name must be at most 80 characters'),
   description: z.string().max(500, 'Description must be at most 500 characters').optional(),
-  categoryId: z.string({
-    required_error: 'Category ID is required',
-  }).uuid('Category ID must be a valid UUID'),
+  categoryId: z
+    .string({
+      required_error: 'Category ID is required',
+    })
+    .uuid('Category ID must be a valid UUID'),
   price: z
     .number({
       required_error: 'Price is required',

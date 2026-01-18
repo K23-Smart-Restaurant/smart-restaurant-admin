@@ -177,9 +177,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         <div>
           <div className="flex items-start justify-between mb-1">
             <h3 className="text-lg font-bold text-charcoal line-clamp-1">{renderName()}</h3>
-            <span
-              className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor()}`}
-            >
+            <span className={`px-2 py-1 text-xs font-semibold rounded ${getCategoryColor()}`}>
               {getCategoryLabel()}
             </span>
           </div>

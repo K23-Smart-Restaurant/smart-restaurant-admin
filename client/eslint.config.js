@@ -20,18 +20,26 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      // Allow named exports of hooks alongside components in context files
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      // Disable overly strict set-state-in-effect rule for context providers
-      'react-hooks/set-state-in-effect': 'off',
-      // Allow underscore-prefixed unused variables
+      // Allow unused vars that start with underscore (intentionally unused parameters)
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
       ],
+      // Suppress React Refresh errors for context files (they export both components and utilities)
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true, allowExportNames: ['useAuth', 'useToast'] },
+      ],
+      // Allow setState in effects for animations and mount effects (intentional patterns)
+      'react-hooks/set-state-in-effect': 'off',
+      // Suppress React Compiler optimization warnings (not critical)
+      'react-hooks/preserve-manual-memoization': 'off',
+      // React Hook Form watch() is known to be incompatible with React Compiler
+      'react-hooks/incompatible-library': 'warn',
     },
   },
 ])

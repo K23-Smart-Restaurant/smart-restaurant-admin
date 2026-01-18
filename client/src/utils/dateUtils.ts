@@ -6,14 +6,14 @@ import i18n from '../i18n/config';
  * Get the date-fns locale based on the current i18n language
  */
 export const getDateLocale = () => {
-    const language = i18n.language;
-    switch (language) {
-        case 'vi':
-            return vi;
-        case 'en':
-        default:
-            return enUS;
-    }
+  const language = i18n.language;
+  switch (language) {
+    case 'vi':
+      return vi;
+    case 'en':
+    default:
+      return enUS;
+  }
 };
 
 /**
@@ -22,11 +22,11 @@ export const getDateLocale = () => {
  * applies the correct locale based on the current i18n language setting
  */
 export const formatDistanceToNowLocalized = (
-    date: Date | number,
-    options?: { addSuffix?: boolean; includeSeconds?: boolean }
+  date: Date | number,
+  options?: { addSuffix?: boolean; includeSeconds?: boolean }
 ): string => {
-    return dateFnsFormatDistanceToNow(date, {
-        ...options,
-        locale: getDateLocale(),
-    });
+  return dateFnsFormatDistanceToNow(date, {
+    ...options,
+    locale: getDateLocale(),
+  });
 };

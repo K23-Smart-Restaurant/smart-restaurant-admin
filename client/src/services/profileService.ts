@@ -44,7 +44,7 @@ export const updateProfile = async (data: ProfileUpdateData): Promise<UserProfil
 export const uploadAvatar = async (file: File): Promise<UserProfile> => {
   const formData = new FormData();
   formData.append('avatar', file);
-  
+
   const response = await apiClient.post<ProfileResponse>('/auth/me/avatar', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

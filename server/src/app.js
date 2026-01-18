@@ -103,9 +103,11 @@ app.get('/health', (req, res) => {
 
 // API Documentation (Swagger UI)
 app.use('/api-docs', swaggerUi.serve);
-app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
-  explorer: true,
-  customCss: `
+app.get(
+  '/api-docs',
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customCss: `
     @media (prefers-color-scheme: dark) {
       body {
         background-color: #fff !important;
@@ -117,8 +119,9 @@ app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
       }
     }
   `,
-  customSiteTitle: 'Smart Restaurant API Docs',
-}));
+    customSiteTitle: 'Smart Restaurant API Docs',
+  })
+);
 
 // Serve raw OpenAPI spec as JSON
 app.get('/api-docs.json', (req, res) => {

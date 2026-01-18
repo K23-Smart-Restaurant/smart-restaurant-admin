@@ -37,7 +37,9 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                 <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">{t('history.title')}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">
+                  {t('history.title')}
+                </h2>
                 <p className="text-gray-600 text-xs sm:text-sm">{t('history.subtitle')}</p>
               </div>
             </div>
@@ -75,7 +77,9 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                       <div className="text-left sm:text-right w-full sm:w-auto">
                         <p className="text-xs sm:text-sm text-gray-600">
                           {t('history.completed')}{' '}
-                          {formatDistanceToNowLocalized(new Date(order.updatedAt), { addSuffix: true })}
+                          {formatDistanceToNowLocalized(new Date(order.updatedAt), {
+                            addSuffix: true,
+                          })}
                         </p>
                         <p className="text-xs text-gray-500">
                           {new Date(order.updatedAt).toLocaleTimeString()}

@@ -28,7 +28,7 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   const isEditMode = !!menuItem;
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Fetch categories from the Category table
   const { categories, isLoading: categoriesLoading, getActiveCategories } = useCategories();
 
@@ -36,7 +36,10 @@ export const MenuItemForm: React.FC<MenuItemFormProps> = ({ menuItem, onSubmit, 
   const menuItemFormSchema = z.object({
     name: z.string().min(2, t('form.validation.nameMin')).max(80, t('form.validation.nameMax')),
     description: z.string().max(500, t('form.validation.descriptionMax')).optional(),
-    categoryId: z.string().uuid(t('form.validation.categoryRequired')).min(1, t('form.validation.categoryRequired')),
+    categoryId: z
+      .string()
+      .uuid(t('form.validation.categoryRequired'))
+      .min(1, t('form.validation.categoryRequired')),
     price: z.number().min(0, t('form.validation.priceMin')),
     preparationTime: z
       .number()

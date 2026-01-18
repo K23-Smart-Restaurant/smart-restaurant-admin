@@ -4,9 +4,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { UserIcon, MailIcon, PhoneIcon, ShieldIcon, SaveIcon, EditIcon, ArrowLeftIcon, CameraIcon } from 'lucide-react';
+import {
+  UserIcon,
+  MailIcon,
+  PhoneIcon,
+  ShieldIcon,
+  SaveIcon,
+  EditIcon,
+  ArrowLeftIcon,
+  CameraIcon,
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { updateProfile, uploadAvatar, getProfile, type UserProfile } from '../services/profileService';
+import {
+  updateProfile,
+  uploadAvatar,
+  getProfile,
+  type UserProfile,
+} from '../services/profileService';
 import { Button } from '../components/common/Button';
 import { useToastContext } from '../contexts/ToastContext';
 
@@ -117,7 +131,7 @@ const ProfilePage: React.FC = () => {
     try {
       setIsUploadingAvatar(true);
       const updatedUser = await uploadAvatar(file);
-      
+
       // Update profile data state
       setProfileData(updatedUser);
 
@@ -126,7 +140,7 @@ const ProfilePage: React.FC = () => {
         ...user!,
         avatar: updatedUser.avatarUrl || undefined,
       });
-      
+
       showSuccess(t('profile.title'), t('profile.avatarSuccess'));
     } catch (error) {
       console.error('Failed to upload avatar:', error);
@@ -236,9 +250,7 @@ const ProfilePage: React.FC = () => {
                   }`}
                   placeholder={t('profile.namePlaceholder')}
                 />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
               </>
             ) : (
               <p className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-charcoal">
