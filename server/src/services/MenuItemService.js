@@ -43,7 +43,7 @@ class MenuItemService {
               modifiers: true,
             },
           },
-          category: true,
+          categoryModel: true,
           photos: {
             orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
           },
@@ -76,7 +76,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        category: true,
+        categoryModel: true,
         photos: {
           orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
         },
@@ -116,13 +116,19 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        category: true,
+        categoryModel: true,
         photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });
   }
 
   async createMenuItem(data, imageUrl, uploadedPhotos = []) {
+    console.log('Raw data received in createMenuItem:', {
+      price: data.price,
+      priceType: typeof data.price,
+      preparationTime: data.preparationTime,
+    });
+
     // Parse numeric fields that might come as strings from FormData
     const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
     const preparationTime = data.preparationTime
@@ -131,26 +137,40 @@ class MenuItemService {
         : data.preparationTime
       : null;
 
+    console.log('Parsed values:', { price, preparationTime });
+
+    // Ensure imageUrl has a value - use primary photo or first photo from uploadedPhotos if not provided
+    let finalImageUrl = imageUrl;
+    if (!finalImageUrl && uploadedPhotos.length > 0) {
+      const primaryPhoto = uploadedPhotos.find((photo) => photo.isPrimary);
+      finalImageUrl = primaryPhoto ? primaryPhoto.url : uploadedPhotos[0].url;
+    }
+
+    const createData = {
+      name: data.name,
+      description: data.description || null,
+      price,
+      category: data.category || 'MAIN_COURSE',
+      categoryId: data.categoryId,
+      imageUrl: finalImageUrl,
+      preparationTime,
+      isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
+      isSoldOut: data.isSoldOut === 'true' || data.isSoldOut === true,
+      isChefRecommendation:
+        data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
+    };
+
+    console.log('Creating menu item with data:', JSON.stringify(createData, null, 2));
+
     const menuItem = await prisma.menuItem.create({
-      data: {
-        name: data.name,
-        description: data.description || null,
-        price,
-        categoryId: data.categoryId,
-        imageUrl,
-        preparationTime,
-        isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
-        isSoldOut: data.isSoldOut === 'true' || data.isSoldOut === true,
-        isChefRecommendation:
-          data.isChefRecommendation === 'true' || data.isChefRecommendation === true,
-      },
+      data: createData,
       include: {
         modifiers: {
           include: {
             modifiers: true,
           },
         },
-        category: true,
+        categoryModel: true,
         photos: true,
       },
     });
@@ -260,7 +280,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        category: true,
+        categoryModel: true,
         photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });

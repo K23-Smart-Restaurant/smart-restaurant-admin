@@ -72,6 +72,7 @@ class MenuItemController {
         // Upload all files to Supabase
         if (filesToUpload.length > 0) {
           const uploaded = await StorageService.uploadMenuItemPhotos(filesToUpload, primaryIndex);
+          console.log('Uploaded photos:', uploaded);
           uploaded.forEach((photo) => {
             uploadedPhotos.push({
               url: photo.url,
@@ -81,9 +82,12 @@ class MenuItemController {
               imageUrl = photo.url;
             }
           });
+          console.log('imageUrl after upload:', imageUrl);
+          console.log('uploadedPhotos after upload:', uploadedPhotos);
         }
       }
 
+      console.log('Creating menu item with imageUrl:', imageUrl);
       const menuItem = await menuItemService.createMenuItem(req.body, imageUrl, uploadedPhotos);
 
       // Add modifiers if provided
