@@ -30,6 +30,7 @@ model User {
   refreshTokens        RefreshToken[]
   restaurantsOwned     Restaurant[]
   reviews              Review[]
+  favorites            FavoriteItem[]
 
   @@index([email])
   @@index([googleId])
@@ -151,23 +152,26 @@ model MenuItem {
   id                   String          @id @default(uuid())
   name                 String
   description          String?
+  category             MenuCategory
   price                Decimal         @db.Decimal(10, 2)
   imageUrl             String?
   isAvailable          Boolean         @default(true)
   isSoldOut            Boolean         @default(false)
   isChefRecommendation Boolean         @default(false)
   preparationTime      Int?
-  categoryId           String
+  categoryId           String?
   restaurantId         String?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  category             Category        @relation(fields: [categoryId], references: [id])
+  categoryModel        Category?       @relation(fields: [categoryId], references: [id])
   restaurant           Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   photos               MenuItemPhoto[]
   modifiers            ModifierGroup[]
   orderItems           OrderItem[]
   reviews              Review[]
+  favoritedBy          FavoriteItem[]
 
+  @@index([category, isAvailable])
   @@index([isAvailable])
   @@index([categoryId])
   @@index([restaurantId])
@@ -293,6 +297,13 @@ enum TableStatus {
   RESERVED
 }
 
+enum MenuCategory {
+  APPETIZER
+  MAIN_COURSE
+  DESSERT
+  BEVERAGE
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -328,4 +339,19 @@ enum OrderItemStatus {
   QUEUED
   COOKING
   READY
+}
+
+model FavoriteItem {
+  id         String   @id @default(uuid())
+  userId     String
+  menuItemId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, menuItemId])
+  @@index([userId])
+  @@index([menuItemId])
+  @@map("FavoriteItem")
 }

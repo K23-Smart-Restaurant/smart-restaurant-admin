@@ -96,7 +96,7 @@ const MenuItemDetailsPage: React.FC = () => {
   }, [menuItem]);
 
   const getCategoryLabel = () => {
-    return menuItem?.category?.name || 'Unknown';
+    return menuItem?.categoryModel?.name || 'Unknown';
   };
 
   const getCategoryBg = () => {
