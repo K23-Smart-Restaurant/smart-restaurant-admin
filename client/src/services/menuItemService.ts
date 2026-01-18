@@ -1,6 +1,12 @@
 import { apiClient } from './api';
 
-export type MenuCategory = 'APPETIZER' | 'MAIN_COURSE' | 'DESSERT' | 'BEVERAGE';
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
 
 export interface MenuItemPhoto {
   id?: string;
@@ -33,14 +39,14 @@ export interface MenuItem {
   id: string;
   name: string;
   description: string | null;
-  category: MenuCategory;
   price: number;
   imageUrl: string | null;
   isAvailable: boolean;
   isSoldOut: boolean;
   isChefRecommendation: boolean;
   preparationTime: number | null;
-  categoryId: string | null;
+  categoryId: string;
+  category?: Category;
   createdAt: string;
   updatedAt: string;
   photos?: MenuItemPhoto[];
@@ -50,20 +56,18 @@ export interface MenuItem {
 export interface CreateMenuItemDto {
   name: string;
   description?: string;
-  category: MenuCategory;
   price: number;
   isAvailable?: boolean;
   isSoldOut?: boolean;
   isChefRecommendation?: boolean;
   preparationTime?: number;
-  categoryId?: string;
+  categoryId: string;
   modifiers?: ModifierGroupInput[];
 }
 
 export interface UpdateMenuItemDto {
   name?: string;
   description?: string;
-  category?: MenuCategory;
   price?: number;
   isAvailable?: boolean;
   isSoldOut?: boolean;
@@ -75,7 +79,6 @@ export interface UpdateMenuItemDto {
 
 export interface MenuItemFilters {
   name?: string;
-  category?: MenuCategory;
   categoryId?: string;
   isAvailable?: boolean;
   sortBy?: string;

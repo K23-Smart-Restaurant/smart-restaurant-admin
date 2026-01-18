@@ -51,6 +51,7 @@
     "categories": "Danh mục",
     "reports": "Báo cáo",
     "settings": "Cài đặt",
+    "profile": "Hồ sơ",
     "logout": "Đăng xuất"
   },
   "status": {
@@ -110,11 +111,28 @@
   },
   "header": {
     "appName": "Smart Restaurant",
+    "adminDashboard": "Bảng Điều Khiển Quản Trị",
     "kitchenDisplay": "Màn Hình Bếp",
     "waiterDashboard": "Bảng Điều Khiển Phục Vụ",
     "online": "Trực tuyến",
     "offline": "Ngoại tuyến",
     "connected": "Đã kết nối",
     "disconnected": "Mất kết nối"
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "subtitle": "Quản lý thông tin tài khoản của bạn",
+    "name": "Họ và tên",
+    "namePlaceholder": "Nhập họ và tên",
+    "email": "Địa chỉ Email",
+    "phone": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại",
+    "role": "Vai trò",
+    "readOnly": "chỉ đọc",
+    "editButton": "Chỉnh sửa hồ sơ",
+    "updateSuccess": "Cập nhật hồ sơ thành công",
+    "updateError": "Không thể cập nhật hồ sơ",
+    "avatarSuccess": "Tải ảnh đại diện thành công",
+    "avatarError": "Không thể tải ảnh đại diện"
   }
 }

@@ -56,8 +56,13 @@
   },
   "history": {
     "title": "Lịch sử đơn hoàn thành",
+    "subtitle": "10 đơn hàng hoàn thành gần nhất",
     "empty": "Chưa có đơn hàng hoàn thành",
-    "completedOrders": "Đơn hàng hoàn thành gần đây"
+    "completedOrders": "Đơn hàng hoàn thành gần đây",
+    "table": "Bàn #{{number}}",
+    "orderNumber": "Đơn #{{number}}",
+    "completed": "Hoàn thành",
+    "note": "Ghi chú:"
   },
   "empty": {
     "title": "Không có đơn hàng",

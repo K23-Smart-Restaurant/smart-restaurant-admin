@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, CheckCircle, Clock } from 'lucide-react';
 import { formatDistanceToNowLocalized } from '../../utils/dateUtils';
 import type { Order } from '../../services/orderService';
@@ -17,6 +18,8 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
   onClose,
   completedOrders,
 }) => {
+  const { t } = useTranslation('kitchen');
+
   if (!isOpen) return null;
 
   return (
@@ -34,8 +37,8 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                 <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">Order History</h2>
-                <p className="text-gray-600 text-xs sm:text-sm">Last 10 completed orders</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-charcoal">{t('history.title')}</h2>
+                <p className="text-gray-600 text-xs sm:text-sm">{t('history.subtitle')}</p>
               </div>
             </div>
             <button
@@ -61,17 +64,17 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                         <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
                         <div>
                           <h3 className="text-base sm:text-lg font-semibold text-charcoal">
-                            Table #{order.table?.tableNumber || 'N/A'}
+                            {t('history.table', { number: order.table?.tableNumber || 'N/A' })}
                           </h3>
                           <p className="text-xs sm:text-sm text-gray-600">
-                            Order #{order.orderNumber}
+                            {t('history.orderNumber', { number: order.orderNumber })}
                             {order.guestName && ` • ${order.guestName}`}
                           </p>
                         </div>
                       </div>
                       <div className="text-left sm:text-right w-full sm:w-auto">
                         <p className="text-xs sm:text-sm text-gray-600">
-                          Completed{' '}
+                          {t('history.completed')}{' '}
                           {formatDistanceToNowLocalized(new Date(order.updatedAt), { addSuffix: true })}
                         </p>
                         <p className="text-xs text-gray-500">
@@ -98,7 +101,7 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                             </div>
                             {item.specialInstructions && (
                               <span className="text-xs text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded ml-8 sm:ml-0">
-                                Note: {item.specialInstructions}
+                                {t('history.note')} {item.specialInstructions}
                               </span>
                             )}
                           </div>
@@ -109,7 +112,7 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
                     {order.notes && (
                       <div className="mt-2 sm:mt-3 ml-6 sm:ml-8 p-2 bg-blue-50 border border-blue-200 rounded">
                         <p className="text-xs text-blue-700">
-                          <span className="font-semibold">Note: </span>
+                          <span className="font-semibold">{t('history.note')} </span>
                           {order.notes}
                         </p>
                       </div>
@@ -120,7 +123,7 @@ const RecallHistoryModal: React.FC<RecallHistoryModalProps> = ({
             ) : (
               <div className="text-center py-8 sm:py-12">
                 <Clock className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
-                <p className="text-gray-500 text-base sm:text-lg">No completed orders yet</p>
+                <p className="text-gray-500 text-base sm:text-lg">{t('history.empty')}</p>
               </div>
             )}
           </div>

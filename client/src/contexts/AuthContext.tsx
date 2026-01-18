@@ -36,6 +36,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper to map API response to User interface (avatarUrl -> avatar)
+  const mapApiUserToUser = (apiUser: Record<string, unknown>): User => ({
+    id: apiUser.id as string,
+    email: apiUser.email as string,
+    name: apiUser.name as string,
+    role: apiUser.role as UserRole,
+    avatar: (apiUser.avatarUrl as string | undefined) || (apiUser.avatar as string | undefined),
+  });
+
   // Check for existing token on mount
   useEffect(() => {
     const initAuth = async () => {
@@ -50,10 +59,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Try to verify token is still valid (optional check)
           try {
-            const response = await apiClient.get<{ success: boolean; data: User }>('/auth/me');
+            const response = await apiClient.get<{ success: boolean; data: Record<string, unknown> }>('/auth/me');
             // Extract user from nested response structure
-            const verifiedUser = response.data.data || response.data;
-            // Update with fresh data if successful
+            const apiUserData = response.data.data || response.data;
+            // Map avatarUrl to avatar and update with fresh data
+            const verifiedUser = mapApiUserToUser(apiUserData);
             setUser(verifiedUser);
             localStorage.setItem('admin_user', JSON.stringify(verifiedUser));
           } catch (verifyError) {

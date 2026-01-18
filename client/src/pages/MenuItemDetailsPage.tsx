@@ -95,24 +95,13 @@ const MenuItemDetailsPage: React.FC = () => {
     return images;
   }, [menuItem]);
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      APPETIZER: 'Appetizer',
-      MAIN_COURSE: 'Main Course',
-      DESSERT: 'Dessert',
-      BEVERAGE: 'Beverage',
-    };
-    return labels[category] || category;
+  const getCategoryLabel = () => {
+    return menuItem?.category?.name || 'Unknown';
   };
 
-  const getCategoryBg = (category: string) => {
-    const colors: Record<string, string> = {
-      APPETIZER: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800',
-      MAIN_COURSE: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800',
-      DESSERT: 'bg-gradient-to-r from-pink-100 to-pink-200 text-pink-800',
-      BEVERAGE: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800',
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+  const getCategoryBg = () => {
+    // Dynamic category coloring - can be enhanced with color field from Category table
+    return 'bg-gradient-to-r from-naples/20 to-arylide/30 text-charcoal';
   };
 
   // Loading state
@@ -221,10 +210,10 @@ const MenuItemDetailsPage: React.FC = () => {
 
                 {/* Category Badge */}
                 <span
-                  className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full shadow-sm ${getCategoryBg(menuItem.category)}`}
+                  className={`inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full shadow-sm ${getCategoryBg()}`}
                 >
                   <TagIcon className="w-4 h-4 mr-1.5" />
-                  {getCategoryLabel(menuItem.category)}
+                  {getCategoryLabel()}
                 </span>
               </div>
 

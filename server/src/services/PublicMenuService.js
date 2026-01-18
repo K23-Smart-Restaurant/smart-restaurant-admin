@@ -11,7 +11,6 @@ class PublicMenuService {
    * @param {Object} filters - Query filters
    * @param {string} filters.search - Search by item name
    * @param {string} filters.categoryId - Filter by category ID
-   * @param {string} filters.category - Filter by category enum (APPETIZER, MAIN_COURSE, etc.)
    * @param {boolean} filters.isChefRecommendation - Filter chef recommendations
    * @param {string} filters.sortBy - Sort field (name, price, popularity)
    * @param {string} filters.sortOrder - Sort direction (asc, desc)
@@ -33,11 +32,6 @@ class PublicMenuService {
     // Filter by category ID
     if (filters.categoryId) {
       where.categoryId = filters.categoryId;
-    }
-
-    // Filter by category enum
-    if (filters.category) {
-      where.category = filters.category;
     }
 
     // Filter chef recommendations
@@ -72,7 +66,6 @@ class PublicMenuService {
           id: true,
           name: true,
           description: true,
-          category: true,
           price: true,
           imageUrl: true,
           isChefRecommendation: true,
@@ -88,7 +81,7 @@ class PublicMenuService {
             },
           },
           // Include category info
-          categoryModel: {
+          category: {
             select: {
               id: true,
               name: true,
@@ -148,7 +141,6 @@ class PublicMenuService {
         id: true,
         name: true,
         description: true,
-        category: true,
         price: true,
         imageUrl: true,
         isChefRecommendation: true,
@@ -162,7 +154,7 @@ class PublicMenuService {
             isPrimary: true,
           },
         },
-        categoryModel: {
+        category: {
           select: {
             id: true,
             name: true,
@@ -229,7 +221,6 @@ class PublicMenuService {
         id: item.id,
         name: item.name,
         description: item.description,
-        category: item.category,
         price: parseFloat(item.price),
         imageUrl: primaryPhoto?.url || item.imageUrl,
         primaryPhoto: primaryPhoto || null,
@@ -237,7 +228,7 @@ class PublicMenuService {
         isChefRecommendation: item.isChefRecommendation,
         preparationTime: item.preparationTime,
         categoryId: item.categoryId,
-        categoryName: item.categoryModel?.name || null,
+        categoryName: item.category?.name || null,
         modifierGroups:
           item.modifiers?.map((group) => ({
             id: group.id,

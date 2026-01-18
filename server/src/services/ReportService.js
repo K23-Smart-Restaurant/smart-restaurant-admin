@@ -84,13 +84,13 @@ class ReportService {
       items.map(async (item) => {
         const menuItem = await prisma.menuItem.findUnique({
           where: { id: item.menuItemId },
-          select: { id: true, name: true, category: true },
+          select: { id: true, name: true, categoryId: true, category: { select: { name: true } } },
         });
 
         return {
           menuItemId: menuItem?.id || item.menuItemId,
           menuItemName: menuItem?.name || 'Unknown',
-          category: menuItem?.category,
+          categoryName: menuItem?.category?.name || 'Unknown',
           totalRevenue: Number(item._sum.subtotal || 0),
           orderCount: Number(item._sum.quantity || 0),
         };

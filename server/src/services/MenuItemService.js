@@ -8,9 +8,6 @@ class MenuItemService {
     if (filters.name) {
       where.name = { contains: filters.name, mode: 'insensitive' };
     }
-    if (filters.category) {
-      where.category = filters.category;
-    }
     if (filters.categoryId) {
       where.categoryId = filters.categoryId;
     }
@@ -32,7 +29,7 @@ class MenuItemService {
     } else if (filters.sortBy === 'price') {
       orderBy = { price: filters.sortOrder || 'asc' };
     } else if (filters.sortBy === 'category') {
-      orderBy = { category: filters.sortOrder || 'asc' };
+      orderBy = { category: { name: filters.sortOrder || 'asc' } };
     } else if (filters.sortBy === 'createdAt') {
       orderBy = { createdAt: filters.sortOrder || 'desc' };
     }
@@ -46,7 +43,7 @@ class MenuItemService {
               modifiers: true,
             },
           },
-          categoryModel: true,
+          category: true,
           photos: {
             orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
           },
@@ -79,7 +76,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        categoryModel: true,
+        category: true,
         photos: {
           orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
         },
@@ -119,7 +116,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        categoryModel: true,
+        category: true,
         photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });
@@ -138,9 +135,8 @@ class MenuItemService {
       data: {
         name: data.name,
         description: data.description || null,
-        category: data.category,
         price,
-        categoryId: data.categoryId || null,
+        categoryId: data.categoryId,
         imageUrl,
         preparationTime,
         isAvailable: data.isAvailable === 'true' || data.isAvailable === true,
@@ -154,7 +150,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        categoryModel: true,
+        category: true,
         photos: true,
       },
     });
@@ -229,11 +225,10 @@ class MenuItemService {
 
     if (data.name !== undefined) updateData.name = data.name;
     if (data.description !== undefined) updateData.description = data.description || null;
-    if (data.category !== undefined) updateData.category = data.category;
     if (data.price !== undefined) {
       updateData.price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
     }
-    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || null;
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
     if (data.preparationTime !== undefined) {
       updateData.preparationTime = data.preparationTime
         ? typeof data.preparationTime === 'string'
@@ -265,7 +260,7 @@ class MenuItemService {
             modifiers: true,
           },
         },
-        categoryModel: true,
+        category: true,
         photos: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
       },
     });

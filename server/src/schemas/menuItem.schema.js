@@ -6,18 +6,15 @@ const createMenuItemSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(80, 'Name must be at most 80 characters'),
   description: z.string().max(500, 'Description must be at most 500 characters').optional(),
-  category: z.enum(['APPETIZER', 'MAIN_COURSE', 'DESSERT', 'BEVERAGE'], {
-    required_error: 'Category is required',
-    invalid_type_error:
-      'Invalid category. Must be one of: APPETIZER, MAIN_COURSE, DESSERT, BEVERAGE',
-  }),
+  categoryId: z.string({
+    required_error: 'Category ID is required',
+  }).uuid('Category ID must be a valid UUID'),
   price: z
     .number({
       required_error: 'Price is required',
       invalid_type_error: 'Price must be a number',
     })
     .positive('Price must be greater than 0'),
-  categoryId: z.string().uuid('Category ID must be a valid UUID').optional(),
   preparationTime: z
     .number({ invalid_type_error: 'Preparation time must be a number' })
     .int('Preparation time must be an integer')

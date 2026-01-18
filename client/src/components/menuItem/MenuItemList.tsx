@@ -1,7 +1,8 @@
 import React from 'react';
 import { SearchIcon, FilterIcon, ArrowUpDownIcon, SparklesIcon, XCircleIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { MenuItem, MenuCategory } from '../../hooks/useMenuItems';
+import type { MenuItem } from '../../hooks/useMenuItems';
+import type { Category } from '../../services/menuItemService';
 import type { FieldHighlight } from '../../types/search.types';
 import { MenuItemCard } from './MenuItemCard';
 import { Pagination } from '../common/Pagination';
@@ -19,8 +20,9 @@ interface MenuItemListProps {
   menuItems: MenuItem[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  selectedCategory: MenuCategory | 'ALL';
-  onCategoryChange: (category: MenuCategory | 'ALL') => void;
+  selectedCategoryId: string | 'ALL';
+  onCategoryChange: (categoryId: string | 'ALL') => void;
+  categories: Category[];
   sortBy: 'name' | 'price' | 'category' | 'createdAt' | 'popularity';
   onSortChange: (sortBy: 'name' | 'price' | 'category' | 'createdAt' | 'popularity') => void;
   sortOrder: 'asc' | 'desc';
@@ -48,8 +50,9 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
   menuItems,
   searchQuery,
   onSearchChange,
-  selectedCategory,
+  selectedCategoryId,
   onCategoryChange,
+  categories,
   sortBy,
   onSortChange,
   sortOrder,
@@ -72,12 +75,9 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
 }) => {
   const { t } = useTranslation('menu');
 
-  const categoryOptions: Array<{ value: MenuCategory | 'ALL'; label: string }> = [
+  const categoryOptions: Array<{ value: string; label: string }> = [
     { value: 'ALL', label: t('categories.all') },
-    { value: 'APPETIZER', label: t('categories.APPETIZER') },
-    { value: 'MAIN_COURSE', label: t('categories.MAIN_COURSE') },
-    { value: 'DESSERT', label: t('categories.DESSERT') },
-    { value: 'BEVERAGE', label: t('categories.BEVERAGE') },
+    ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
   ];
 
   const sortOptions: Array<{ value: typeof sortBy; label: string }> = [
@@ -132,8 +132,8 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
             </label>
             <select
               id="category"
-              value={selectedCategory}
-              onChange={(e) => onCategoryChange(e.target.value as MenuCategory | 'ALL')}
+              value={selectedCategoryId}
+              onChange={(e) => onCategoryChange(e.target.value)}
               className="w-full bg-gray-200 text-black px-4 py-2 border border-antiflash rounded-md focus:ring-2 focus:ring-naples focus:ring-offset-2 focus:outline-none"
             >
               {categoryOptions.map((option) => (
@@ -182,10 +182,10 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               {t('filters.searchFilter', { query: searchQuery })}
             </span>
           )}
-          {selectedCategory !== 'ALL' && (
+          {selectedCategoryId !== 'ALL' && (
             <span className="px-2 py-1 bg-naples/20 text-charcoal text-xs rounded-full">
               {t('filters.categoryFilter', {
-                category: categoryOptions.find((c) => c.value === selectedCategory)?.label,
+                category: categoryOptions.find((c) => c.value === selectedCategoryId)?.label,
               })}
             </span>
           )}
@@ -252,7 +252,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
               {searchQuery ? t('search.noResults', { query: searchQuery }) : t('search.noItems')}
             </h3>
             <p className="text-sm text-gray-500 mb-6">
-              {searchQuery || selectedCategory !== 'ALL'
+              {searchQuery || selectedCategoryId !== 'ALL'
                 ? t('search.noResultsDescription')
                 : t('search.noItemsDescription')}
             </p>
@@ -276,7 +276,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
             )}
 
             {/* Action Buttons */}
-            {(searchQuery || selectedCategory !== 'ALL') && (
+            {(searchQuery || selectedCategoryId !== 'ALL') && (
               <div className="flex justify-center gap-3">
                 {searchQuery && (
                   <button
@@ -286,7 +286,7 @@ export const MenuItemList: React.FC<MenuItemListProps> = ({
                     {t('actions.clearSearch')}
                   </button>
                 )}
-                {(searchQuery || selectedCategory !== 'ALL') && (
+                {(searchQuery || selectedCategoryId !== 'ALL') && (
                   <button
                     onClick={() => {
                       onSearchChange('');

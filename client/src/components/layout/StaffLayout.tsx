@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
-import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon } from 'lucide-react';
+import { LogOutIcon, WifiIcon, WifiOffIcon, ClockIcon, ChevronDownIcon, UserIcon } from 'lucide-react';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 
 /**
@@ -107,10 +107,18 @@ const StaffLayout: React.FC = () => {
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 className="flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-1.5 sm:py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 group"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
-                  <span className="text-charcoal font-bold text-sm sm:text-base">
-                    {user?.name?.charAt(0).toUpperCase() || 'S'}
-                  </span>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300 overflow-hidden">
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name || 'Staff'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-charcoal font-bold text-sm sm:text-base">
+                      {user?.name?.charAt(0).toUpperCase() || 'S'}
+                    </span>
+                  )}
                 </div>
                 <div className="hidden md:block text-left">
                   <p className="text-sm font-semibold text-charcoal">{user?.name || 'Staff'}</p>
@@ -135,6 +143,17 @@ const StaffLayout: React.FC = () => {
                       <p className="text-sm font-semibold text-charcoal">{user?.name || 'Staff'}</p>
                       <p className="text-xs text-gray-600 mt-0.5">{user?.email || ''}</p>
                     </div>
+                    <Link
+                      to={user?.role === 'KITCHEN_STAFF' ? '/kitchen/profile' : '/waiter/profile'}
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 transition-all duration-300 flex items-center space-x-2 group"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                      <span>{t('navigation.profile')}</span>
+                      <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
+                        →
+                      </span>
+                    </Link>
                     <button
                       onClick={() => {
                         setIsProfileDropdownOpen(false);

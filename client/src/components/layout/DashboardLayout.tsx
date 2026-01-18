@@ -15,6 +15,7 @@ import {
   MenuIcon,
   XIcon,
   ChevronDownIcon,
+  UserIcon,
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -81,9 +82,8 @@ const DashboardLayout: React.FC = () => {
     <div className="min-h-screen flex bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-white/80 backdrop-blur-xl text-charcoal border-r border-gray-200 shadow-elevation-2 transition-all duration-300 ease-in-out z-40 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64`}
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-white/80 backdrop-blur-xl text-charcoal border-r border-gray-200 shadow-elevation-2 transition-all duration-300 ease-in-out z-40 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0 w-64`}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
@@ -92,7 +92,7 @@ const DashboardLayout: React.FC = () => {
             <h1 className="text-2xl font-bold text-naples relative z-10 animate-fade-in">
               Smart Restaurant
             </h1>
-            <p className="text-sm text-gray-600 mt-1 relative z-10">Admin Dashboard</p>
+            <p className="text-sm text-gray-600 mt-1 relative z-10">{t('header.adminDashboard')}</p>
           </div>
 
           {/* Navigation */}
@@ -109,11 +109,10 @@ const DashboardLayout: React.FC = () => {
                     <Link
                       to={item.path}
                       onClick={closeSidebar}
-                      className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
-                        isActive(item.path)
+                      className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${isActive(item.path)
                           ? 'bg-gradient-to-r from-naples to-arylide text-charcoal font-semibold shadow-glow-yellow-lg transform scale-105'
                           : 'text-charcoal hover:bg-gradient-to-r hover:from-naples/20 hover:to-arylide/20 hover:text-charcoal hover:scale-105'
-                      }`}
+                        }`}
                     >
                       <Icon
                         className={`w-5 h-5 mr-3 transition-all duration-300 ${isActive(item.path) ? 'animate-bounce-gentle' : 'group-hover:scale-110 group-hover:rotate-12'}`}
@@ -179,10 +178,18 @@ const DashboardLayout: React.FC = () => {
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                   className="flex items-center space-x-3 px-3 py-2 hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 rounded-xl transition-all duration-300 transform hover:scale-105 group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300">
-                    <span className="text-charcoal font-bold text-base">
-                      {user?.name?.charAt(0).toUpperCase() || 'A'}
-                    </span>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-naples to-arylide flex items-center justify-center shadow-md group-hover:shadow-glow-yellow transition-shadow duration-300 overflow-hidden">
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-charcoal font-bold text-base">
+                        {user?.name?.charAt(0).toUpperCase() || 'A'}
+                      </span>
+                    )}
                   </div>
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-semibold text-charcoal">{user?.name || 'Admin'}</p>
@@ -207,6 +214,17 @@ const DashboardLayout: React.FC = () => {
                         </p>
                         <p className="text-xs text-gray-600 mt-0.5">{user?.email || ''}</p>
                       </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-charcoal hover:bg-gradient-to-r hover:from-gradient-primary/10 hover:to-gradient-secondary/10 transition-all duration-300 flex items-center space-x-2 group"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>{t('navigation.profile')}</span>
+                        <span className="ml-auto transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
+                          →
+                        </span>
+                      </Link>
                       <button
                         onClick={() => {
                           setIsProfileDropdownOpen(false);

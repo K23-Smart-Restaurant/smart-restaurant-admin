@@ -2,12 +2,27 @@ import prisma from '../lib/prisma.js';
 
 class CategoryService {
   async createCategory(data) {
+    // If restaurantId not provided, get it from an existing category
+    let restaurantId = data.restaurantId;
+    
+    if (!restaurantId) {
+      const existingCategory = await prisma.category.findFirst({
+        where: { restaurantId: { not: null } },
+        select: { restaurantId: true },
+      });
+      
+      if (existingCategory) {
+        restaurantId = existingCategory.restaurantId;
+      }
+    }
+
     return prisma.category.create({
       data: {
         name: data.name,
         description: data.description,
         displayOrder: data.displayOrder || 0,
         isActive: data.isActive !== undefined ? data.isActive : true,
+        ...(restaurantId && { restaurantId }),
       },
       include: {
         _count: {

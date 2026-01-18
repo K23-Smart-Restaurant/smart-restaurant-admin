@@ -51,8 +51,8 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, 
             </div>
           </div>
 
-          {/* Hover actions */}
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute top-4 right-4 flex space-x-2">
+          {/* Actions - visible on mobile, hover on desktop */}
+          <div className="sm:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 absolute top-4 right-4 flex space-x-2">
             {/* Edit button */}
             <button
               onClick={() => onEdit(category)}
