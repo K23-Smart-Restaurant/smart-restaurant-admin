@@ -52,7 +52,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     '';
 
   const getCategoryLabel = () => {
-    return menuItem.category?.name || t('categories.unknown');
+    return menuItem.categoryModel?.name || t('categories.unknown');
   };
 
   const getCategoryColor = () => {
