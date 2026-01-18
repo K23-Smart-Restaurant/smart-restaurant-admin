@@ -2,8 +2,7 @@ name: Deploy Admin to AWS EC2
 
 on:
   push:
-    branches:
-      - production
+    branches: [main, production]
   workflow_dispatch:
 
 env:
