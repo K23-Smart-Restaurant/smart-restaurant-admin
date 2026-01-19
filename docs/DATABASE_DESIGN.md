@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Smart Restaurant Admin system uses **PostgreSQL** as its database, managed through **Prisma ORM**. The database schema is defined in `server/prisma/schema.prisma`.
+The Smart Restaurant Customer system uses **PostgreSQL** as its database, managed through **Prisma ORM**. The database schema is defined in `server/prisma/schema.prisma`.
 
 This document describes the current database structure as implemented in the project.
 
@@ -17,23 +17,25 @@ erDiagram
     User ||--o{ RefreshToken : "has"
     User ||--o{ Restaurant : "owns"
     User ||--o{ Review : "writes"
-    
+    User ||--o{ FavoriteItem : "saves"
+
     Restaurant ||--o{ Table : "contains"
     Restaurant ||--o{ Category : "has"
     Restaurant ||--o{ MenuItem : "serves"
     Restaurant ||--o{ ModifierGroup : "defines"
-    
+
     Category ||--o{ MenuItem : "contains"
-    
+
     MenuItem ||--o{ MenuItemPhoto : "has"
     MenuItem ||--o{ ModifierGroup : "has"
     MenuItem ||--o{ OrderItem : "included in"
     MenuItem ||--o{ Review : "receives"
-    
+    MenuItem ||--o{ FavoriteItem : "favorited via"
+
     ModifierGroup ||--o{ Modifier : "contains"
-    
+
     Table ||--o{ Order : "receives"
-    
+
     Order ||--o{ OrderItem : "contains"
     Order ||--o| Payment : "has"
 ```
@@ -75,6 +77,7 @@ Stores all user accounts including admins, waiters, kitchen staff, and customers
 - Has many `Order` as customer (one-to-many)
 - Has many `Order` as waiter (one-to-many)
 - Has many `Review` (one-to-many)
+- Has many `FavoriteItem` (one-to-many)
 
 ---
 
@@ -190,29 +193,31 @@ Represents dishes/items on the restaurant menu.
 | `id` | String (UUID) | PK, Default: uuid() | Unique identifier |
 | `name` | String | NOT NULL | Item name |
 | `description` | String | NULLABLE | Item description |
+| `category` | MenuCategory (Enum) | NOT NULL | Menu category type |
 | `price` | Decimal(10,2) | NOT NULL | Base price |
 | `imageUrl` | String | NULLABLE | Primary image URL |
 | `isAvailable` | Boolean | Default: true | Availability status |
 | `isSoldOut` | Boolean | Default: false | Sold out status |
 | `isChefRecommendation` | Boolean | Default: false | Chef's pick flag |
 | `preparationTime` | Int | NULLABLE | Prep time in minutes |
-| `categoryId` | String | FK → Category.id, NOT NULL | Item category |
+| `categoryId` | String | FK → Category.id, NULLABLE | Optional category reference |
 | `restaurantId` | String | FK → Restaurant.id, NULLABLE | Associated restaurant |
 | `createdAt` | DateTime | Default: now() | Creation timestamp |
 | `updatedAt` | DateTime | Auto-updated | Last update timestamp |
 
-**Indexes:** `isAvailable`, `categoryId`, `restaurantId`
+**Indexes:** composite(`category`, `isAvailable`), `isAvailable`, `categoryId`, `restaurantId`
 
 **Constraints:**
 - ON DELETE CASCADE (when Restaurant is deleted)
 
 **Relationships:**
-- Belongs to `Category`
+- Belongs to `Category` (optional)
 - Belongs to `Restaurant`
 - Has many `MenuItemPhoto` (one-to-many)
 - Has many `ModifierGroup` (one-to-many)
 - Has many `OrderItem` (one-to-many)
 - Has many `Review` (one-to-many)
+- Has many `FavoriteItem` (one-to-many)
 
 ---
 
@@ -394,6 +399,29 @@ Customer reviews for menu items.
 
 ---
 
+### 14. FavoriteItem
+
+Stores customer's favorite menu items.
+
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| `id` | String (UUID) | PK, Default: uuid() | Unique identifier |
+| `userId` | String | FK → User.id, NOT NULL | User who favorited |
+| `menuItemId` | String | FK → MenuItem.id, NOT NULL | Favorited menu item |
+| `createdAt` | DateTime | Default: now() | When item was favorited |
+
+**Indexes:** `userId`, `menuItemId`
+
+**Constraints:**
+- UNIQUE composite(`userId`, `menuItemId`) - One favorite per user per item
+- ON DELETE CASCADE (when User or MenuItem is deleted)
+
+**Relationships:**
+- Belongs to `User`
+- Belongs to `MenuItem`
+
+---
+
 ## Enumerations
 
 ### UserRole
@@ -412,6 +440,14 @@ Customer reviews for menu items.
 | `AVAILABLE` | Table is free |
 | `OCCUPIED` | Table is in use |
 | `RESERVED` | Table is reserved |
+
+### MenuCategory
+| Value | Description |
+|-------|-------------|
+| `APPETIZER` | Starter dishes |
+| `MAIN_COURSE` | Main dishes |
+| `DESSERT` | Dessert items |
+| `BEVERAGE` | Drinks and beverages |
 
 ### OrderStatus
 | Value | Description |
@@ -464,12 +500,14 @@ Customer reviews for menu items.
 | User → Restaurant | One-to-Many | Admin owns multiple restaurants |
 | User → Order (customer) | One-to-Many | Customer places multiple orders |
 | User → Order (waiter) | One-to-Many | Waiter serves multiple orders |
+| User → FavoriteItem | One-to-Many | User favorites multiple items |
 | Restaurant → Table | One-to-Many | Restaurant has multiple tables |
 | Restaurant → Category | One-to-Many | Restaurant has multiple categories |
 | Restaurant → MenuItem | One-to-Many | Restaurant serves multiple items |
 | Category → MenuItem | One-to-Many | Category contains multiple items |
 | MenuItem → MenuItemPhoto | One-to-Many | Item has multiple photos |
 | MenuItem → ModifierGroup | One-to-Many | Item has multiple modifier groups |
+| MenuItem → FavoriteItem | One-to-Many | Item favorited by multiple users |
 | ModifierGroup → Modifier | One-to-Many | Group contains multiple modifiers |
 | Table → Order | One-to-Many | Table receives multiple orders |
 | Order → OrderItem | One-to-Many | Order contains multiple items |
@@ -484,6 +522,7 @@ Customer reviews for menu items.
 ### Cascade Deletions
 The following relationships have cascade delete enabled:
 - `User` → `RefreshToken`: Deleting a user removes all their refresh tokens
+- `User` → `FavoriteItem`: Deleting a user removes all their favorites
 - `Restaurant` → `Table`: Deleting a restaurant removes all its tables
 - `Restaurant` → `Category`: Deleting a restaurant removes all its categories
 - `Restaurant` → `MenuItem`: Deleting a restaurant removes all its menu items
@@ -491,6 +530,7 @@ The following relationships have cascade delete enabled:
 - `MenuItem` → `MenuItemPhoto`: Deleting an item removes all its photos
 - `MenuItem` → `ModifierGroup`: Deleting an item removes all its modifier groups
 - `MenuItem` → `Review`: Deleting an item removes all its reviews
+- `MenuItem` → `FavoriteItem`: Deleting an item removes all favorite references
 - `ModifierGroup` → `Modifier`: Deleting a group removes all its modifiers
 - `Order` → `OrderItem`: Deleting an order removes all its items
 - `User` → `Review`: Deleting a user removes all their reviews
@@ -504,6 +544,7 @@ The following relationships have cascade delete enabled:
 - `Payment.orderId`: Each order can have only one payment
 - `Payment.stripePaymentIntentId`: Stripe intent IDs must be unique
 - `Review(userId, menuItemId)`: One review per user per menu item
+- `FavoriteItem(userId, menuItemId)`: One favorite per user per menu item
 
 ---
 

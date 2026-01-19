@@ -1,42 +1,40 @@
-# Smart Restaurant Admin 🍽️
+# Smart Restaurant Admin
 
-> A modern, full-stack restaurant management system for administrators to efficiently manage tables, menus, orders, staff, and generate QR codes for seamless customer ordering.
+A modern, full-stack restaurant management system for administrators to efficiently manage tables, menus, orders, staff, and generate QR codes for seamless customer ordering.
 
-[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue?logo=postgresql)](https://www.postgresql.org/)
+**Technology Stack:** React 19, TypeScript 5, Node.js 18+, PostgreSQL 14+
 
 ---
 
-## 📖 Documentation
+## Documentation
 
-| Document | Description |
-|----------|-------------|
-| 📘 [**User Guide**](docs/USER_GUIDE.md) | Complete guide for using the application – features, workflows, and step-by-step instructions |
-| ⚙️ [**Setup Guide**](docs/SETUP.md) | Installation, environment configuration, and running the application |
-| 🏗️ [**Architecture**](docs/ARCHITECTURE.md) | System design, tech stack, database schema, and code organization |
-
----
-
-## 🎯 About the Project
-
-**Smart Restaurant Admin** is a comprehensive web-based management system designed for restaurant administrators, managers, and staff. It provides an intuitive dashboard to handle day-to-day restaurant operations.
-
-### What Does It Do?
-
-This application serves as the **administrative control center** for a modern restaurant:
-
-- **📊 Dashboard** – Real-time business metrics, KPIs, and live order notifications
-- **🪑 Table Management** – Create tables, track status, generate QR codes (PNG & PDF)
-- **🍔 Menu Management** – Organize items with categories, images (up to 5), and modifiers
-- **📦 Order Management** – Real-time order tracking with status workflow
-- **👥 Staff Management** – Role-based access control (Admin, Waiter, Kitchen Staff)
-- **📈 Reports & Analytics** – Revenue trends, top-selling items, performance metrics
+| Document                               | Description                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [User Guide](docs/USER_GUIDE.md)       | Complete guide for using the application, including features, workflows, and step-by-step instructions |
+| [Setup Guide](docs/SETUP.md)           | Installation, environment configuration, and running the application                                   |
+| [Architecture](docs/ARCHITECTURE.md)   | System design, technology stack, database schema, and code organization                                |
+| [API Reference](docs/API_REFERENCE.md) | API endpoints, request/response schemas, and authentication details                                    |
 
 ---
 
-## � Quick Start
+## Project Overview
+
+Smart Restaurant Admin is a comprehensive web-based management system designed for restaurant administrators, managers, and staff. It provides an intuitive dashboard to handle day-to-day restaurant operations.
+
+### Core Functionality
+
+This application serves as the administrative control center for modern restaurant operations:
+
+- **Dashboard** - Real-time business metrics, key performance indicators, and live order notifications
+- **Table Management** - Create and manage tables, track status, generate QR codes in PNG and PDF formats
+- **Menu Management** - Organize menu items with categories, support for multiple images (up to 5 per item), and modifiers
+- **Order Management** - Real-time order tracking with comprehensive status workflow
+- **Staff Management** - Role-based access control supporting Admin, Waiter, and Kitchen Staff roles
+- **Reports and Analytics** - Revenue trends, top-selling items analysis, and performance metrics
+
+---
+
+## Quick Start
 
 ```bash
 # 1. Clone and install
@@ -59,92 +57,114 @@ npm install
 # Terminal 2: cd client && npm run dev
 ```
 
-📍 **Frontend:** http://localhost:5173  
-📍 **Backend API:** http://localhost:3001/api
+**Application URLs:**
 
-→ For detailed installation instructions, see the [**Setup Guide**](docs/SETUP.md)
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001/api
 
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technologies |
-|-------|--------------|
-| **Frontend** | React 19, TypeScript, Vite, TanStack Query, Tailwind CSS |
-| **Backend** | Node.js, Express, PostgreSQL, Prisma ORM, Socket.IO |
-| **Auth** | JWT, Passport.js, bcrypt |
-| **Features** | QR code generation, PDF export, real-time updates |
-
-→ For detailed architecture, see the [**Architecture Guide**](docs/ARCHITECTURE.md)
+For detailed installation instructions, refer to the [Setup Guide](docs/SETUP.md).
 
 ---
 
-## 📁 Project Structure
+## Technology Stack
+
+| Layer              | Technologies                                             |
+| ------------------ | -------------------------------------------------------- |
+| **Frontend**       | React 19, TypeScript, Vite, TanStack Query, Tailwind CSS |
+| **Backend**        | Node.js, Express, PostgreSQL, Prisma ORM, Socket.IO      |
+| **Authentication** | JWT, Passport.js, bcrypt                                 |
+| **Features**       | QR code generation, PDF export, real-time updates        |
+
+For detailed architecture information, refer to the [Architecture Guide](docs/ARCHITECTURE.md).
+
+---
+
+## Project Structure
 
 ```
 smart-restaurant-admin/
-├── client/                 # React frontend (TypeScript)
+├── client/                         # React frontend (TypeScript)
 │   ├── src/
-│   │   ├── components/     # UI components
-│   │   ├── pages/          # Page-level components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── services/       # API service layer
-│   │   └── contexts/       # React Context providers
-│   └── ...
+│   │   ├── assets/                 # Static assets (images, icons)
+│   │   ├── components/             # Reusable UI components
+│   │   ├── contexts/               # React Context providers (Auth, Theme)
+│   │   ├── hooks/                  # Custom React hooks
+│   │   ├── i18n/                   # Internationalization setup
+│   │   ├── locales/                # Translation files (en, vi)
+│   │   ├── pages/                  # Page-level components
+│   │   ├── services/               # API service layer
+│   │   ├── types/                  # TypeScript type definitions
+│   │   ├── utils/                  # Utility functions
+│   │   ├── App.tsx                 # Main application component
+│   │   └── main.tsx                # Application entry point
+│   ├── public/                     # Public static files
+│   ├── docs/                       # Client-specific documentation
+│   ├── eslint.config.js            # ESLint configuration
+│   ├── vite.config.ts              # Vite build configuration
+│   ├── vitest.config.ts            # Vitest testing configuration
+│   ├── tailwind.config.js          # Tailwind CSS configuration
+│   ├── tsconfig.json               # TypeScript configuration
+│   ├── package.json                # Frontend dependencies
+│   ├── Dockerfile                  # Production Docker image
+│   ├── Dockerfile.dev              # Development Docker image
+│   └── nginx.conf                  # Nginx server configuration
 │
-├── server/                 # Node.js backend
+├── server/                         # Node.js backend
 │   ├── src/
-│   │   ├── controllers/    # Request handlers
-│   │   ├── routes/         # API route definitions
-│   │   ├── services/       # Business logic
-│   │   └── middleware/     # Express middleware
-│   ├── prisma/             # Database schema
-│   └── ...
+│   │   ├── config/                 # Configuration files (database, JWT, etc.)
+│   │   ├── controllers/            # Request handlers
+│   │   ├── docs/                   # API documentation (OpenAPI/Swagger)
+│   │   ├── lib/                    # Shared libraries
+│   │   ├── middleware/             # Express middleware (auth, validation)
+│   │   ├── routes/                 # API route definitions
+│   │   ├── schemas/                # Validation schemas
+│   │   ├── services/               # Business logic layer
+│   │   ├── utils/                  # Utility functions
+│   │   ├── app.js                  # Express application setup
+│   │   └── index.js                # Server entry point
+│   ├── prisma/
+│   │   ├── schema.prisma           # Database schema definition
+│   │   ├── migrations/             # Database migration files
+│   │   └── lib/                    # Prisma client extensions
+│   ├── logs/                       # Application logs
+│   ├── eslint.config.js            # ESLint configuration
+│   ├── prisma.config.ts            # Prisma configuration
+│   ├── package.json                # Backend dependencies
+│   └── Dockerfile                  # Production Docker image
 │
-└── docs/                   # Documentation
-    ├── USER_GUIDE.md       # End-user documentation
-    ├── SETUP.md            # Installation guide
-    ├── ARCHITECTURE.md     # System design
-    ├── deployment/         # Deployment guides
-    ├── guides/             # Additional guides (i18n, etc.)
-    └── features/           # Feature-specific docs
+├── docs/                           # Project documentation
+│   ├── ARCHITECTURE.md             # System architecture
+│   ├── DATABASE_DESIGN.md          # Database schema documentation
+│   ├── SETUP.md                    # Installation guide
+│   ├── USER_GUIDE.md               # End-user documentation
+│   ├── API_REFERENCE.md            # API reference guide
+│   ├── deployment/                 # Deployment guides
+│   ├── features/                   # Feature documentation
+│   └── guides/                     # Additional guides
+│       └── i18n/                   # Internationalization guides
+│
+├── docker-compose.yaml             # Docker Compose configuration
+├── commit-history.md               # Git commit history
+└── README.md                       # This file
 ```
 
 ---
 
-## � Additional Documentation
+## Project Context
 
-### Deployment
-- [Deployment Guide](docs/deployment/DEPLOYMENT.md) – Production deployment
-- [EC2 Deployment](docs/deployment/EC2_DEPLOYMENT_GUIDE.md) – AWS EC2 setup
-- [GitHub Secrets](docs/deployment/GITHUB_SECRETS_SETUP.md) – CI/CD configuration
-
-### Guides
-- [Internationalization](docs/guides/i18n/) – Multi-language support (EN/VI)
-
-### Feature Documentation
-- [Fuzzy Search](docs/features/fuzzy-search/) – Search implementation
-- [Menu Management](docs/features/menu-management/) – Menu feature docs
-- [QR Code](docs/features/qr-code/) – QR code generation
-- [Staff Apps](docs/features/staff-apps/) – Waiter & Kitchen display
-- [Table Management](docs/features/table-management/) – Table feature docs
-
----
-
-## 🎓 Project Context
-
-This application is part of the **Smart Restaurant System**, a comprehensive solution for modern restaurant operations developed as part of the Web Application Development Course at HCMUS.
+This application is part of the Smart Restaurant System, a comprehensive solution for modern restaurant operations developed as part of the Web Application Development Course at HCMUS.
 
 **Related Applications:**
-- **Smart Restaurant Customer** – QR-based customer ordering interface
-- **Smart Restaurant SuperAdmin** – Platform-level admin management
+
+- Smart Restaurant Customer - QR-based customer ordering interface
+- Smart Restaurant SuperAdmin - Platform-level administrative management
 
 ---
 
-## 📄 License
+## License
 
 ISC License
 
 ---
 
-*© 2026 Smart Restaurant Admin. HCMUS Web Application Development Course.*
+Copyright 2026 Smart Restaurant Admin. HCMUS Web Application Development Course.
